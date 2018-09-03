@@ -26,7 +26,7 @@ import dataset
 
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
-
+TF_TRAIN_STEPS = os.getenv('TF_TRAIN_STEPS',1000)
 MODEL_DIR = os.getenv('OUT_DIR', None)
 DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
 
@@ -37,7 +37,6 @@ print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
 TF_MODEL_DIR = MODEL_DIR
-TF_TRAIN_STEPS = 1000
 
 class Model(object):
   """Class that defines a graph to recognize digits in the MNIST dataset."""
@@ -187,7 +186,7 @@ def main(unused_argv):
   '''
 
   train_spec = tf.estimator.TrainSpec(
-        input_fn=train_input_fn, max_steps=TF_TRAIN_STEPS)
+        input_fn=train_input_fn, max_steps=int(TF_TRAIN_STEPS))
 
   # Evaluate the model and print results
   def eval_input_fn():
