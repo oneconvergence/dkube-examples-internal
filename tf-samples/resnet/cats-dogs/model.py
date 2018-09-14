@@ -93,7 +93,7 @@ def train(_):
     
     DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
-    EXTRACT_PATH = os.path.split(DATA_DIR)[0]
+    EXTRACT_PATH = "/tmp/resnet-model"
     ZIP_FILE = DATA_DIR + "/data.zip"
     if os.path.exists(ZIP_FILE):
         print("Extracting compressed training data...")
