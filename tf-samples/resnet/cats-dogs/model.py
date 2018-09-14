@@ -2,7 +2,7 @@ import os
 import multiprocessing
 import tensorflow as tf
 import tensorflow_hub as hub
-
+import zipfile
 
 from tensorflow.python import debug as tf_debug
 
@@ -11,18 +11,14 @@ tf.logging.info('GPU Available {}'.format(tf.test.is_gpu_available()))
 if 'TF_CONFIG' in os.environ:
     tf.logging.info('TF_CONFIG: {}'.format(os.environ["TF_CONFIG"]))
 
-
-
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
 
 MODEL_DIR = os.getenv('OUT_DIR', None)
-DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
 
 BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 64))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
 
-print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
 
@@ -95,6 +91,18 @@ def train(_):
     
     run_config = tf.estimator.RunConfig()
     
+    DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
+    print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
+    EXTRACT_PATH = os.path.split(DATA_DIR)[0]
+    ZIP_FILE = DATA_DIR + "/data.zip"
+    if os.path.exists(ZIP_FILE):
+        print("Extracting compressed training data...")
+        archive = zipfile.ZipFile(ZIP_FILE)
+        for file in archive.namelist():
+            if file.startswith('data'):
+                archive.extract(file, EXTRACT_PATH)
+        print("Training data successfuly extracted")
+        DATA_DIR = EXTRACT_PATH + "/data"    
 
     params = {
         'module_spec': 'https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/1',
