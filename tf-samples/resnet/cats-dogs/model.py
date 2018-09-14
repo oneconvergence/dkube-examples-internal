@@ -95,18 +95,16 @@ def train(_):
     run_config = tf.estimator.RunConfig()
     DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
-    try:
-        EXTRACT_PATH = os.path.split(DATA_DIR)[0]
-        if zipfile.is_zipfile(DATA_DIR):
-            print("Extracting compressed training data...")
-            archive = zipfile.ZipFile(DATA_DIR)
-            for file in archive.namelist():
-                if file.startswith('dogscats/'):
-                    archive.extract(file, EXTRACT_PATH)
-            print("Training data successfuly extracted")
-            DATA_DIR = os.path.split(DATA_DIR)[0] + "/dogscats/"
-    except:
-        print("Data not compressed")
+    EXTRACT_PATH = os.path.split(DATA_DIR)[0]
+    ZIP_FILE = DATA_DIR + "/dogscats.zip"
+    if os.path.exists(ZIP_FILE):
+        print("Extracting compressed training data...")
+        archive = zipfile.ZipFile(ZIP_FILE)
+        for file in archive.namelist():
+            if file.startswith('dogscats'):
+                archive.extract(file, EXTRACT_PATH)
+        print("Training data successfuly extracted")
+        DATA_DIR = EXTRACT_PATH + "/dogscats"
 
     params = {
         'module_spec': 'https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/1',
