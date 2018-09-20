@@ -38,6 +38,19 @@ print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
 TF_MODEL_DIR = MODEL_DIR
 
+steps_epoch = 0
+def count_epochs(iterator):
+    sess = tf.Session()
+    global steps_epoch
+    steps_epoch = 0
+    while True:
+        try:
+            sess.run(iterator)
+            steps_epoch += 1
+        except Exception as OutOfRangeError:
+            steps_epoch /= EPOCHS
+            break
+
 class Model(object):
   """Class that defines a graph to recognize digits in the MNIST dataset."""
 
@@ -136,15 +149,8 @@ def model_fn(features, labels, mode, params):
 
 
 def main(unused_argv):
-  FLAGS.model_dir = MODEL_DIR
-  FLAGS.batch_size = BATCH_SIZE
-  FLAGS.train_epochs = EPOCHS
-  FLAGS.data_dir = DATA_DIR
-  FLAGS.export_dir = MODEL_DIR
 
-  print('FLAGS used for training {}'.format(FLAGS))
-
-  data_format = FLAGS.data_format
+  data_format = None
   if data_format is None:
     data_format = ('channels_first'
                    if tf.test.is_built_with_cuda() else 'channels_last')
@@ -152,29 +158,30 @@ def main(unused_argv):
   training_config = tf.estimator.RunConfig(model_dir=TF_MODEL_DIR, save_summary_steps=100, save_checkpoints_steps=100)
   mnist_classifier = tf.estimator.Estimator(
       model_fn=model_fn,
-      model_dir=FLAGS.model_dir,
+      model_dir=MODEL_DIR,
       params={
           'data_format': data_format
       }, config=training_config)
 
   # Export the model
-  if FLAGS.export_dir is not None:
+  if MODEL_DIR is not None:
     image = tf.placeholder(tf.float32, [None, 28, 28])
     input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn({
         'image': image,
     })
     export_fn = input_fn
-    export_final = tf.estimator.FinalExporter(FLAGS.export_dir, serving_input_receiver_fn=input_fn)
+    export_final = tf.estimator.FinalExporter(MODEL_DIR, serving_input_receiver_fn=input_fn)
 
   # Train the model
   def train_input_fn():
     # When choosing shuffle buffer sizes, larger sizes result in better
     # randomness, while smaller sizes use less memory. MNIST is a small
     # enough dataset that we can easily shuffle the full epoch.
-    ds = dataset.train(FLAGS.data_dir)
-    ds = ds.cache().shuffle(buffer_size=50000).batch(FLAGS.batch_size).repeat(
-        FLAGS.train_epochs)
+    ds = dataset.train(DATA_DIR)
+    ds = ds.cache().shuffle(buffer_size=50000).batch(BATCH_SIZE).repeat(EPOCHS)
     (images, labels) = ds.make_one_shot_iterator().get_next()
+    (cimages, clabels) = ds.make_one_shot_iterator().get_next()
+    count_epochs(cimages)
     return (images, labels)
 
   '''
@@ -190,8 +197,7 @@ def main(unused_argv):
 
   # Evaluate the model and print results
   def eval_input_fn():
-    return dataset.test(FLAGS.data_dir).batch(
-        FLAGS.batch_size).make_one_shot_iterator().get_next()
+    return dataset.test(DATA_DIR).batch(BATCH_SIZE).make_one_shot_iterator().get_next()
 
   eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn,
                                       steps=1,
@@ -200,7 +206,7 @@ def main(unused_argv):
                                       start_delay_secs=1)
   tf.estimator.train_and_evaluate(mnist_classifier, train_spec, eval_spec)
 
-  mnist_classifier.export_savedmodel(FLAGS.export_dir, export_fn)
+  mnist_classifier.export_savedmodel(MODEL_DIR, export_fn)
   '''
   eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
   print()
@@ -215,39 +221,6 @@ def main(unused_argv):
     mnist_classifier.export_savedmodel(FLAGS.export_dir, input_fn)
  '''
 
-if __name__ == '__main__':
-  parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--batch_size',
-      type=int,
-      default=10,
-      help='Number of images to process in a batch')
-  parser.add_argument(
-      '--data_dir',
-      type=str,
-      default='/tmp/mnist_data',
-      help='Path to directory containing the MNIST dataset')
-  parser.add_argument(
-      '--model_dir',
-      type=str,
-      default='/tmp/mnist_model',
-      help='The directory where the model will be stored.')
-  parser.add_argument(
-      '--train_epochs', type=int, default=1, help='Number of epochs to train.')
-  parser.add_argument(
-      '--data_format',
-      type=str,
-      default=None,
-      choices=['channels_first', 'channels_last'],
-      help='A flag to override the data format used in the model. channels_first '
-      'provides a performance boost on GPU but is not always compatible '
-      'with CPU. If left unspecified, the data format will be chosen '
-      'automatically based on whether TensorFlow was built for CPU or GPU.')
-  parser.add_argument(
-      '--export_dir',
-      type=str,
-      help='The directory where the exported SavedModel will be stored.')
-
+def run():
   tf.logging.set_verbosity(tf.logging.INFO)
-  FLAGS, unparsed = parser.parse_known_args()
-  tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+  tf.app.run(main=main)
