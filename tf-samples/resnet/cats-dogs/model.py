@@ -23,10 +23,21 @@ TF_TRAIN_STEPS = os.getenv('TF_TRAIN_STEPS',1000)
 
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
-
+steps_epoch  = 0
 if not os.path.isdir(MODEL_DIR):
     os.makedirs(MODEL_DIR)
 
+def count_epochs(iterator):
+    sess = tf.Session()
+    global steps_epoch
+    steps_epoch = 0
+    while True:
+        try:
+            sess.run(iterator)
+            steps_epoch += 1
+        except Exception as OutOfRangeError:
+            steps_epoch /= EPOCHS
+            break
 
 def _img_string_to_tensor(image_string, image_size=(299, 299)):
     image_decoded = tf.image.decode_jpeg(image_string, channels=3)
@@ -60,8 +71,10 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
 
         dataset = dataset.map(_path_to_img, num_parallel_calls=multiprocessing.cpu_count())
         dataset = dataset.batch(batch_size).prefetch(buffer_size)
-
-        return dataset
+        (images, labels) = dataset.make_one_shot_iterator().get_next()
+        (cimages, clabels) = dataset.make_one_shot_iterator().get_next()
+	count_epochs(cimages)
+        return (images, labels)
 
     return _input_fn
 
@@ -91,7 +104,7 @@ def model_fn(features, labels, mode, params):
 
 def train(_):
     
-    run_config = tf.estimator.RunConfig()
+    run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=10, save_checkpoints_steps=10)
     
     DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
@@ -155,6 +168,6 @@ def train(_):
 
     classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
-if __name__ == '__main__':
+def run():
     tf.logging.set_verbosity(tf.logging.INFO)
     tf.app.run(main=train)
