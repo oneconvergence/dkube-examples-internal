@@ -29,16 +29,16 @@ DATASET_NAME = os.getenv('DATASET_NAME', None)
 TF_TRAIN_STEPS = os.getenv('TF_TRAIN_STEPS',1000)
 MODEL_DIR = os.getenv('OUT_DIR', None)
 DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
-
 BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 10))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
+TF_MODEL_DIR = MODEL_DIR
+train_hook = None
+eval_hook = None
+steps_epoch = 0
 
 print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
-TF_MODEL_DIR = MODEL_DIR
-
-steps_epoch = 0
 def count_epochs(iterator):
     sess = tf.Session()
     global steps_epoch
@@ -126,6 +126,8 @@ def model_fn(features, labels, mode, params):
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
     accuracy = tf.metrics.accuracy(
         labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
+    logging_hook = train_hook({">>>>>Loss": loss, ">>>>Accuracy":accuracy[1] ,
+                        "Step" : tf.train.get_or_create_global_step()}, every_n_iter=100)
     # Name the accuracy tensor 'train_accuracy' to demonstrate the
     # LoggingTensorHook.
     tf.identity(accuracy[1], name='train_accuracy')
@@ -133,7 +135,8 @@ def model_fn(features, labels, mode, params):
     return tf.estimator.EstimatorSpec(
         mode=tf.estimator.ModeKeys.TRAIN,
         loss=loss,
-        train_op=optimizer.minimize(loss, tf.train.get_or_create_global_step()))
+        train_op=optimizer.minimize(loss, tf.train.get_or_create_global_step()),
+        training_hooks = [logging_hook])
   if mode == tf.estimator.ModeKeys.EVAL:
     logits = model(image, training=False)
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
@@ -221,6 +224,9 @@ def main(unused_argv):
     mnist_classifier.export_savedmodel(FLAGS.export_dir, input_fn)
  '''
 
-def run():
+def run(training_hook, evaluation_hook):
+  global train_hook, eval_hook
+  train_hook = training_hook
+  eval_hook = evaluation_hook
   tf.logging.set_verbosity(tf.logging.INFO)
   tf.app.run(main=main)
