@@ -35,7 +35,7 @@ TF_MODEL_DIR = MODEL_DIR
 train_hook = None
 eval_hook = None
 steps_epoch = 0
-
+summary_interval = 100
 print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
@@ -158,7 +158,7 @@ def main(unused_argv):
     data_format = ('channels_first'
                    if tf.test.is_built_with_cuda() else 'channels_last')
 
-  training_config = tf.estimator.RunConfig(model_dir=TF_MODEL_DIR, save_summary_steps=100, save_checkpoints_steps=100)
+  training_config = tf.estimator.RunConfig(model_dir=TF_MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
   mnist_classifier = tf.estimator.Estimator(
       model_fn=model_fn,
       model_dir=MODEL_DIR,
@@ -224,9 +224,10 @@ def main(unused_argv):
     mnist_classifier.export_savedmodel(FLAGS.export_dir, input_fn)
  '''
 
-def run(training_hook, evaluation_hook):
-  global train_hook, eval_hook
+def run(training_hook, evaluation_hook, interval=100):
+  global train_hook, eval_hook, summary_interval
   train_hook = training_hook
   eval_hook = evaluation_hook
+  summary_interval = interval
   tf.logging.set_verbosity(tf.logging.INFO)
   tf.app.run(main=main)

@@ -20,7 +20,7 @@ TF_TRAIN_STEPS = os.getenv('TF_TRAIN_STEPS',1000)
 train_hook = None
 eval_hook = None
 train_loss = 0
-
+summary_interval = 100
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
 steps_epoch  = 0
@@ -111,7 +111,7 @@ def model_fn(features, labels, mode, params):
 
 def train(_):
     
-    run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=10, save_checkpoints_steps=10)
+    run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
     
     DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
@@ -175,9 +175,10 @@ def train(_):
 
     classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
-def run(training_hook, evaluation_hook):
-    global train_hook, eval_hook
+def run(training_hook, evaluation_hook, interval=100):
+    global train_hook, eval_hook, summary_interval
     train_hook = training_hook
     eval_hook = evaluation_hook
+    summary_interval = interval
     tf.logging.set_verbosity(tf.logging.INFO)
     tf.app.run(main=train)
