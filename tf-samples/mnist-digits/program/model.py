@@ -126,8 +126,8 @@ def model_fn(features, labels, mode, params):
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
     accuracy = tf.metrics.accuracy(
         labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
-    logging_hook = train_hook({">>>>>Loss": loss, ">>>>Accuracy":accuracy[1] ,
-                        "Step" : tf.train.get_or_create_global_step()}, every_n_iter=100)
+    logging_hook = train_hook({"loss": loss, "accuracy":accuracy[1] ,
+                        "step" : tf.train.get_or_create_global_step()}, every_n_iter=100)
     # Name the accuracy tensor 'train_accuracy' to demonstrate the
     # LoggingTensorHook.
     tf.identity(accuracy[1], name='train_accuracy')
