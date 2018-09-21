@@ -126,17 +126,24 @@ def model_fn(features, labels, mode, params):
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
     accuracy = tf.metrics.accuracy(
         labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
-    logging_hook = train_hook({"loss": loss, "accuracy":accuracy[1] ,
+    if train_hook != None:
+        logging_hook = train_hook({"loss": loss, "accuracy":accuracy[1] ,
                         "step" : tf.train.get_or_create_global_step()}, every_n_iter=summary_interval)
     # Name the accuracy tensor 'train_accuracy' to demonstrate the
     # LoggingTensorHook.
     tf.identity(accuracy[1], name='train_accuracy')
     tf.summary.scalar('train_accuracy', accuracy[1])
-    return tf.estimator.EstimatorSpec(
-        mode=tf.estimator.ModeKeys.TRAIN,
-        loss=loss,
-        train_op=optimizer.minimize(loss, tf.train.get_or_create_global_step()),
-        training_hooks = [logging_hook])
+    if train_hook != None:
+        return tf.estimator.EstimatorSpec(
+            mode=tf.estimator.ModeKeys.TRAIN,
+            loss=loss,
+            train_op=optimizer.minimize(loss, tf.train.get_or_create_global_step()),
+            training_hooks = [logging_hook])
+    else:
+        return tf.estimator.EstimatorSpec(
+            mode=tf.estimator.ModeKeys.TRAIN,
+            loss=loss,
+            train_op=optimizer.minimize(loss, tf.train.get_or_create_global_step()))
   if mode == tf.estimator.ModeKeys.EVAL:
     logits = model(image, training=False)
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
@@ -231,3 +238,6 @@ def run(training_hook, evaluation_hook, interval=100):
   summary_interval = interval
   tf.logging.set_verbosity(tf.logging.INFO)
   tf.app.run(main=main)
+
+if __name__ == '__main__':
+    run(None, None)
