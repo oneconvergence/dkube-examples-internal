@@ -127,7 +127,7 @@ def model_fn(features, labels, mode, params):
     accuracy = tf.metrics.accuracy(
         labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
     logging_hook = train_hook({"loss": loss, "accuracy":accuracy[1] ,
-                        "step" : tf.train.get_or_create_global_step()}, every_n_iter=100)
+                        "step" : tf.train.get_or_create_global_step()}, every_n_iter=summary_interval)
     # Name the accuracy tensor 'train_accuracy' to demonstrate the
     # LoggingTensorHook.
     tf.identity(accuracy[1], name='train_accuracy')

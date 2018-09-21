@@ -105,7 +105,7 @@ def model_fn(features, labels, mode, params):
     )
 
     if mode == tf.estimator.ModeKeys.TRAIN:
-        logging_hook = train_hook({"loss": train_loss, "step" : tf.train.get_or_create_global_step()}, every_n_iter=10)
+        logging_hook = train_hook({"loss": train_loss, "step" : tf.train.get_or_create_global_step()}, every_n_iter=summary_interval)
         spec = spec._replace(training_hooks = [logging_hook])
     return spec
 
