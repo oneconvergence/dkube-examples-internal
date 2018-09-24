@@ -99,7 +99,6 @@ def model_fn(features, labels, mode, params):
     spec =  head.create_estimator_spec(
         features, mode, logits, labels, train_op_fn=train_op_fn
     )
-
     if mode == tf.estimator.ModeKeys.TRAIN and logger_hook != None:
         logging_hook = logger_hook({"loss": spec.loss, "step" : tf.train.get_or_create_global_step(), "mode":"train"}, every_n_iter=summary_interval)
         spec = spec._replace(training_hooks = [logging_hook])
@@ -148,7 +147,7 @@ def train(_):
 
     eval_files = os.path.join(DATA_DIR, 'valid', '**/*.jpg')
     eval_input_fn = make_input_fn(eval_files, image_size=input_img_size, batch_size=1)
-    eval_spec = tf.estimator.EvalSpec(eval_input_fn)
+    eval_spec = tf.estimator.EvalSpec(eval_input_fn, steps=1, throttle_secs=1, start_delay_secs=1)
 
     tf.estimator.train_and_evaluate(classifier, train_spec, eval_spec)
     def serving_input_receiver_fn():
