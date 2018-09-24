@@ -17,9 +17,7 @@ MODEL_DIR = os.getenv('OUT_DIR', None)
 BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 64))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
 TF_TRAIN_STEPS = os.getenv('TF_TRAIN_STEPS',1000)
-train_hook = None
-eval_hook = None
-train_loss = 0
+logger_hook = None
 summary_interval = 100
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
@@ -90,8 +88,6 @@ def model_fn(features, labels, mode, params):
         logits = tf.layers.dense(bottleneck_tensor, units=1, trainable=is_training)
 
     def train_op_fn(loss):
-        global train_loss
-        train_loss = loss
         optimizer = tf.train.AdamOptimizer(learning_rate=params['learning_rate'])
         return optimizer.minimize(loss, global_step=tf.train.get_global_step())
 
@@ -104,9 +100,12 @@ def model_fn(features, labels, mode, params):
         features, mode, logits, labels, train_op_fn=train_op_fn
     )
 
-    if mode == tf.estimator.ModeKeys.TRAIN and train_hook != None:
-        logging_hook = train_hook({"loss": train_loss, "step" : tf.train.get_or_create_global_step()}, every_n_iter=summary_interval)
+    if mode == tf.estimator.ModeKeys.TRAIN and logger_hook != None:
+        logging_hook = logger_hook({"loss": spec.loss, "step" : tf.train.get_or_create_global_step(), "mode":"train"}, every_n_iter=summary_interval)
         spec = spec._replace(training_hooks = [logging_hook])
+    if mode == tf.estimator.ModeKeys.EVAL and logger_hook != None:
+        logging_hook = logger_hook({"loss": spec.loss, "accuracy":spec.eval_metric_ops['accuracy'][1], "step" : tf.train.get_or_create_global_step(), "mode": "eval"}, every_n_iter=summary_interval)
+        spec = spec._replace(evaluation_hooks = [logging_hook])
     return spec
 
 def train(_):
@@ -175,13 +174,12 @@ def train(_):
 
     classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
-def run(training_hook, evaluation_hook, interval=100):
-    global train_hook, eval_hook, summary_interval
-    train_hook = training_hook
-    eval_hook = evaluation_hook
+def run(dkube_hook, interval=100):
+    global logger_hook, summary_interval
+    logger_hook = dkube_hook
     summary_interval = interval
     tf.logging.set_verbosity(tf.logging.INFO)
     tf.app.run(main=train)
 
 if __name__ == '__main__':
-    run(None,None)
+    run(None)

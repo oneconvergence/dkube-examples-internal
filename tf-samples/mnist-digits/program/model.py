@@ -32,8 +32,7 @@ DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
 BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 10))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
 TF_MODEL_DIR = MODEL_DIR
-train_hook = None
-eval_hook = None
+logger_hook = None
 steps_epoch = 0
 summary_interval = 100
 print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
@@ -126,14 +125,13 @@ def model_fn(features, labels, mode, params):
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
     accuracy = tf.metrics.accuracy(
         labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
-    if train_hook != None:
-        logging_hook = train_hook({"loss": loss, "accuracy":accuracy[1] ,
-                        "step" : tf.train.get_or_create_global_step()}, every_n_iter=summary_interval)
     # Name the accuracy tensor 'train_accuracy' to demonstrate the
     # LoggingTensorHook.
     tf.identity(accuracy[1], name='train_accuracy')
     tf.summary.scalar('train_accuracy', accuracy[1])
-    if train_hook != None:
+    if logger_hook != None:
+        logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
+            "step" : tf.train.get_or_create_global_step(), "mode":"train"}, every_n_iter=summary_interval)
         return tf.estimator.EstimatorSpec(
             mode=tf.estimator.ModeKeys.TRAIN,
             loss=loss,
@@ -147,14 +145,30 @@ def model_fn(features, labels, mode, params):
   if mode == tf.estimator.ModeKeys.EVAL:
     logits = model(image, training=False)
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
-    return tf.estimator.EstimatorSpec(
-        mode=tf.estimator.ModeKeys.EVAL,
-        loss=loss,
-        eval_metric_ops={
-            'accuracy':
-                tf.metrics.accuracy(
-                    labels=tf.argmax(labels, axis=1),
-                    predictions=tf.argmax(logits, axis=1)),
+    accuracy = tf.metrics.accuracy(
+        labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
+    if logger_hook != None:
+        logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
+            "step" : tf.train.get_or_create_global_step(), "mode":"eval"}, every_n_iter=summary_interval)
+    	return tf.estimator.EstimatorSpec(
+        	mode=tf.estimator.ModeKeys.EVAL,
+        	loss=loss,
+        	eval_metric_ops={
+            	'accuracy':
+                	tf.metrics.accuracy(
+                    	labels=tf.argmax(labels, axis=1),
+                    	predictions=tf.argmax(logits, axis=1)),
+        	},
+                evaluation_hooks = [logging_hook])
+    else:
+    	return tf.estimator.EstimatorSpec(
+        	mode=tf.estimator.ModeKeys.EVAL,
+        	loss=loss,
+        	eval_metric_ops={
+                'accuracy':
+                    tf.metrics.accuracy(
+                        labels=tf.argmax(labels, axis=1),
+                        predictions=tf.argmax(logits, axis=1)),
         })
 
 
@@ -164,7 +178,6 @@ def main(unused_argv):
   if data_format is None:
     data_format = ('channels_first'
                    if tf.test.is_built_with_cuda() else 'channels_last')
-
   training_config = tf.estimator.RunConfig(model_dir=TF_MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
   mnist_classifier = tf.estimator.Estimator(
       model_fn=model_fn,
@@ -231,13 +244,12 @@ def main(unused_argv):
     mnist_classifier.export_savedmodel(FLAGS.export_dir, input_fn)
  '''
 
-def run(training_hook, evaluation_hook, interval=100):
-  global train_hook, eval_hook, summary_interval
-  train_hook = training_hook
-  eval_hook = evaluation_hook
+def run(dkube_hook, interval=100):
+  global logger_hook, summary_interval
+  logger_hook = dkube_hook
   summary_interval = interval
   tf.logging.set_verbosity(tf.logging.INFO)
   tf.app.run(main=main)
 
 if __name__ == '__main__':
-    run(None, None)
+    run(None)
