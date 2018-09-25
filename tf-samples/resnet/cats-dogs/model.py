@@ -3,9 +3,7 @@ import multiprocessing
 import tensorflow as tf
 import tensorflow_hub as hub
 import zipfile
-
-from tensorflow.python import debug as tf_debug
-
+from tensorflow.python.ops import metrics as metrics_lib
 tf.logging.info('TF Version {}'.format(tf.__version__))
 tf.logging.info('GPU Available {}'.format(tf.test.is_gpu_available()))
 if 'TF_CONFIG' in os.environ:
@@ -13,20 +11,29 @@ if 'TF_CONFIG' in os.environ:
 
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
-
 MODEL_DIR = os.getenv('OUT_DIR', None)
-
 BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 64))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
-
-TF_TRAIN_STEPS = os.getenv('TF_TRAIN_STEPS',1000)
-
+TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
+logger_hook = None
+summary_interval = 100
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
-
+steps_epoch  = 0
 if not os.path.isdir(MODEL_DIR):
     os.makedirs(MODEL_DIR)
 
+def count_epochs(iterator):
+    sess = tf.Session()
+    global steps_epoch
+    steps_epoch = 0
+    while True:
+        try:
+            sess.run(iterator)
+            steps_epoch += 1
+        except Exception as OutOfRangeError:
+            steps_epoch /= EPOCHS
+            break
 
 def _img_string_to_tensor(image_string, image_size=(299, 299)):
     image_decoded = tf.image.decode_jpeg(image_string, channels=3)
@@ -60,8 +67,10 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
 
         dataset = dataset.map(_path_to_img, num_parallel_calls=multiprocessing.cpu_count())
         dataset = dataset.batch(batch_size).prefetch(buffer_size)
-
-        return dataset
+        (images, labels) = dataset.make_one_shot_iterator().get_next()
+        (cimages, clabels) = dataset.make_one_shot_iterator().get_next()
+	count_epochs(cimages)
+        return (images, labels)
 
     return _input_fn
 
@@ -85,13 +94,24 @@ def model_fn(features, labels, mode, params):
     else:
         head = tf.contrib.estimator.multi_class_head(n_classes=NUM_CLASSES, label_vocabulary=params['label_vocab'])
 
-    return head.create_estimator_spec(
+    spec =  head.create_estimator_spec(
         features, mode, logits, labels, train_op_fn=train_op_fn
     )
+    if mode == tf.estimator.ModeKeys.TRAIN and logger_hook != None:
+        logging_hook = logger_hook({"loss": spec.loss,"accuracy":
+            metrics_lib.accuracy(labels, spec.predictions['classes'])[1], 
+            "step" : tf.train.get_or_create_global_step(), "mode":"train"}, every_n_iter=summary_interval)
+        spec = spec._replace(training_hooks = [logging_hook])
+    if mode == tf.estimator.ModeKeys.EVAL and logger_hook != None:
+        logging_hook = logger_hook({"loss": spec.loss, "accuracy":
+            spec.eval_metric_ops['accuracy'][1], "step" : 
+            tf.train.get_or_create_global_step(), "mode": "eval"}, every_n_iter=summary_interval)
+        spec = spec._replace(evaluation_hooks = [logging_hook])
+    return spec
 
 def train(_):
     
-    run_config = tf.estimator.RunConfig()
+    run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
     
     DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
@@ -125,11 +145,11 @@ def train(_):
 
     train_files = os.path.join(DATA_DIR, 'train', '**/*.jpg')
     train_input_fn = make_input_fn(train_files, image_size=input_img_size, batch_size=8, shuffle=True)
-    train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=int(TF_TRAIN_STEPS))
+    train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=TF_TRAIN_STEPS)
 
     eval_files = os.path.join(DATA_DIR, 'valid', '**/*.jpg')
     eval_input_fn = make_input_fn(eval_files, image_size=input_img_size, batch_size=1)
-    eval_spec = tf.estimator.EvalSpec(eval_input_fn)
+    eval_spec = tf.estimator.EvalSpec(eval_input_fn, steps=1, throttle_secs=1, start_delay_secs=1)
 
     tf.estimator.train_and_evaluate(classifier, train_spec, eval_spec)
     def serving_input_receiver_fn():
@@ -155,6 +175,14 @@ def train(_):
 
     classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
-if __name__ == '__main__':
+def run(dkube_hook):
+    global logger_hook, summary_interval
+    summary_interval = 100
+    if TF_TRAIN_STEPS%100 < 10:
+        summary_interval = TF_TRAIN_STEPS/10
+    logger_hook = dkube_hook
     tf.logging.set_verbosity(tf.logging.INFO)
     tf.app.run(main=train)
+
+if __name__ == '__main__':
+    run(None)
