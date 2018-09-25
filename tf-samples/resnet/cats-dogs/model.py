@@ -3,9 +3,7 @@ import multiprocessing
 import tensorflow as tf
 import tensorflow_hub as hub
 import zipfile
-
-from tensorflow.python import debug as tf_debug
-
+from tensorflow.python.ops import metrics as metrics_lib
 tf.logging.info('TF Version {}'.format(tf.__version__))
 tf.logging.info('GPU Available {}'.format(tf.test.is_gpu_available()))
 if 'TF_CONFIG' in os.environ:
@@ -100,10 +98,14 @@ def model_fn(features, labels, mode, params):
         features, mode, logits, labels, train_op_fn=train_op_fn
     )
     if mode == tf.estimator.ModeKeys.TRAIN and logger_hook != None:
-        logging_hook = logger_hook({"loss": spec.loss, "step" : tf.train.get_or_create_global_step(), "mode":"train"}, every_n_iter=summary_interval)
+        logging_hook = logger_hook({"loss": spec.loss,"accuracy":
+            metrics_lib.accuracy(labels, spec.predictions['classes'])[1], 
+            "step" : tf.train.get_or_create_global_step(), "mode":"train"}, every_n_iter=summary_interval)
         spec = spec._replace(training_hooks = [logging_hook])
     if mode == tf.estimator.ModeKeys.EVAL and logger_hook != None:
-        logging_hook = logger_hook({"loss": spec.loss, "accuracy":spec.eval_metric_ops['accuracy'][1], "step" : tf.train.get_or_create_global_step(), "mode": "eval"}, every_n_iter=summary_interval)
+        logging_hook = logger_hook({"loss": spec.loss, "accuracy":
+            spec.eval_metric_ops['accuracy'][1], "step" : 
+            tf.train.get_or_create_global_step(), "mode": "eval"}, every_n_iter=summary_interval)
         spec = spec._replace(evaluation_hooks = [logging_hook])
     return spec
 
