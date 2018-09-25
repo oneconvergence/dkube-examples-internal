@@ -244,8 +244,11 @@ def main(unused_argv):
     mnist_classifier.export_savedmodel(FLAGS.export_dir, input_fn)
  '''
 
-def run(dkube_hook, interval=100):
+def run(dkube_hook):
   global logger_hook, summary_interval
+  summary_interval = 100
+  if TF_TRAIN_STEPS%100 < 10:
+    summary_interval = TF_TRAIN_STEPS/10
   logger_hook = dkube_hook
   summary_interval = interval
   tf.logging.set_verbosity(tf.logging.INFO)
