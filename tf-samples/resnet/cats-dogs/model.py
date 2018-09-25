@@ -14,7 +14,7 @@ DATASET_NAME = os.getenv('DATASET_NAME', None)
 MODEL_DIR = os.getenv('OUT_DIR', None)
 BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 64))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
-TF_TRAIN_STEPS = os.getenv('TF_TRAIN_STEPS',1000)
+TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
 logger_hook = None
 summary_interval = 100
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
@@ -145,7 +145,7 @@ def train(_):
 
     train_files = os.path.join(DATA_DIR, 'train', '**/*.jpg')
     train_input_fn = make_input_fn(train_files, image_size=input_img_size, batch_size=8, shuffle=True)
-    train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=int(TF_TRAIN_STEPS))
+    train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=TF_TRAIN_STEPS)
 
     eval_files = os.path.join(DATA_DIR, 'valid', '**/*.jpg')
     eval_input_fn = make_input_fn(eval_files, image_size=input_img_size, batch_size=1)
