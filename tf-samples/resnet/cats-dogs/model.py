@@ -69,7 +69,7 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
         dataset = dataset.batch(batch_size).prefetch(buffer_size)
         (images, labels) = dataset.make_one_shot_iterator().get_next()
         (cimages, clabels) = dataset.make_one_shot_iterator().get_next()
-	count_epochs(cimages)
+        count_epochs(cimages)
         return (images, labels)
 
     return _input_fn
