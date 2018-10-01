@@ -150,7 +150,7 @@ def model_fn(features, labels, mode, params):
     if logger_hook != None:
         logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
             "step" : tf.train.get_or_create_global_step(), "mode":"eval"}, every_n_iter=summary_interval)
-    	return tf.estimator.EstimatorSpec(
+        return tf.estimator.EstimatorSpec(
         	mode=tf.estimator.ModeKeys.EVAL,
         	loss=loss,
         	eval_metric_ops={
