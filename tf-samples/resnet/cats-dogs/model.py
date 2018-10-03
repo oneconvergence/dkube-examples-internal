@@ -178,7 +178,7 @@ def train(_):
 def run(dkube_hook):
     global logger_hook, summary_interval
     summary_interval = 100
-    if TF_TRAIN_STEPS%100 < 10:
+    if TF_TRAIN_STEPS%100 < 10 and TF_TRAIN_STEPS < 1000:
         summary_interval = TF_TRAIN_STEPS/10
     logger_hook = dkube_hook
     tf.logging.set_verbosity(tf.logging.INFO)
