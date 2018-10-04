@@ -26,14 +26,14 @@ if not os.path.isdir(MODEL_DIR):
 def count_epochs(iterator):
     sess = tf.Session()
     global steps_epoch
-    steps_epoch = 0
-    while True:
-        try:
-            sess.run(iterator)
-            steps_epoch += 1
-        except Exception as OutOfRangeError:
-            steps_epoch /= EPOCHS
-            break
+    if not steps_epoch:
+        while True:
+            try:
+                sess.run(iterator)
+                steps_epoch += 1
+            except Exception as OutOfRangeError:
+                steps_epoch /= EPOCHS
+                break
 
 def _img_string_to_tensor(image_string, image_size=(299, 299)):
     image_decoded = tf.image.decode_jpeg(image_string, channels=3)
@@ -57,9 +57,7 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
         return { 'image': image_resized }, label
     
     def _input_fn():
-      
         dataset = tf.data.Dataset.list_files(file_pattern)
-
         if shuffle:
             dataset = dataset.apply(tf.contrib.data.shuffle_and_repeat(buffer_size, num_epochs))
         else:

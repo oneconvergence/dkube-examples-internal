@@ -41,14 +41,14 @@ print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 def count_epochs(iterator):
     sess = tf.Session()
     global steps_epoch
-    steps_epoch = 0
-    while True:
-        try:
-            sess.run(iterator)
-            steps_epoch += 1
-        except Exception as OutOfRangeError:
-            steps_epoch /= EPOCHS
-            break
+    if not steps_epoch:
+        while True:
+            try:
+                sess.run(iterator)
+                steps_epoch += 1
+            except Exception as OutOfRangeError:
+                steps_epoch /= EPOCHS
+                break
 
 class Model(object):
   """Class that defines a graph to recognize digits in the MNIST dataset."""
