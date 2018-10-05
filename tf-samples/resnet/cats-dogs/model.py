@@ -4,6 +4,8 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import zipfile
 from tensorflow.python.ops import metrics as metrics_lib
+from dkube import dkubeLoggerHook as logger_hook
+
 tf.logging.info('TF Version {}'.format(tf.__version__))
 tf.logging.info('GPU Available {}'.format(tf.test.is_gpu_available()))
 if 'TF_CONFIG' in os.environ:
@@ -15,7 +17,6 @@ MODEL_DIR = os.getenv('OUT_DIR', None)
 BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 64))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
 TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
-logger_hook = None
 summary_interval = 100
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
@@ -95,15 +96,15 @@ def model_fn(features, labels, mode, params):
     spec =  head.create_estimator_spec(
         features, mode, logits, labels, train_op_fn=train_op_fn
     )
-    if mode == tf.estimator.ModeKeys.TRAIN and logger_hook != None:
+    if mode == tf.estimator.ModeKeys.TRAIN:
         logging_hook = logger_hook({"loss": spec.loss,"accuracy":
             metrics_lib.accuracy(labels, spec.predictions['classes'])[1], 
-            "step" : tf.train.get_or_create_global_step(), "mode":"train"}, every_n_iter=summary_interval)
+            "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
         spec = spec._replace(training_hooks = [logging_hook])
-    if mode == tf.estimator.ModeKeys.EVAL and logger_hook != None:
+    if mode == tf.estimator.ModeKeys.EVAL:
         logging_hook = logger_hook({"loss": spec.loss, "accuracy":
             spec.eval_metric_ops['accuracy'][1], "step" : 
-            tf.train.get_or_create_global_step(), "mode": "eval"}, every_n_iter=summary_interval)
+            tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode": "eval"}, every_n_iter=summary_interval)
         spec = spec._replace(evaluation_hooks = [logging_hook])
     return spec
 
@@ -173,14 +174,13 @@ def train(_):
 
     classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
-def run(dkube_hook):
-    global logger_hook, summary_interval
+def run():
+    global summary_interval
     summary_interval = 100
     if TF_TRAIN_STEPS%100 < 10 and TF_TRAIN_STEPS < 1000:
         summary_interval = TF_TRAIN_STEPS/10
-    logger_hook = dkube_hook
     tf.logging.set_verbosity(tf.logging.INFO)
     tf.app.run(main=train)
 
 if __name__ == '__main__':
-    run(None)
+    run()
