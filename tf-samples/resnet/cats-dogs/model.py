@@ -147,7 +147,7 @@ def train(_):
     train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=TF_TRAIN_STEPS)
 
     eval_files = os.path.join(DATA_DIR, 'valid', '**/*.jpg')
-    eval_input_fn = make_input_fn(eval_files, image_size=input_img_size, batch_size=1)
+    eval_input_fn = make_input_fn(eval_files, image_size=input_img_size, batch_size=10)
     eval_spec = tf.estimator.EvalSpec(eval_input_fn, steps=1, throttle_secs=1, start_delay_secs=1)
 
     tf.estimator.train_and_evaluate(classifier, train_spec, eval_spec)
