@@ -4,6 +4,8 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import zipfile
 from tensorflow.python.ops import metrics as metrics_lib
+from dkube import dkubeLoggerHook as logger_hook
+
 tf.logging.info('TF Version {}'.format(tf.__version__))
 tf.logging.info('GPU Available {}'.format(tf.test.is_gpu_available()))
 if 'TF_CONFIG' in os.environ:
@@ -15,7 +17,6 @@ MODEL_DIR = os.getenv('OUT_DIR', None)
 BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 64))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
 TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
-logger_hook = None
 summary_interval = 100
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
@@ -26,14 +27,14 @@ if not os.path.isdir(MODEL_DIR):
 def count_epochs(iterator):
     sess = tf.Session()
     global steps_epoch
-    steps_epoch = 0
-    while True:
-        try:
-            sess.run(iterator)
-            steps_epoch += 1
-        except Exception as OutOfRangeError:
-            steps_epoch /= EPOCHS
-            break
+    if not steps_epoch:
+        while True:
+            try:
+                sess.run(iterator)
+                steps_epoch += 1
+            except Exception as OutOfRangeError:
+                steps_epoch /= EPOCHS
+                break
 
 def _img_string_to_tensor(image_string, image_size=(299, 299)):
     image_decoded = tf.image.decode_jpeg(image_string, channels=3)
@@ -57,9 +58,7 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
         return { 'image': image_resized }, label
     
     def _input_fn():
-      
         dataset = tf.data.Dataset.list_files(file_pattern)
-
         if shuffle:
             dataset = dataset.apply(tf.contrib.data.shuffle_and_repeat(buffer_size, num_epochs))
         else:
@@ -97,15 +96,15 @@ def model_fn(features, labels, mode, params):
     spec =  head.create_estimator_spec(
         features, mode, logits, labels, train_op_fn=train_op_fn
     )
-    if mode == tf.estimator.ModeKeys.TRAIN and logger_hook != None:
+    if mode == tf.estimator.ModeKeys.TRAIN:
         logging_hook = logger_hook({"loss": spec.loss,"accuracy":
             metrics_lib.accuracy(labels, spec.predictions['classes'])[1], 
-            "step" : tf.train.get_or_create_global_step(), "mode":"train"}, every_n_iter=summary_interval)
+            "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
         spec = spec._replace(training_hooks = [logging_hook])
-    if mode == tf.estimator.ModeKeys.EVAL and logger_hook != None:
+    if mode == tf.estimator.ModeKeys.EVAL:
         logging_hook = logger_hook({"loss": spec.loss, "accuracy":
             spec.eval_metric_ops['accuracy'][1], "step" : 
-            tf.train.get_or_create_global_step(), "mode": "eval"}, every_n_iter=summary_interval)
+            tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode": "eval"}, every_n_iter=summary_interval)
         spec = spec._replace(evaluation_hooks = [logging_hook])
     return spec
 
@@ -144,11 +143,11 @@ def train(_):
     input_img_size = hub.get_expected_image_size(hub.Module(params['module_spec']))
 
     train_files = os.path.join(DATA_DIR, 'train', '**/*.jpg')
-    train_input_fn = make_input_fn(train_files, image_size=input_img_size, batch_size=8, shuffle=True)
+    train_input_fn = make_input_fn(train_files, image_size=input_img_size, shuffle=True)
     train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=TF_TRAIN_STEPS)
 
     eval_files = os.path.join(DATA_DIR, 'valid', '**/*.jpg')
-    eval_input_fn = make_input_fn(eval_files, image_size=input_img_size, batch_size=1)
+    eval_input_fn = make_input_fn(eval_files, image_size=input_img_size)
     eval_spec = tf.estimator.EvalSpec(eval_input_fn, steps=1, throttle_secs=1, start_delay_secs=1)
 
     tf.estimator.train_and_evaluate(classifier, train_spec, eval_spec)
@@ -175,14 +174,13 @@ def train(_):
 
     classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
-def run(dkube_hook):
-    global logger_hook, summary_interval
+def run():
+    global summary_interval
     summary_interval = 100
-    if TF_TRAIN_STEPS%100 < 10:
+    if TF_TRAIN_STEPS%100 < 10 and TF_TRAIN_STEPS < 1000:
         summary_interval = TF_TRAIN_STEPS/10
-    logger_hook = dkube_hook
     tf.logging.set_verbosity(tf.logging.INFO)
     tf.app.run(main=train)
 
 if __name__ == '__main__':
-    run(None)
+    run()
