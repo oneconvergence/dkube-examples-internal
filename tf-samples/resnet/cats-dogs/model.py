@@ -143,11 +143,11 @@ def train(_):
     input_img_size = hub.get_expected_image_size(hub.Module(params['module_spec']))
 
     train_files = os.path.join(DATA_DIR, 'train', '**/*.jpg')
-    train_input_fn = make_input_fn(train_files, image_size=input_img_size, batch_size=8, shuffle=True)
+    train_input_fn = make_input_fn(train_files, image_size=input_img_size, shuffle=True)
     train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=TF_TRAIN_STEPS)
 
     eval_files = os.path.join(DATA_DIR, 'valid', '**/*.jpg')
-    eval_input_fn = make_input_fn(eval_files, image_size=input_img_size, batch_size=10)
+    eval_input_fn = make_input_fn(eval_files, image_size=input_img_size)
     eval_spec = tf.estimator.EvalSpec(eval_input_fn, steps=1, throttle_secs=1, start_delay_secs=1)
 
     tf.estimator.train_and_evaluate(classifier, train_spec, eval_spec)
