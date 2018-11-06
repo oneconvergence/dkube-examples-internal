@@ -64,8 +64,7 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
         else:
             dataset = dataset.repeat(num_epochs)
 
-        dataset = dataset.map(_path_to_img, num_parallel_calls=multiprocessing.cpu_count())
-        dataset = dataset.batch(batch_size).prefetch(buffer_size)
+        dataset = dataset.apply(tf.contrib.data.map_and_batch(map_func=_path_to_img, batch_size=BATCH_SIZE))
         (images, labels) = dataset.make_one_shot_iterator().get_next()
         (cimages, clabels) = dataset.make_one_shot_iterator().get_next()
         count_epochs(cimages)
