@@ -55,7 +55,7 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
         image_string = tf.read_file(path)
         image_resized = _img_string_to_tensor(image_string, image_size)
         
-        return { 'image': image_resized }, label
+        return { 'inputs': image_resized }, label
     
     def _input_fn():
         dataset = tf.data.Dataset.list_files(file_pattern)
@@ -78,7 +78,7 @@ def model_fn(features, labels, mode, params):
     NUM_CLASSES = len(params['label_vocab'])
 
     module = hub.Module(params['module_spec'], trainable=is_training and params['train_module'], name=params['module_name'])
-    bottleneck_tensor = module(features['image'])
+    bottleneck_tensor = module(features['inputs'])
 
     with tf.name_scope('final_retrain_ops'):
         logits = tf.layers.dense(bottleneck_tensor, units=1, trainable=is_training)
@@ -153,7 +153,7 @@ def train(_):
     def serving_input_receiver_fn():
     
     	feature_spec = {
-        	'image': tf.FixedLenFeature([], dtype=tf.string)
+            'inputs': tf.FixedLenFeature([], dtype=tf.string)
     	}
     
     	default_batch_size = 1
@@ -162,14 +162,11 @@ def train(_):
         	dtype=tf.string, shape=[default_batch_size], 
         	name='input_image_tensor')
     
-    	received_tensors = { 'images': serialized_tf_example }
-    	features = tf.parse_example(serialized_tf_example, feature_spec)
-    
-    	fn = lambda image: _img_string_to_tensor(image, input_img_size)
-    
-    	features['image'] = tf.map_fn(fn, features['image'], dtype=tf.float32)
-    
-    	return tf.estimator.export.ServingInputReceiver(features, received_tensors)
+        received_tensors = { 'inputs': serialized_tf_example }
+        features = tf.parse_example(serialized_tf_example, feature_spec)
+        fn = lambda image: _img_string_to_tensor(image, input_img_size)
+        features['inputs'] = tf.map_fn(fn, features['inputs'], dtype=tf.float32)
+        return tf.estimator.export.ServingInputReceiver(features, received_tensors)
 
     classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
