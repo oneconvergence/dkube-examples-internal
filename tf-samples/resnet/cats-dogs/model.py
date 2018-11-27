@@ -3,8 +3,10 @@ import multiprocessing
 import tensorflow as tf
 import tensorflow_hub as hub
 import zipfile
+import tarfile
 from tensorflow.python.ops import metrics as metrics_lib
 from dkube import dkubeLoggerHook as logger_hook
+from tensorflow.python.platform import tf_logging as logging
 
 tf.logging.info('TF Version {}'.format(tf.__version__))
 tf.logging.info('GPU Available {}'.format(tf.test.is_gpu_available()))
@@ -14,6 +16,7 @@ if 'TF_CONFIG' in os.environ:
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
 MODEL_DIR = os.getenv('OUT_DIR', None)
+TFHUB_CACHE_DIR = os.getenv('TFHUB_CACHE_DIR',None)
 BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 64))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
 TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
@@ -77,7 +80,7 @@ def model_fn(features, labels, mode, params):
 
     NUM_CLASSES = len(params['label_vocab'])
 
-    module = hub.Module(params['module_spec'], trainable=is_training and params['train_module'], name=params['module_name'])
+    module = hub.Module(TFHUB_CACHE_DIR, trainable=is_training and params['train_module'], name=params['module_name'])
     bottleneck_tensor = module(features['inputs'])
 
     with tf.name_scope('final_retrain_ops'):
@@ -110,7 +113,15 @@ def model_fn(features, labels, mode, params):
 def train(_):
     
     run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
-    
+    if TFHUB_CACHE_DIR == None:
+        logging.error("No directory specified for resnet50 model")
+        return
+    else:
+        files = [os.path.abspath(os.path.join(dirpath, f)) for dirpath,_,filenames in os.walk(TFHUB_CACHE_DIR) for f in filenames if f.endswith('tar.gz')]
+        for fname in files:
+            tar = tarfile.open(fname, "r:gz")
+            tar.extractall(TFHUB_CACHE_DIR)
+            tar.close()
     DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
     EXTRACT_PATH = "/tmp/resnet-model"
@@ -139,7 +150,7 @@ def train(_):
         params=params
     )
 
-    input_img_size = hub.get_expected_image_size(hub.Module(params['module_spec']))
+    input_img_size = hub.get_expected_image_size(hub.Module(TFHUB_CACHE_DIR))
 
     train_files = os.path.join(DATA_DIR, 'train', '**/*.jpg')
     train_input_fn = make_input_fn(train_files, image_size=input_img_size, shuffle=True)
