@@ -117,7 +117,7 @@ def train(_):
         logging.error("No directory specified for resnet50 model")
         return
     else:
-        files = [os.path.abspath(os.path.join(dirpath, f)) for dirpath,_,filenames in os.walk(TFHUB_CACHE_DIR) for f in filenames if f.endswith('tar.gz')]
+        files = [os.path.join(TFHUB_CACHE_DIR, f) for f in tf.gfile.ListDirectory(TFHUB_CACHE_DIR) if f.endswith('tar.gz')]
         for fname in files:
             tar = tarfile.open(fname, "r:gz")
             tar.extractall(TFHUB_CACHE_DIR)
