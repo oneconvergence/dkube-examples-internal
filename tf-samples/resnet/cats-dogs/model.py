@@ -113,15 +113,6 @@ def model_fn(features, labels, mode, params):
 def train(_):
     
     run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
-    if TFHUB_CACHE_DIR == None:
-        logging.error("No directory specified for resnet50 model")
-        return
-    else:
-        files = [os.path.join(TFHUB_CACHE_DIR, f) for f in tf.gfile.ListDirectory(TFHUB_CACHE_DIR) if f.endswith('tar.gz')]
-        for fname in files:
-            tar = tarfile.open(fname, "r:gz")
-            tar.extractall(TFHUB_CACHE_DIR)
-            tar.close()
     DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
     EXTRACT_PATH = "/tmp/resnet-model"
@@ -142,6 +133,15 @@ def train(_):
         'train_module': False,  # Whether we want to finetune the module
         'label_vocab': os.listdir(os.path.join(DATA_DIR, 'valid'))
     }
+    global TFHUB_CACHE_DIR
+    if TFHUB_CACHE_DIR != None:
+        files = [os.path.join(TFHUB_CACHE_DIR, f) for f in tf.gfile.ListDirectory(TFHUB_CACHE_DIR) if f.endswith('tar.gz')]
+        for fname in files:
+            tar = tarfile.open(fname, "r:gz")
+            tar.extractall(TFHUB_CACHE_DIR)
+            tar.close()
+    else:
+        TFHUB_CACHE_DIR = params['module_spec']
 
     classifier = tf.estimator.Estimator(
         model_fn=model_fn,
