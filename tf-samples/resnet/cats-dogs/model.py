@@ -3,8 +3,10 @@ import multiprocessing
 import tensorflow as tf
 import tensorflow_hub as hub
 import zipfile
+import tarfile
 from tensorflow.python.ops import metrics as metrics_lib
 from dkube import dkubeLoggerHook as logger_hook
+from tensorflow.python.platform import tf_logging as logging
 
 tf.logging.info('TF Version {}'.format(tf.__version__))
 tf.logging.info('GPU Available {}'.format(tf.test.is_gpu_available()))
@@ -14,6 +16,7 @@ if 'TF_CONFIG' in os.environ:
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
 MODEL_DIR = os.getenv('OUT_DIR', None)
+TFHUB_CACHE_DIR = os.getenv('TFHUB_CACHE_DIR',None)
 BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 64))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
 TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
@@ -55,7 +58,7 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
         image_string = tf.read_file(path)
         image_resized = _img_string_to_tensor(image_string, image_size)
         
-        return { 'image': image_resized }, label
+        return { 'inputs': image_resized }, label
     
     def _input_fn():
         dataset = tf.data.Dataset.list_files(file_pattern)
@@ -64,8 +67,7 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
         else:
             dataset = dataset.repeat(num_epochs)
 
-        dataset = dataset.map(_path_to_img, num_parallel_calls=multiprocessing.cpu_count())
-        dataset = dataset.batch(batch_size).prefetch(buffer_size)
+        dataset = dataset.apply(tf.contrib.data.map_and_batch(map_func=_path_to_img, batch_size=BATCH_SIZE))
         (images, labels) = dataset.make_one_shot_iterator().get_next()
         (cimages, clabels) = dataset.make_one_shot_iterator().get_next()
         count_epochs(cimages)
@@ -78,8 +80,8 @@ def model_fn(features, labels, mode, params):
 
     NUM_CLASSES = len(params['label_vocab'])
 
-    module = hub.Module(params['module_spec'], trainable=is_training and params['train_module'], name=params['module_name'])
-    bottleneck_tensor = module(features['image'])
+    module = hub.Module(TFHUB_CACHE_DIR, trainable=is_training and params['train_module'], name=params['module_name'])
+    bottleneck_tensor = module(features['inputs'])
 
     with tf.name_scope('final_retrain_ops'):
         logits = tf.layers.dense(bottleneck_tensor, units=1, trainable=is_training)
@@ -111,7 +113,6 @@ def model_fn(features, labels, mode, params):
 def train(_):
     
     run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
-    
     DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
     EXTRACT_PATH = "/tmp/resnet-model"
@@ -132,6 +133,15 @@ def train(_):
         'train_module': False,  # Whether we want to finetune the module
         'label_vocab': os.listdir(os.path.join(DATA_DIR, 'valid'))
     }
+    global TFHUB_CACHE_DIR
+    if TFHUB_CACHE_DIR != None:
+        files = [os.path.join(TFHUB_CACHE_DIR, f) for f in tf.gfile.ListDirectory(TFHUB_CACHE_DIR) if f.endswith('tar.gz')]
+        for fname in files:
+            tar = tarfile.open(fname, "r:gz")
+            tar.extractall(TFHUB_CACHE_DIR)
+            tar.close()
+    else:
+        TFHUB_CACHE_DIR = params['module_spec']
 
     classifier = tf.estimator.Estimator(
         model_fn=model_fn,
@@ -140,7 +150,7 @@ def train(_):
         params=params
     )
 
-    input_img_size = hub.get_expected_image_size(hub.Module(params['module_spec']))
+    input_img_size = hub.get_expected_image_size(hub.Module(TFHUB_CACHE_DIR))
 
     train_files = os.path.join(DATA_DIR, 'train', '**/*.jpg')
     train_input_fn = make_input_fn(train_files, image_size=input_img_size, shuffle=True)
@@ -154,7 +164,7 @@ def train(_):
     def serving_input_receiver_fn():
     
     	feature_spec = {
-        	'image': tf.FixedLenFeature([], dtype=tf.string)
+            'inputs': tf.FixedLenFeature([], dtype=tf.string)
     	}
     
     	default_batch_size = 1
@@ -163,14 +173,11 @@ def train(_):
         	dtype=tf.string, shape=[default_batch_size], 
         	name='input_image_tensor')
     
-    	received_tensors = { 'images': serialized_tf_example }
-    	features = tf.parse_example(serialized_tf_example, feature_spec)
-    
-    	fn = lambda image: _img_string_to_tensor(image, input_img_size)
-    
-    	features['image'] = tf.map_fn(fn, features['image'], dtype=tf.float32)
-    
-    	return tf.estimator.export.ServingInputReceiver(features, received_tensors)
+        received_tensors = { 'inputs': serialized_tf_example }
+        features = tf.parse_example(serialized_tf_example, feature_spec)
+        fn = lambda image: _img_string_to_tensor(image, input_img_size)
+        features['inputs'] = tf.map_fn(fn, features['inputs'], dtype=tf.float32)
+        return tf.estimator.export.ServingInputReceiver(features, received_tensors)
 
     classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
