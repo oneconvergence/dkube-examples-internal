@@ -162,18 +162,12 @@ def train(_):
 
     tf.estimator.train_and_evaluate(classifier, train_spec, eval_spec)
     def serving_input_receiver_fn():
-    
-    	feature_spec = {
-            'inputs': tf.FixedLenFeature([], dtype=tf.string)
-    	}
-    
-    	default_batch_size = 1
-    
-    	serialized_tf_example = tf.placeholder(
-        	dtype=tf.string, shape=[default_batch_size], 
-        	name='input_image_tensor')
-    
-        received_tensors = { 'inputs': serialized_tf_example }
+        feature_spec = {
+                'inputs': tf.FixedLenFeature([], dtype=tf.string)
+        }
+        default_batch_size = 1
+        serialized_tf_example = tf.placeholder(dtype=tf.string,shape=[default_batch_size],name='input_image_tensor')
+        received_tensors = {'inputs':serialized_tf_example}
         features = tf.parse_example(serialized_tf_example, feature_spec)
         fn = lambda image: _img_string_to_tensor(image, input_img_size)
         features['inputs'] = tf.map_fn(fn, features['inputs'], dtype=tf.float32)
