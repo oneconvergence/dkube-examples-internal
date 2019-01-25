@@ -16,11 +16,17 @@ if 'TF_CONFIG' in os.environ:
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
 MODEL_DIR = os.getenv('OUT_DIR', None)
-TFHUB_CACHE_DIR = os.getenv('TFHUB_CACHE_DIR',None)
+TFHUB_CACHE_DIR = os.getenv('MODEL_PATH',None)
 BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 64))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
 TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
 summary_interval = 100
+if TFHUB_CACHE_DIR != None:
+    if not os.path.isdir(os.path.join(TFHUB_CACHE_DIR, 'resnet_v2_50')):
+	TFHUB_CACHE_DIR = None
+    else:
+	TFHUB_CACHE_DIR = os.path.join(TFHUB_CACHE_DIR, 'resnet_v2_50')
+
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
 steps_epoch  = 0
