@@ -20,7 +20,7 @@ from dkube import dkubeLoggerHook as logger_hook
 import argparse
 import os
 import sys
-
+import json
 import tensorflow as tf
 import dataset
 
@@ -209,8 +209,13 @@ def main(unused_argv):
                                       throttle_secs=1,
                                       start_delay_secs=1)
   tf.estimator.train_and_evaluate(mnist_classifier, train_spec, eval_spec)
+  if os.getenv('TF_CONFIG') != '':
+        config = json.loads(os.getenv('TF_CONFIG'))
+        if config['task']['type'] == 'master':
+            mnist_classifier.export_savedmodel(MODEL_DIR, export_fn)
+  else:
+        mnist_classifier.export_savedmodel(MODEL_DIR, export_fn)
 
-  mnist_classifier.export_savedmodel(MODEL_DIR, export_fn)
   '''
   eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
   print()
