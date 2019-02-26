@@ -172,8 +172,13 @@ def train(_):
         fn = lambda image: _img_string_to_tensor(image, input_img_size)
         features['inputs'] = tf.map_fn(fn, features['inputs'], dtype=tf.float32)
         return tf.estimator.export.ServingInputReceiver(features, received_tensors)
+    if os.getenv('TF_CONFIG') != '':
+        config = json.loads(os.getenv('TF_CONFIG'))
+        if config['task']['type'] == 'master':
+            classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
+    else:
+        classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
-    classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
 def run():
     global summary_interval
