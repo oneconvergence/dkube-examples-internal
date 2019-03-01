@@ -46,6 +46,8 @@ def count_epochs(iterator):
                 sess.run(iterator)
                 steps_epoch += 1
             except Exception as OutOfRangeError:
+                if steps_epoch == 0:
+                   steps_epoch = TF_TRAIN_STEPS
                 steps_epoch /= EPOCHS
                 break
 
