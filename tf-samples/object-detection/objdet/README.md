@@ -1,5 +1,5 @@
-#Steps to train object detection in dkube
-##Step 1 : Stet up  the environment
+# Steps to train object detection in dkube
+## Step 1 : Stet up  the environment
 1. Copy the below script and add it along with the training program in the workspace.
 https://github.com/oneconvergence/dkube-examples/blob/object-detection/tf-samples/object-detection/objdet/process.sh
 
@@ -19,13 +19,15 @@ Prefix : obj-det-test
 Select other
 Name : faster rcnn
 URL : http://storage.googleapis.com/download.tensorflow.org/models/object_detection/faster_rcnn_resnet101_coco_11_06_2017.tar.gz
-##Step 2 : Start a training job
+## Step 2 : Start a training job
 1. Name : obj-det
 2. Framework : v1.12-objdet
 3. Start-up script :
-```export S3_REQUEST_TIMEOUT_MSEC=60000
+```bash
+export S3_REQUEST_TIMEOUT_MSEC=60000
 bash process.sh <c/n> (c- if data/model is compressed, n - otherwise)
-python model_main.py --pipeline_config_path=$HOME/pipeline.config --model_dir=$OUT_DIR```
+python model_main.py --pipeline_config_path=$HOME/pipeline.config --model_dir=$OUT_DIR
+```
 4. Parameters
 Upload file : select the pipeline.config file
 In the pipeline.config file 

@@ -1,12 +1,11 @@
-Object Detection Model
-----------------------
+# Object Detection Model
 This model is to detect various breeds of cats and dogs.
 It uses the Oxford IIIT-pets dataset.
 
 The output
 of the detector will look like the following:
 
-![](img/oxford_pet.png)
+![](img/image)
 
 There are two verson of this detector.
 1. Non pipelined implementation: The training program does the training as well as exporting of the model.
