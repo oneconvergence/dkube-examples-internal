@@ -17,13 +17,15 @@ The export workspace should contain the export program that accepts the model ch
 ### Add training workspace
 Select the repository where the training pgm is stored as the workspace
 - Select Github
-- Name : object_detection_tarining
+- Name : object-detection-training
 - URL : path of the training program in github
+- eg: https://github.com/oneconvergence/dkube-examples/tree/object-detection/tf-samples/object-detection/objdet-pipeline/train
 ### Add export workspace
 Select the repository where the export pgm is stored as the workspace
 - Select Github
-- Name : object_detection_export
+- Name : object-detection-export
 - URL : path of the export program in github
+-eg: https://github.com/oneconvergence/dkube-examples/tree/object-detection/tf-samples/object-detection/objdet-pipeline/export
 ### Add dataset
 Select the s3 bucket where the dataset is stored as TFRecords
 - Select s3FileSystem
