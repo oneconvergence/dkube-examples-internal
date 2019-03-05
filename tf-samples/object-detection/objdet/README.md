@@ -43,4 +43,16 @@ python model_main.py --pipeline_config_path=$HOME/pipeline.config --model_dir=$O
 6. Model : select the model downloaded
 7. Dataset : select the loaded dataset
 8. Start training
-
+## Deploy the model
+1. Select models tab
+2. Select the model generated in the previous step
+3. Deploy
+The sering URL will be available in the inference tab in dkube UI
+## Inference
+1. Start the inference server on the machine where dkube is launched using the following command.
+```bash
+./run.sh create <unique name> <user name> ocdr/dkube-d3inf:<version> <serving url from dkube> <tag>
+```
+2. This command return the url where the UI can be accessed.
+3. Go to this url and select image, label map file and provide the number of classes.
+4. Select detect.
