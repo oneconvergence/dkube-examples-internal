@@ -7,7 +7,8 @@ Tensorflow object detection API expects the model parameters in a pipeline confi
 - Set fine_tune_checkpoint: "MODEL_PATH/faster_rcnn_resnet101_coco_11_06_2017/model.ckpt"
 - train_input_reader.input_path: "DATA_PATH/TFRecords/pet_faces_train.record-?????-of-00010"
 - eval_input_reader.input_path: "DATA_PATH/TFRecords/pet_faces_val.record-?????-of-00010"
-The MODEL_PATH and DATA_PATH will be replaced with appropriate values inside Dkube. This configuration file needs to be available in the host machine. Sample config file for faster RCNN model is available here.
+- The MODEL_PATH and DATA_PATH will be replaced with appropriate values inside Dkube. This configuration file needs to be available in the host machine. Sample config file for faster RCNN model is available here.
+- https://github.com/oneconvergence/dkube-examples/blob/object-detection/tf-samples/object-detection/pipeline.config
 ### Prepare training job workspace
 The workspace should contain the training program and the label map file. Alos for updating the config file, the user has to copy the processing script provided here into the workspace. This script will extract the dataset and model if they are compressed and update the config file accordingly. The training program should store the checkpoints generated in the path specified by $OUT_DIR. 
 ### Prepare export job workspace
