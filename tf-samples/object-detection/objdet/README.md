@@ -1,5 +1,5 @@
 # Steps to train object detection in dkube
-## Step 1 : Stet up  the environment
+## Set up  the environment
 ### Add workspace
 1. Copy the below script and add it along with the training program in the workspace.
 - https://github.com/oneconvergence/dkube-examples/blob/object-detection/tf-samples/object-detection/objdet/process.sh
@@ -29,7 +29,7 @@ Tensorflow object detection API expects the model parameters in a pipeline confi
 - eval_input_reader.input_path: "DATA_PATH/TFRecords/pet_faces_val.record-?????-of-00010"
 - The MODEL_PATH and DATA_PATH will be replaced with appropriate values inside Dkube. This configuration file needs to be available in the host machine. Sample config file for faster RCNN model is available here.
 - https://github.com/oneconvergence/dkube-examples/blob/object-detection/tf-samples/object-detection/pipeline.config
-## Step 2 : Start a training job
+## Start a training job
 1. Name : obj-det
 2. Framework : v1.12-objdet
 3. Start-up script :
