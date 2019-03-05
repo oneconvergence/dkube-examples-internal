@@ -76,7 +76,7 @@ The sering URL will be available in the inference tab in dkube UI
 ## Inference
 1. Start the inference server on the machine where dkube is launched using the following command.
 ```bash
-./run.sh create <unique name> <user name> ocdr/dkube-d3inf:<version> <serving url from dkube> <tag>
+./run.sh create name=<name> user=<user name> program=objdet model_serving_url=<model serving url> image=<image> access_ip=<access ip>
 ```
 2. This command return the url where the UI can be accessed.
 3. Go to this url and select image, label map file and provide the number of classes.
