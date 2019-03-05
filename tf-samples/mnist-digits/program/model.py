@@ -23,6 +23,7 @@ import sys
 import json
 import tensorflow as tf
 import dataset
+import json
 
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
@@ -38,7 +39,13 @@ print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
 def count_epochs(iterator):
-    sess = tf.Session()
+    cluster_spec = json.loads(os.getenv('TF_CONFIG',None))
+    role = cluster_spec['task']
+    host = cluster_spec['cluster'][role['type']][role['index']]
+    if len(cluster_spec['cluster'].keys()) > 1:
+     sess = tf.Session('grpc://'+ host)
+    else:
+     sess = tf.Session()
     global steps_epoch
     if not steps_epoch:
         while True:

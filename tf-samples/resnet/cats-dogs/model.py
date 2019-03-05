@@ -29,7 +29,13 @@ if not os.path.isdir(MODEL_DIR):
     os.makedirs(MODEL_DIR)
 
 def count_epochs(iterator):
-    sess = tf.Session()
+    cluster_spec = json.loads(os.getenv('TF_CONFIG',None))
+    role = cluster_spec['task']
+    host = cluster_spec['cluster'][role['type']][role['index']]
+    if len(cluster_spec['cluster'].keys()) > 1:
+     sess = tf.Session('grpc://'+ host)
+    else:
+     sess = tf.Session()
     global steps_epoch
     if not steps_epoch:
         while True:
