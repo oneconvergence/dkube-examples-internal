@@ -34,7 +34,6 @@ Tensorflow object detection API expects the model parameters in a pipeline confi
 2. Framework : v1.12-objdet
 3. Start-up script :
 ```bash
-export S3_REQUEST_TIMEOUT_MSEC=60000
 bash process.sh <c/n> (c- if data/model is compressed, n - otherwise)
 python model_main.py --pipeline_config_path=$HOME/pipeline.config --model_dir=$OUT_DIR
 ```

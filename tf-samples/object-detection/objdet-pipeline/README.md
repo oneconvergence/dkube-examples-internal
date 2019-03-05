@@ -44,7 +44,6 @@ Select training jobs in dkube UI, and fill the following:
 2. Framework : v1.12
 3. Start-up script :
 ```bash
-export S3_REQUEST_TIMEOUT_MSEC=60000
 bash process.sh <c/n> (c- if data/model is compressed, n - otherwise)
 python model_main.py --pipeline_config_path=$HOME/pipeline.config --model_dir=$OUT_DIR
 ```
@@ -60,8 +59,7 @@ Select training jobs in dkube UI, and fill the following:
 2. Framework : v1.12
 3. Start-up script :
 ```bash
-export S3_REQUEST_TIMEOUT_MSEC=60000
-python export_inference_graph.py --input_type=image_tensor --pipeline_config_path=$HYPERPARAMS_JSON_FILEPATH --trained_checkpoint_prefix=$MODEL_PATH/$MODEL_NAME/out/model.ckpt-20000  --output_directory=$OUT_DIR
+python export_inference_graph.py --input_type=image_tensor --pipeline_config_path=$HYPERPARAMS_JSON_FILEPATH --trained_checkpoint_prefix=$MODEL_PATH/$MODEL_NAME/out/model.ckpt-1  --output_directory=$OUT_DIR
 ```
 4. Parameters
 - Upload file : select the pipeline.config file
