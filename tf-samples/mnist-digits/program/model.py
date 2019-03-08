@@ -20,9 +20,10 @@ from dkube import dkubeLoggerHook as logger_hook
 import argparse
 import os
 import sys
-
+import json
 import tensorflow as tf
 import dataset
+import json
 
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
@@ -38,7 +39,13 @@ print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
 def count_epochs(iterator):
-    sess = tf.Session()
+    cluster_spec = json.loads(os.getenv('TF_CONFIG',None))
+    role = cluster_spec['task']
+    host = cluster_spec['cluster'][role['type']][role['index']]
+    if len(cluster_spec['cluster'].keys()) > 1:
+     sess = tf.Session('grpc://'+ host)
+    else:
+     sess = tf.Session()
     global steps_epoch
     if not steps_epoch:
         while True:
@@ -211,8 +218,13 @@ def main(unused_argv):
                                       throttle_secs=1,
                                       start_delay_secs=1)
   tf.estimator.train_and_evaluate(mnist_classifier, train_spec, eval_spec)
+  if os.getenv('TF_CONFIG') != '':
+        config = json.loads(os.getenv('TF_CONFIG'))
+        if config['task']['type'] == 'master':
+            mnist_classifier.export_savedmodel(MODEL_DIR, export_fn)
+  else:
+        mnist_classifier.export_savedmodel(MODEL_DIR, export_fn)
 
-  mnist_classifier.export_savedmodel(MODEL_DIR, export_fn)
   '''
   eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
   print()

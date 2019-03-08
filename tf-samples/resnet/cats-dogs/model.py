@@ -1,4 +1,5 @@
 import os
+import json
 import multiprocessing
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -28,7 +29,13 @@ if not os.path.isdir(MODEL_DIR):
     os.makedirs(MODEL_DIR)
 
 def count_epochs(iterator):
-    sess = tf.Session()
+    cluster_spec = json.loads(os.getenv('TF_CONFIG',None))
+    role = cluster_spec['task']
+    host = cluster_spec['cluster'][role['type']][role['index']]
+    if len(cluster_spec['cluster'].keys()) > 1:
+     sess = tf.Session('grpc://'+ host)
+    else:
+     sess = tf.Session()
     global steps_epoch
     if not steps_epoch:
         while True:
@@ -174,8 +181,13 @@ def train(_):
         fn = lambda image: _img_string_to_tensor(image, input_img_size)
         features['inputs'] = tf.map_fn(fn, features['inputs'], dtype=tf.float32)
         return tf.estimator.export.ServingInputReceiver(features, received_tensors)
+    if os.getenv('TF_CONFIG') != '':
+        config = json.loads(os.getenv('TF_CONFIG'))
+        if config['task']['type'] == 'master':
+            classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
+    else:
+        classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
-    classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
 
 def run():
     global summary_interval
