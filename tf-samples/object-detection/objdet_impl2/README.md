@@ -4,6 +4,7 @@
 1. Copy the below script and add it along with the training program in the workspace.
 - https://github.com/oneconvergence/dkube-examples/blob/object-detection/tf-samples/object-detection/objdet/process.sh
 - The training program should store the checkpoints generated in the path specified by $OUT_DIR.
+- The workspace should contain the pipeline.config file
 2. Select the repository where the training pgm is stored as the workspace
 - Select Github
 - Name : object_detection
@@ -37,12 +38,10 @@ Tensorflow object detection API expects the model parameters in a pipeline confi
 bash process.sh <c/n> (c- if data/model is compressed, n - otherwise)
 python model_main.py --pipeline_config_path=$HOME/pipeline.config --model_dir=$OUT_DIR
 ```
-4. Parameters
-- Upload file : select the pipeline.config file
-5. Workspace : select the previously saved workspace
-6. Model : select the model downloaded
-7. Dataset : select the loaded dataset
-8. Start training
+4. Workspace : select the previously saved workspace
+5. Model : select the model downloaded
+6. Dataset : select the loaded dataset
+7. Start training
 ## Deploy the model
 1. Select models tab
 2. Select the model generated in the previous step
