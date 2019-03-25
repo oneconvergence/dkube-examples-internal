@@ -1,6 +1,6 @@
 import six.moves.urllib as urllib
 import os
-import tensorfow as tf
+import tensorflow as tf
 
 OUTPUT_DIR = os.getenv('OUT_DIR', None)
 opener = urllib.request.URLopener()
