@@ -18,7 +18,7 @@ DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
 MODEL_DIR = os.getenv('OUT_DIR', None)
 TFHUB_CACHE_DIR = os.getenv('TFHUB_CACHE_DIR',None)
-BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 64))
+BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 10))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
 TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
 summary_interval = 100
@@ -194,6 +194,8 @@ def run():
     summary_interval = 100
     if TF_TRAIN_STEPS%100 < 10 and TF_TRAIN_STEPS < 1000:
         summary_interval = TF_TRAIN_STEPS/10
+    if TF_TRAIN_STEPS <= 100:
+        summary_interval = 10;
     tf.logging.set_verbosity(tf.logging.INFO)
     tf.app.run(main=train)
 
