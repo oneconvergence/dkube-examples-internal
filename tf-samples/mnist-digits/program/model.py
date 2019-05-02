@@ -168,6 +168,9 @@ def main(unused_argv):
   if data_format is None:
     data_format = ('channels_first'
                    if tf.test.is_built_with_cuda() else 'channels_last')
+  if DATUMS_PATH == None or DATASET_NAME == None:
+        print("No input dataset specified. Exiting...")
+        return 1
   training_config = tf.estimator.RunConfig(model_dir=TF_MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
   mnist_classifier = tf.estimator.Estimator(
       model_fn=model_fn,
