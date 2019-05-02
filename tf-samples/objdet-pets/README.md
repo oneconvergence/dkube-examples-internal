@@ -46,17 +46,28 @@ Tensorflow object detection API expects the model parameters in a pipeline confi
 - train_input_reader.input_path: "DATA_PATH/pet_faces_train.record-?????-of-00010"
 - eval_input_reader.input_path: "DATA_PATH/pet_faces_val.record-?????-of-00010"
 - The MODEL_PATH and DATA_PATH will be replaced with appropriate values inside Dkube. This configuration file needs to be available in the host machine. Sample config file for faster RCNN model is available here.
-- https://github.com/oneconvergence/dkube-examples/blob/object-detection/tf-samples/object-detection/pipeline.config
-## Start a training job
-1. Name : obj-det
-2. Framework : v1.12-objdet
-3. Start-up script :
+- https://github.com/oneconvergence/dkube-examples/blob/master/tf-samples/objdet-pets/pipeline.config
+
+The config file can be passed to training job in either of the following ways:
+###As parameter file : 
+The file can be stored locally and selected as a file in the parameters section when starting the training job. Use the below script as start up script in this case.
 ```bash
 bash process.sh $HYPERPARAMS_JSON_FILEPATH
 python model_main.py  --pipeline_config_path=$HYPERPARAMS_JSON_FILEPATH --model_dir=$OUT_DIR
 ```
+###As part of workspace
+The file can be stored in the workspace. Use the below script as start up script in this case.
+```bash
+bash process.sh ./pipeline.config
+python model_main.py  --pipeline_config_path=./pipeline.config --model_dir=$OUT_DIR
+```
+## Start a training job
+1. Name : obj-det
+2. Framework : v1.12-objdet
+3. Start-up script :
+- Use the appropriate script from the above section(Prepare config file)
 4. Parameters
-- Upload file : select the pipeline.config file here
+- Upload file : select the pipeline.config file here if file is stored loacally.
 - Set the number of steps
 5. Workspace : select "object-detection"
 6. Model : select "faster-rcnn"
