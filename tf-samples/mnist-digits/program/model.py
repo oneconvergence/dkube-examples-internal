@@ -25,6 +25,7 @@ import tensorflow as tf
 import dataset
 import json
 
+FLAGS = None
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
 TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
@@ -128,7 +129,7 @@ def model_fn(features, labels, mode, params):
             'classify': tf.estimator.export.PredictOutput(predictions)
         })
   if mode == tf.estimator.ModeKeys.TRAIN:
-    optimizer = tf.train.AdamOptimizer(learning_rate=1e-4)
+    optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate)
     logits = model(image, training=True)
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
     accuracy = tf.metrics.accuracy(
@@ -163,7 +164,10 @@ def model_fn(features, labels, mode, params):
                 evaluation_hooks = [logging_hook])
 
 def main(unused_argv):
-
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--learning_rate', type=float, default=1e-4, help='Number of steps to run trainer.')
+  global FLAGS
+  FLAGS, unparsed = parser.parse_known_args()
   data_format = None
   if data_format is None:
     data_format = ('channels_first'

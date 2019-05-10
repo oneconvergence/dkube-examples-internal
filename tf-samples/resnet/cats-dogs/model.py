@@ -5,6 +5,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import zipfile
 import tarfile
+import argparse
 from tensorflow.python.ops import metrics as metrics_lib
 from dkube import dkubeLoggerHook as logger_hook
 from tensorflow.python.platform import tf_logging as logging
@@ -14,6 +15,7 @@ tf.logging.info('GPU Available {}'.format(tf.test.is_gpu_available()))
 if 'TF_CONFIG' in os.environ:
     tf.logging.info('TF_CONFIG: {}'.format(os.environ["TF_CONFIG"]))
 
+FLAGS = None
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
 MODEL_DIR = os.getenv('OUT_DIR', None)
@@ -96,7 +98,7 @@ def model_fn(features, labels, mode, params):
         logits = tf.layers.dense(bottleneck_tensor, units=1, trainable=is_training)
 
     def train_op_fn(loss):
-        optimizer = tf.train.AdamOptimizer(learning_rate=params['learning_rate'])
+        optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate)
         return optimizer.minimize(loss, global_step=tf.train.get_global_step())
 
     if NUM_CLASSES == 2:
@@ -120,7 +122,10 @@ def model_fn(features, labels, mode, params):
     return spec
 
 def train(_):
-    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--learning_rate', type=float, default=1e-3, help='Learning rate for training.')
+    global FLAGS
+    FLAGS, unparsed = parser.parse_known_args()
     run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
     DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
