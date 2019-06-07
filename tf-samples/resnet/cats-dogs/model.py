@@ -120,9 +120,12 @@ def model_fn(features, labels, mode, params):
     return spec
 
 def train(_):
-    
     run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
-    DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
+    if DATUMS_PATH != None:
+        DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
+    else:
+        DATA_DIR = os.getenv('DATA_DIR', None)
+
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
     EXTRACT_PATH = "/tmp/resnet-model"
     ZIP_FILE = DATA_DIR + "/data.zip"
