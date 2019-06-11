@@ -165,11 +165,10 @@ def model_fn(features, labels, mode, params):
 
 def main(unused_argv):
   try:
-      fp = open(os.getenv('HYPERPARAMS_FILEPATH', 'None'),'r')
-      import pdb;pdb.set_trace()
+      fp = open(os.getenv('HP_TUNING_INFO_FILE', 'None'),'r')
       hyperparams = json.loads(fp.read())
   except IOError as e:
-      hyperparams = { "learning_rate":1e-4, "batch_size":10, "num_epochs":1 }
+      hyperparams = { "learning_rate":1e-4, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
       pass
   parser = argparse.ArgumentParser()
   parser.add_argument('--learning_rate', type=float, default=float(hyperparams['learning_rate']), help='Learning rate for training.')
