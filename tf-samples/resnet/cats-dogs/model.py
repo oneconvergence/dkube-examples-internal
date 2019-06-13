@@ -110,6 +110,7 @@ def model_fn(features, labels, mode, params):
         features, mode, logits, labels, train_op_fn=train_op_fn
     )
     if mode == tf.estimator.ModeKeys.TRAIN:
+        tf.summary.scalar('accuracy', metrics_lib.accuracy(labels, spec.predictions['classes'])[1])
         logging_hook = logger_hook({"loss": spec.loss,"accuracy":
             metrics_lib.accuracy(labels, spec.predictions['classes'])[1], 
             "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
