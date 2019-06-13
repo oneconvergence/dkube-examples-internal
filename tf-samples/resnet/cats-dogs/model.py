@@ -47,7 +47,7 @@ def count_epochs(iterator):
             except Exception as OutOfRangeError:
                 if steps_epoch == 0:
                    steps_epoch = TF_TRAIN_STEPS
-                steps_epoch /= EPOCHS
+                steps_epoch /= FLAGS.num_epochs
                 break
 
 def _img_string_to_tensor(image_string, image_size=(299, 299)):
@@ -78,7 +78,7 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
         else:
             dataset = dataset.repeat(num_epochs)
 
-        dataset = dataset.apply(tf.contrib.data.map_and_batch(map_func=_path_to_img, batch_size=BATCH_SIZE))
+        dataset = dataset.apply(tf.contrib.data.map_and_batch(map_func=_path_to_img, batch_size=FLAGS.batch_size))
         (images, labels) = dataset.make_one_shot_iterator().get_next()
         (cimages, clabels) = dataset.make_one_shot_iterator().get_next()
         count_epochs(cimages)
@@ -123,8 +123,16 @@ def model_fn(features, labels, mode, params):
     return spec
 
 def train(_):
+    try:
+      fp = open(os.getenv('HP_TUNING_INFO_FILE', 'None'),'r')
+      hyperparams = json.loads(fp.read())
+    except IOError as e:
+      hyperparams = { "learning_rate":1e-3, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
+      pass
     parser = argparse.ArgumentParser()
-    parser.add_argument('--learning_rate', type=float, default=1e-3, help='Learning rate for training.')
+    parser.add_argument('--learning_rate', type=float, default=float(hyperparams['learning_rate']), help='Learning rate for training.')
+    parser.add_argument('--batch_size', type=int, default=int(hyperparams['batch_size']), help='Batch size for training.')
+    parser.add_argument('--num_epochs', type=int, default=int(hyperparams['num_epochs']), help='Number of epochs to train for.')
     global FLAGS
     FLAGS, unparsed = parser.parse_known_args()
     run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
@@ -168,11 +176,11 @@ def train(_):
     input_img_size = hub.get_expected_image_size(hub.Module(TFHUB_CACHE_DIR))
 
     train_files = os.path.join(DATA_DIR, 'train', '**/*.jpg')
-    train_input_fn = make_input_fn(train_files, image_size=input_img_size, shuffle=True)
+    train_input_fn = make_input_fn(train_files, image_size=input_img_size, shuffle=True, batch_size=FLAGS.batch_size, num_epochs=FLAGS.num_epochs)
     train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=TF_TRAIN_STEPS)
 
     eval_files = os.path.join(DATA_DIR, 'valid', '**/*.jpg')
-    eval_input_fn = make_input_fn(eval_files, image_size=input_img_size)
+    eval_input_fn = make_input_fn(eval_files, image_size=input_img_size, shuffle=False, batch_size=FLAGS.batch_size, num_epochs=FLAGS.num_epochs)
     eval_spec = tf.estimator.EvalSpec(eval_input_fn, steps=1, throttle_secs=1, start_delay_secs=1)
 
     tf.estimator.train_and_evaluate(classifier, train_spec, eval_spec)

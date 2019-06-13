@@ -56,7 +56,7 @@ def count_epochs(iterator):
             except Exception as OutOfRangeError:
                 if steps_epoch == 0:
                    steps_epoch = TF_TRAIN_STEPS
-                steps_epoch /= EPOCHS
+                steps_epoch /= FLAGS.num_epochs
                 break
 
 class Model(object):
@@ -164,8 +164,16 @@ def model_fn(features, labels, mode, params):
                 evaluation_hooks = [logging_hook])
 
 def main(unused_argv):
+  try:
+      fp = open(os.getenv('HP_TUNING_INFO_FILE', 'None'),'r')
+      hyperparams = json.loads(fp.read())
+  except IOError as e:
+      hyperparams = { "learning_rate":1e-4, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
+      pass
   parser = argparse.ArgumentParser()
-  parser.add_argument('--learning_rate', type=float, default=1e-4, help='Number of steps to run trainer.')
+  parser.add_argument('--learning_rate', type=float, default=float(hyperparams['learning_rate']), help='Learning rate for training.')
+  parser.add_argument('--batch_size', type=int, default=int(hyperparams['batch_size']), help='Batch size for training.')
+  parser.add_argument('--num_epochs', type=int, default=int(hyperparams['num_epochs']), help='Number of epochs to train for.')
   global FLAGS
   FLAGS, unparsed = parser.parse_known_args()
   data_format = None
@@ -198,7 +206,7 @@ def main(unused_argv):
     # randomness, while smaller sizes use less memory. MNIST is a small
     # enough dataset that we can easily shuffle the full epoch.
     ds = dataset.train(DATA_DIR)
-    ds = ds.cache().shuffle(buffer_size=50000).batch(BATCH_SIZE).repeat(EPOCHS)
+    ds = ds.cache().shuffle(buffer_size=50000).batch(FLAGS.batch_size).repeat(FLAGS.num_epochs)
     (images, labels) = ds.make_one_shot_iterator().get_next()
     (cimages, clabels) = ds.make_one_shot_iterator().get_next()
     count_epochs(cimages)
@@ -217,7 +225,7 @@ def main(unused_argv):
 
   # Evaluate the model and print results
   def eval_input_fn():
-    return dataset.test(DATA_DIR).batch(BATCH_SIZE).make_one_shot_iterator().get_next()
+    return dataset.test(DATA_DIR).batch(FLAGS.batch_size).make_one_shot_iterator().get_next()
 
   eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn,
                                       steps=1,
