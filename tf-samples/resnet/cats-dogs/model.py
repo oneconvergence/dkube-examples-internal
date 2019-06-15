@@ -25,8 +25,8 @@ summary_interval = 100
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
 steps_epoch  = 0
-if not os.path.isdir(MODEL_DIR):
-    os.makedirs(MODEL_DIR)
+#if not os.path.isdir(MODEL_DIR):
+#    os.makedirs(MODEL_DIR)
 
 def count_epochs(iterator):
     cluster_spec = json.loads(os.getenv('TF_CONFIG',None))
