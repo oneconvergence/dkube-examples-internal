@@ -126,7 +126,7 @@ def train(_):
     try:
       fp = open(os.getenv('HP_TUNING_INFO_FILE', 'None'),'r')
       hyperparams = json.loads(fp.read())
-    except as e:
+    except:
       hyperparams = { "learning_rate":1e-3, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
       pass
     parser = argparse.ArgumentParser()
