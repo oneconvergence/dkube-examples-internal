@@ -14,18 +14,24 @@ Features such as -
 
 Following examples are provided,
 
+## Tensorflow Examples
+
 - Gray scale digits classification using MNIST network.
 
-  [https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/mnist](https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/mnist)
+  [https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/mnist/README.md](https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/mnist/README.md)
 
   Supports samples for GPU based training, distributed training, hyperparameter tuning & pipeline.
 
 - CatsDogs binary classification using RESNETV2 network.
 
-  [https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/resnet](https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/resnet)
+  [https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/resnet/README.md](https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/resnet/README.md)
 
   Supports samples for GPU based training, distributed training, hyperparameter tuning & pipeline.
 
 - Object detection sample on cocoo pets dataset.
 
+  [https://github.com/oneconvergence/dkube-examples/blob/1.2/tensorflow/object-detection/pets/README.md](https://github.com/oneconvergence/dkube-examples/blob/1.2/tensorflow/object-detection/pets/README.md)
 
+## Pytorch Examples
+
+** Will be added soon **
