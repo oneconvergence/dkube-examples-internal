@@ -33,7 +33,7 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
  2. Click *+Dataset* button.
  3. Select *Github* option.
  4. Enter a unique name say *resnet-catsdogs*
- 5. Paste link *[[https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/resnet/catsdogs/classifier/data](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/resnet/catsdogs/classifier/data)]* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/resnet/catsdogs/classifier/data](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/resnet/catsdogs/classifier/data)* in the URL text box.
  6. Click *Add Dataset* button.
  7. Dataset will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
