@@ -1,7 +1,7 @@
-# MNIST network classifier
-This example is derived from [tensorflow example]([https://github.com/tensorflow/models/tree/master/official/mnist](https://github.com/tensorflow/models/tree/master/official/mnist) and modified to run on Dkube Platform.
+# RESNETv2 network classifier
+This example is derived from [retraining](https://www.tensorflow.org/hub/tutorials/image_retraining) and modified to run on Dkube Platform. The example retrains a [resnetv2](https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/1) model for binary classification with catsdogs data.
 
- - This program trains MNIST network on Gray scale Digits data.
+ - This program trains RESNETV2 network on CatsDogs data.
  - Modified program is configurable and takes Hyperparameters like steps, batchsize, learning rate etc from ENV vars or from a JSON file. User can input these parameters from Dkube UI or upload a file which will then be provided for the running instance of program.
  - Program is modified to be able to run in distributed training mode. User can select this mode while training in Dkube.
  - Program is modified to write TF summaries and use custom Dkube session hook to emit out some critical information about the training which is then displayed on Dkube UI Dashboard.
@@ -12,9 +12,9 @@ This example is derived from [tensorflow example]([https://github.com/tensorflow
  - **classifier/data**: This directory has processed training data. Program trains on this data.
  - **inference**: This directory has compatible test data images which can be used for inference.
  - **hptuning/tuning.yaml**: Sample YAML showing the configuration format and parameters for tuning.
- - **pipeline/digits.py**: Python DSL defining a sample Dkube pipeline. Pipeline uses Dkube components for all stages.
- - **pipeline/digits.tar.gz**: Compiled python DSL which can be directly uploaded on to Dkube platform.
- - **pipeline/digits.ipynb**: Ipython notebook with the code. Upload the file in Dkube notebook and run all the cells. This notebook will generate and trigger the run of pipeline.
+ - **pipeline/catsdogs.py**: Python DSL defining a sample Dkube pipeline. Pipeline uses Dkube components for all stages.
+ - **pipeline/catsdogs.tar.gz**: Compiled python DSL which can be directly uploaded on to Dkube platform.
+ - **pipeline/catsdogs.ipynb**: Ipython notebook with the code. Upload the file in Dkube notebook and run all the cells. This notebook will generate and trigger the run of pipeline.
 
 # How to Train
 ## Step1: Create a workspace
