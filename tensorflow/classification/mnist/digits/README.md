@@ -1,5 +1,5 @@
 # MNIST network classifier
-This example is derived from [tensorflow example]([https://github.com/tensorflow/models/tree/master/official/mnist](https://github.com/tensorflow/models/tree/master/official/mnist) and modified to run on Dkube Platform.
+This example is derived from [tensorflow example](https://github.com/tensorflow/models/tree/master/official/mnist) and modified to run on Dkube Platform.
 
  - This program trains MNIST network on Gray scale Digits data.
  - Modified program is configurable and takes Hyperparameters like steps, batchsize, learning rate etc from ENV vars or from a JSON file. User can input these parameters from Dkube UI or upload a file which will then be provided for the running instance of program.
