@@ -5,7 +5,7 @@ This workspace contains the code for downloading the dataset, extarcting the dat
 1. Select the git repository where the training pgm is stored as the workspace
 - Select Github
 - Name : object-detection
-- URL : https://github.com/oneconvergence/dkube-examples/tree/master/tf-samples/objdet-pets
+- URL : https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/objdet-pets
 ## Add dataset 
 Tensorflow object detection API expects the input dataset to be in TFRecord format. But the pet dataset available is in .jpg and .xml format. We need some preprocessing to convert this into TFRecord format. 
 ### Download dataset
@@ -46,7 +46,7 @@ Tensorflow object detection API expects the model parameters in a pipeline confi
 - train_input_reader.input_path: "DATA_PATH/pet_faces_train.record-?????-of-00010"
 - eval_input_reader.input_path: "DATA_PATH/pet_faces_val.record-?????-of-00010"
 - The MODEL_PATH and DATA_PATH will be replaced with appropriate values inside Dkube. This configuration file needs to be available in the host machine. Sample config file for faster RCNN model is available here.
-- https://github.com/oneconvergence/dkube-examples/blob/master/tf-samples/objdet-pets/pipeline.config
+- https://github.com/oneconvergence/dkube-examples/blob/master/tensorflow/objdet-pets/pipeline.config
 
 The config file can be passed to training job in either of the following ways:
 ### As parameter file: 

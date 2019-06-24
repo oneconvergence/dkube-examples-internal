@@ -23,8 +23,8 @@ This example is derived from [tensorflow example]([https://github.com/tensorflow
  2. Click *+Workspace* button.
  3. Select *Github* option.
  4. Enter a unique name say *mnist-digits*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/mnist/digits/classifier/program 
- ](https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/mnist/digits/classifier/program)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/mnist/digits/classifier/program 
+ ](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/mnist/digits/classifier/program)* in the URL text box.
  6. Click *Add Workspace* button.
  7. Workspace will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -34,7 +34,7 @@ This example is derived from [tensorflow example]([https://github.com/tensorflow
  2. Click *+Dataset* button.
  3. Select *Github* option.
  4. Enter a unique name say *mnist-digits*
- 5. Paste link *[[https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/mnist/digits/classifier/data](https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/mnist/digits/classifier/data)]* in the URL text box.
+ 5. Paste link *[[https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/mnist/digits/classifier/data](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/mnist/digits/classifier/data)]* in the URL text box.
  6. Click *Add Dataset* button.
  7. Dataset will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -131,7 +131,7 @@ parameterconfigs:
 2. Sample pipeline for this example is available under `pipeline/` mentioned in section [directories](#%20Directories)
 ## How to use digits.ipynb
 1. Create a new *Workspace* in Dkube as explained in [section](##%20Step1:%20Create%20a%20workspace) with unqiue name say, *digits-pl-nb*
-2. Change the github url to [https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/mnist/digits/pipeline/digits.ipynb](https://github.com/oneconvergence/dkube-examples/tree/1.2/tf-samples/classification/mnist/digits/pipeline/digits.ipynb)
+2. Change the github url to [https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/mnist/digits/pipeline/digits.ipynb](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/mnist/digits/pipeline/digits.ipynb)
 3. Create a new *Notebook* in Dkube and select the workspace as *digits-pl-nb*.
 4. The Dkube notebook does not need any Dataset.
 5. Launch the notebook and wait for the status to show *running*.
