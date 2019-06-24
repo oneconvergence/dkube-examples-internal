@@ -40,7 +40,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
  8. Please wait till status turns to *ready*.
 ## Step3: Start a training job
  1. Click *Jobs* side menu option.
- 2. Click*+Training Job* button.
+ 2. Click *+Training Job* button.
  3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
 	- Enter a unique name say *digits-classifier*
 	- **Container** section - Leave with default options selected.
