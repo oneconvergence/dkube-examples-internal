@@ -1,5 +1,5 @@
 # MNIST network classifier
-<TODO - Add some links or brief about this network>
+**<TODO - Add some links or brief about this network>**
 
 Following samples are provided for this network.
 - **digits**
