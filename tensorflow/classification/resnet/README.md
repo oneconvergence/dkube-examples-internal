@@ -1,5 +1,5 @@
 # RESNETv2 network classifier
-<TODO - Add some links or brief about this network>
+**<TODO - Add some links or brief about this network>**
 
 Following samples are provided for this network.
 - **catsdogs**
@@ -12,4 +12,4 @@ Following samples are provided for this network.
 
     Program trains on *catsdogs* dataset which available @ **catsdogs/classifier/data**.
 
-    For more detailed README of this example, Click the link [https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/resnet/catsdogs/classifier/README.md](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/resnet/catsdogs/classifier/README.md)
+    For more detailed README of this example, Click the link [https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/resnet/catsdogs/README.md](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/resnet/catsdogs/README.md)
