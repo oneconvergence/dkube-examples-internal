@@ -1,103 +1,140 @@
-# Steps to train object detection in dkube
-This program is to detect pet breeds from images. It uses transfer learning to train the model. The pre trained model used for transfer learning is "faster_rcnn_resnet101_coco_11_06_2017".
-## Add workspace
-This workspace contains the code for downloading the dataset, extarcting the datset, preprocessing, and training. 
-1. Select the git repository where the training pgm is stored as the workspace
-- Select Github
-- Name : object-detection
-- URL : https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/objdet-pets
-## Add dataset 
-Tensorflow object detection API expects the input dataset to be in TFRecord format. But the pet dataset available is in .jpg and .xml format. We need some preprocessing to convert this into TFRecord format. 
-### Download dataset
-Use the below command to download the images and annotations for pets dataset. The resultant dataset <Pets> will be available in the dataset tab in dkube.
-- dkubectl data download start --config <download.ini>
-```bash
-[DATA_DOWNLOAD]
-dkubeURL=""
-token=""
-name="Pets"
-script="python /home/dkube/objdet-pets/download.py"
-image="ocdr/dkube-datascience-preprocess:1.1"
-tags=["something"]
-```
-- This will download the images.tar.gz and annotations.tar.gz for Oxford IIT  Pets dataset and create a dataset named "Pets" in dkube.
-### Preprocess data
-Use the below command to convert the downloaded dataset to TFRecord format. The resultant dataset <TFRecords> will be available in the dataset tab in dkube.
-- dkubectl data preprocess start --config <preprocess.ini>
-```bash
-[DATA_PREPROCESS]
-dkubeURL=""
-token=""
-name="TFRecords"
-script="python /home/dkube/objdet-pets/extract.py; python /home/dkube/objdet-pets/create_pet_tf_record.py --data_dir=/tmp/dataset/ --output_dir=$OUT_DIR --label_map_path=/home/dkube/objdet-pets/pet_label_map.pbtxt"
-datasets=["Pets"]
-image="ocdr/dkube-datascience-preprocess:1.1"
-tags=["sometag"]
+# Pet Detector
+This example is derived from [tensorflow object detection example](https://github.com/tensorflow/models/tree/master/research/object_detection) and modified to run on Dkube Platform.
 
-```
-## Add model for transfer learning
-- Select the pretrained model for transfer learning as model
-- Select other
-- Name : faster rcnn
-- URL : http://storage.googleapis.com/download.tensorflow.org/models/object_detection/faster_rcnn_resnet101_coco_11_06_2017.tar.gz
-## Prepare config file
-Tensorflow object detection API expects the model parameters in a pipeline configuration file. This file needs to be updated with the dataset path and pretrained model path inside dkube. To facilitate that the user has to modify the pipeline config file as below:
-- Set fine_tune_checkpoint: "MODEL_PATH/faster_rcnn_resnet101_coco_11_06_2017/model.ckpt"
-- train_input_reader.input_path: "DATA_PATH/pet_faces_train.record-?????-of-00010"
-- eval_input_reader.input_path: "DATA_PATH/pet_faces_val.record-?????-of-00010"
-- The MODEL_PATH and DATA_PATH will be replaced with appropriate values inside Dkube. This configuration file needs to be available in the host machine. Sample config file for faster RCNN model is available here.
-- https://github.com/oneconvergence/dkube-examples/blob/master/tensorflow/objdet-pets/pipeline.config
+ - This program detects pet breeds from images. It uses transfer learning to train the model. The pre trained model used for transfer learning is "faster_rcnn_resnet101_coco_11_06_2017".
+ - Modified program is configurable and takes Hyperparameters like steps, batchsize etc from ENV vars or from a config file. User can input these parameters from Dkube UI or upload a file which will then be provided for the running instance of program.
+ - Program is modified to export the trained model for inference.
 
-The config file can be passed to training job in either of the following ways:
-### As parameter file: 
-The file can be stored locally and selected as a file in the parameters section when starting the training job. Use the below script as start up script in this case.
-```bash
-bash process.sh $HYPERPARAMS_JSON_FILEPATH
-python model_main.py  --pipeline_config_path=$HYPERPARAMS_JSON_FILEPATH --model_dir=$OUT_DIR
-```
-### As part of workspace:
-The file can be stored in the workspace. Use the below script as start up script in this case.
-```bash
-bash process.sh ./pipeline.config
-python model_main.py  --pipeline_config_path=./pipeline.config --model_dir=$OUT_DIR
-```
-## Start a training job
-1. Name : obj-det
-2. Framework : v1.12-objdet
-3. Start-up script :
-- Use the appropriate script from the above section(Prepare config file)
-4. Parameters
-- Upload file : select the pipeline.config file here if file is stored loacally.
-- Set the number of steps
-5. Workspace : select "object-detection"
-6. Model : select "faster-rcnn"
-7. Dataset : select "TFRecords"
-8. Start training
-## Deploy the model
-1. Select models tab
-2. Select the model generated in the previous step
-3. Deploy
-The sering URL will be available in the inference tab in dkube UI
-## Inference
-1. Start the inference server on the machine where dkube is launched using the following command.
-```bash
-dkubectl infapp launch --config infapp.ini -n objdet
-```
-```
-[INFAPP]
-#Path to the kubeconfig of the cluster
-kubeconfig=<>
-#Name of the program to run, choices are - mnist,catsdogs
-program="objdet"
-#Name of the dkube user
-user=<>
-#Serving URL of the model in dkube
-modelurl=<>
-#Container image to be used for inference app
-image="ocdr/dkube-d3inf:1.1"
-#IP to make inference app available on
-accessip=<>
-```
-2. This command return the url where the UI can be accessed.
-3. Go to this url and select image, label map file and provide the number of classes.
-4. Select detect.
+# Directories
+
+ - **program/preprocessing** : This directory has data prprocessing code files.
+ - **program/training**: This directory has training code files implemented on top of Tensorflow framework. 
+ - **inference**: This directory has compatible test data images which can be used for inference.
+
+# How to Preprocess Data
+Tensorflow object detection API expects the input dataset to be in TFRecord format. But the pet dataset available is in .jpg and .xml format. We need some preprocessing to convert this into TFRecord format.
+## Step1: Create a workspace
+ 1. Click *Workspaces* side menu option.
+ 2. Click *+Workspace* button.
+ 3. Select *Github* option.
+ 4. Enter a unique name say *pets-detector-preprocessing*
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/object-detection/pets/program/preprocesing
+ ](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/object-detection/pets/program/preprocesing)* in the URL text box.
+ 6. Click *Add Workspace* button.
+ 7. Workspace will be created and imported in Dkube. Progress of import can be seen.
+ 8. Please wait till status turns to *ready*.
+## Step2: Download the Dataset
+This step will download the images.tar.gz and annotations.tar.gz for Oxford IIT Pets dataset and create a dataset named "pets" in dkube.
+1. Click *Jobs* side menu option.
+ 2. Click *+Data Preprocessing* button.
+ 3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
+	- Enter a unique name say *download-pets-dataset*
+	- Enter target dataset name for data being downloaded by the job say *pets*.
+	- **Container** section - 
+	    - Docker Image URL : docker.io/ocdr/dkube-datascience-preprocess:1.1
+	    - Private : If image is private, select private and provide dockerhub username and password
+	    - Start-up script : `python download.py`
+	-  **Parameters** section - Leave it to default.
+	- **Workspace** section - Please select the workspace *pet-detector-preprocessing* created in *Step1*.
+4. Click *Submit* button.
+5. A new entry with name *download-pets-dataset* will be created in *Data Preprocessing* table.
+6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
+
+## Step3: Preprocess Data (Conversion to TFRecord format)
+This step converts the downloaded dataset to TFRecords, the format expected by tensorflow object detection API.
+1. Click *Jobs* side menu option.
+ 2. Click *+Data Preprocessing* button.
+ 3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
+	- Enter a unique name say *preprocess-pets-dataset*
+	- Enter target dataset name for the preprocessed data say *tf-records*.
+	- **Container** section - 
+	    - Docker Image URL : docker.io/ocdr/dkube-datascience-preprocess:1.1
+	    - Private : If image is private, select private and provide dockerhub username and password
+	    - Start-up script : `python extract.py; python create_pet_tf_record.py --data_dir=/tmp/dataset/ --output_dir=$OUT_DIR --label_map_path=pet_label_map.pbtxt`
+	-  **Parameters** section - Leave it to default.
+	- **Workspace** section - Please select the workspace *pet-detector-preprocessing* created in *Step1*.
+	- **Dataset** section - Please select the dataset *pets* created in *Step2*.
+4. Click *Submit* button.
+5. A new entry with name *preprocess-pets-dataset* will be created in *Data Preprocessing* table.
+6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
+# How to Train
+## Step1: Create a workspace
+
+ 1. Click *Workspaces* side menu option.
+ 2. Click *+Workspace* button.
+ 3. Select *Github* option.
+ 4. Enter a unique name say *pet-detector*
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/object-detection/pets/program/training 
+ ](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/object-detection/pets/program/training )* in the URL text box.
+ 6. Click *Add Workspace* button.
+ 7. Workspace will be created and imported in Dkube. Progress of import can be seen.
+ 8. Please wait till status turns to *ready*.
+
+## Step2: Add model for transfer learning
+ 1. Click *Models* side menu option.
+ 2. Click *+Model* button.
+ 3. Select *Other* option.
+ 4. Enter a unique name say *faster-rcnn*
+ 5. Paste link *[http://storage.googleapis.com/download.tensorflow.org/models/object_detection/faster_rcnn_resnet101_coco_11_06_2017.tar.gz](http://storage.googleapis.com/download.tensorflow.org/models/object_detection/faster_rcnn_resnet101_coco_11_06_2017.tar.gz)* in the URL text box.
+ 6. Click *Add Model* button.
+ 7. Model will be created and imported in Dkube. Progress of import can be seen.
+ 8. Please wait till status turns to *ready*.
+## Step3: Start a training job
+ 1. Click *Jobs* side menu option.
+ 2. Click *+Training Job* button.
+ 3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
+	- Enter a unique name say *pet-detector*
+	- **Container** section
+	  - Tensorflow Version - Leave with default options selected.
+	  - Startup script - `bash process.sh ./pipeline.config; python model_main.py  --pipeline_config_path=./pipeline.config --model_dir=$OUT_DIR`
+	- **GPUs** section - Provide the required number of GPUs. This field is optional, if not provided network will train on CPU.
+	-  **Parameters** section - Input the values for hyperparameters or leave it to default.
+	- **Workspace** section - Please select the workspace *pet-detector* created in *Step1(How to train)*.
+	- **Model** section - Please select the workspace *faster-rcnn* created in *Step2(How to train)*.
+	- **Dataset** section - Please select the dataset *tf-records* created in *Step3(How to Preprocess Data)*.
+4. Click *Submit* button.
+5. A new entry with name *pet-detector* will be created in *Jobs* table.
+6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
+
+# How to Serve
+
+ 1. After the job is *complete* from above step. The trained model will get generated inside *Dkube*. Link to which is reflected in the *Model* field of a job in *Job* table.
+ 2. Click the link to see the trained model details.
+ 3. Click the *Deploy* button to deploy the trained model for serving. A form will display.
+ 4. Input the unique name say *pet-detector-serving*
+ 5. Select *CPU* or *GPU* to deploy model on specific device. Unless specifically required, model can be served on CPU.
+ 6. Click *Deploy* button.
+ 7. Click *Inferences* side menu and check that a serving job is created with the name given i.e, *digits-serving*.
+ 8. Wait till *status* field shows *running*.
+ 9. Copy the *URL* shown in *Endpoint* field of the serving job.
+
+# How to test Inference
+1. To test inference **dkubectl** binary is needed.
+2. Please use *dkube-notebook* for testing inference.
+3. Create a file *pet-detector.ini* with below contents, Only field to be filled in is *modelurl*. Paste the *URL* copied in previous step.
+
+    ```
+    [INFAPP]
+    #Name of the program to run, choices are - digits,catsdogs,cifar,objdetect,bolts
+    program="objdetect"
+    #Serving URL of the model in dkube
+    modelurl=""
+    #Container image to be used for inference app
+    #image=""
+    #IP to make inference app available on
+    #accessip=""
+    
+    ################################################################################################################
+    #    Following fields need not be filled in when launching inference application from inside dkube notebook    #
+    ################################################################################################################
+    #Name of the dkube user
+    #user=""
+    #Path to the kubeconfig of the cluster ex: "~/.dkube/kubeconfig"
+    #kubeconfig=""
+    ```
+  4. Execute the command `dkubectl infapp launch --config pet-detector.ini -n pet-detector`
+  5. The above command will output a URL, please click the URL to see the UI which can be used for testing inference.
+  6. Upload an image for inference, images in **inference** folder can be used.
+  7. Upload the labe map file in the file upload section. The pet_label_map.pbtxt file in **inference** cab be used.
+  8. set the Number of classes to 32
+  7. Click *Detect* button and the image is displayed with detection boxes returned by the model.
