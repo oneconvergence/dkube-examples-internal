@@ -2,7 +2,7 @@
 This example is derived from [tensorflow object detection example](https://github.com/tensorflow/models/tree/master/research/object_detection) and modified to run on Dkube Platform.
 
  - This program detects pet breeds from images. It uses transfer learning to train the model. The pre trained model used for transfer learning is "faster_rcnn_resnet101_coco_11_06_2017".
- - Modified program is configurable and takes Hyperparameters like steps, batchsize etc from ENV vars or from a config file. User can input these parameters from Dkube UI or upload a file which will then be provided for the running instance of program.
+ - Modified program is configurable and takes Hyperparameters like steps, batchsize etc from Dkube UI and update the pipeline config file. 
  - Program is modified to export the trained model for inference.
 
 # Directories
