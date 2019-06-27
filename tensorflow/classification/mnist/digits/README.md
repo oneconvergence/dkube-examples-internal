@@ -43,7 +43,9 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
  2. Click *+Training Job* button.
  3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
 	- Enter a unique name say *digits-classifier*
-	- **Container** section - Leave with default options selected.
+	- **Container** section
+		- Tensorflw version - Leave with default options selected.
+		- Start-up script -`python model.py`
 	- **GPUs** section - Provide the required number of GPUs. This field is optional, if not provided network will train on CPU.
 	-  **Parameters** section - Input the values for hyperparameters or leave it to default. This program trains to very good accuracy with the displayed default parameters.
 	- **Workspace** section - Please select the workspace *mnist-digits* created in *Step1*.
