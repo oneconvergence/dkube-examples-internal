@@ -18,8 +18,8 @@ Tensorflow object detection API expects the input dataset to be in TFRecord form
  2. Click *+Workspace* button.
  3. Select *Github* option.
  4. Enter a unique name say *pets-detector-preprocessing*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/object-detection/pets/program/preprocesing
- ](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/object-detection/pets/program/preprocesing)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/obj-det-1.2/tensorflow/object-detection/pets/program/preprocessing
+ ](https://github.com/oneconvergence/dkube-examples/tree/obj-det-1.2/tensorflow/object-detection/pets/program/preprocessing)* in the URL text box.
  6. Click *Add Workspace* button.
  7. Workspace will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -64,8 +64,8 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
  2. Click *+Workspace* button.
  3. Select *Github* option.
  4. Enter a unique name say *pet-detector*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/object-detection/pets/program/training 
- ](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/object-detection/pets/program/training )* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/obj-det-1.2/tensorflow/object-detection/pets/program/training 
+ ](https://github.com/oneconvergence/dkube-examples/tree/obj-det-1.2/tensorflow/object-detection/pets/program/training )* in the URL text box.
  6. Click *Add Workspace* button.
  7. Workspace will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
