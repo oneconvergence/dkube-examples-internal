@@ -37,6 +37,8 @@ inputs:
      description: 'Optional. Environments for training program. Exact key value will be made available for the container'}
   - {name: gdrdma,          type: String,   optional: true,     default: 'false',
      description: 'Optional. Whether to use GDRDMA for distributed training.'}
+  - {name: access_url,      type: String,   optional: true,
+     description: 'Optional. URL at which dkube is accessible, copy paste from the browser of this window. Required for cloud deployments.'}
 outputs:
   - {name: rundetails,      description: 'Details of the dkube run'}
   - {name: artifact,        description: 'Identifier in Dkube storage where artifacts of training are stored.'}
@@ -46,6 +48,7 @@ implementation:
     command: ['dkubepl']
     args: [
       training,
+      --accessurl, {inputValue: access_url},
       --token, {inputValue: auth_token},
       --container, {inputValue: container},
       --script, {inputValue: run_script},
@@ -58,7 +61,8 @@ implementation:
       --files, {inputValue: config_files},
       --envs, {inputValue: envs},
       --gdrdma, {inputValue: gdrdma},
-      --runid, '{{pod.name}}'
+      --runid, '{{pod.name}}',
+      --wfid, '{{workflow.uid}}'
     ]
     fileOutputs:
       rundetails:   /tmp/rundetails

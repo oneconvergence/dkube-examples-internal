@@ -1,7 +1,7 @@
 import kfp.dsl as dsl
 from kfp import components
 import json
-from random import randint
+import time
 
 dkube_preprocess_op = components.load_component_from_file(
     "components/preprocess/component.yaml")
@@ -27,6 +27,7 @@ SERVING_EXAMPLE = "catsdogs"
               description=('Anjani-tiles pipeline with videos as input '
                            'with dkube components'))
 def d3pipeline(
+               access_url,
                auth_token,
                preprocess_container=json.dumps(
                    {'image': 'docker.io/ocdr/dkube-datascience-tf-cpu:v1.10'}),
@@ -46,14 +47,15 @@ def d3pipeline(
 
     # generate random preprocess_target_name
     preprocess_target_name = "{}-{}".format(preprocess_target_name,
-                                            str(randint(1, INT_MAX)))
+                                            str(int(time.time())))
 
     # preprocessing stage
     preprocess = dkube_preprocess_op(auth_token, preprocess_target_name,
                                      preprocess_container,
                                      program=preprocess_program,
                                      datasets=preprocess_datasets,
-                                     run_script=preprocess_script)
+                                     run_script=preprocess_script,
+                                     access_url=access_url)
 
     # training stage
     preprocess_dataset_name = json.dumps([preprocess_target_name])
@@ -62,14 +64,17 @@ def d3pipeline(
                               run_script=training_script,
                               datasets=preprocess_dataset_name,
                               ngpus=training_gpus,
-                              envs=training_envs).after(preprocess)
+                              envs=training_envs,
+                              access_url=access_url).after(preprocess)
     # serving stage
     serving = dkube_serving_op(
-        auth_token, train.outputs['artifact']).after(train)
+        auth_token, train.outputs['artifact'],
+        access_url=access_url).after(train)
     # inference stage
     inference = dkube_viewer_op(
         auth_token, serving.outputs['servingurl'],
-        SERVING_EXAMPLE, viewtype='inference').after(serving)
+        SERVING_EXAMPLE, viewtype='inference',
+        access_url=access_url).after(serving)
 
 
 if __name__ == '__main__':

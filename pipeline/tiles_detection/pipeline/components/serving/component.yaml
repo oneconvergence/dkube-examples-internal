@@ -13,6 +13,8 @@ inputs:
      description: 'Required. Dkube authentication token.'}
   - {name: model,           type: String,   optional: false,
      description: 'Required. Trained model in Dkube which is to be deployed for serving.'}
+  - {name: access_url,      type: String,   optional: true,
+     description: 'Optional. URL at which dkube is accessible, copy paste from the browser of this window. Required for cloud deployments.'}
 outputs:
   - {name: rundetails,       description: 'Details of the dkube run'}
   - {name: servingurl,       description: 'URL at which the serving web server is accessible.'}
@@ -22,9 +24,11 @@ implementation:
     command: ['dkubepl']
     args: [
       serving,
+      --accessurl, {inputValue: access_url},
       --token, {inputValue: auth_token},
       --model, {inputValue: model},
-      --runid, '{{pod.name}}'
+      --runid, '{{pod.name}}',
+      --wfid,  '{{workflow.uid}}'
     ]
     fileOutputs:
       rundetails: /tmp/rundetails

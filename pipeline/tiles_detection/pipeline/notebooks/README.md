@@ -11,4 +11,8 @@
   > prefix: /videos
 
 3. Launch Notebook with workspace as **Anjani-tiles-videos**         
-4. change directory to **program/pipeline/notebooks** and open Notebook **dkube-tiles-pipeline.ipynb**
+4. change directory to **program/pipeline/notebooks** and open Notebook **dkube-tiles-pipeline.ipynb**           
+
+5. Update access_url in **Create and Run pipeline** cell with URL at which dkube is accessible, copy paste from the browser of this window.
+
+6. Run the notebook
