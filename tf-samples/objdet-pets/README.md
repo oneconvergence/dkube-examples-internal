@@ -57,7 +57,9 @@ bash process.sh
 python model_main.py --model_dir=$OUT_DIR
 ```
 4. Parameters
-- Upload file : select the pipeline.config file here if file is stored locally.
+- Upload file 
+--Download pipeline.config file from https://github.com/oneconvergence/dkube-examples/blob/master/tf-samples/objdet-pets/pipeline.config
+--select the pipeline.config file here if file is stored locally.
 - Set the number of steps
 5. Workspace : select "object-detection"
 6. Model : select "faster-rcnn"
