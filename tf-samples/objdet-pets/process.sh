@@ -4,10 +4,10 @@ CONFIG_FILE="/tmp/config_file/pipeline.config"
 mkdir -p "/tmp/config_file/"
 DEFAULT_FILEPATH="./pipeline.config"
 
-if [ -z "$CONFIG_FILEPATH" ]; then
-    cp $CONFIG_FILEPATH $CONFIG_FILE
+if [! -z "$CONFIG_FILEPATH" ]; then
+    cp "$CONFIG_FILEPATH" "$CONFIG_FILE"
 elif [ -f "$DEFAULT_FILEPATH" ]; then
-    cp $DEFAULT_FILEPATH $CONFIG_FILE
+    cp "$DEFAULT_FILEPATH" "$CONFIG_FILE"
 else
     echo "No config file provided"
     exit 1
