@@ -52,7 +52,7 @@ Tensorflow object detection API expects the model parameters in a pipeline confi
 1. Name : obj-det
 2. Framework : v1.12
 3. Start-up script :
-- ```bash
+```bash
 bash process.sh
 python model_main.py --model_dir=$OUT_DIR
 ```
