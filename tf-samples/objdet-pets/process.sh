@@ -4,7 +4,7 @@ CONFIG_FILE="/tmp/config_file/pipeline.config"
 mkdir -p "/tmp/config_file/"
 DEFAULT_FILEPATH="./pipeline.config"
 
-if [-n "$CONFIG_FILEPATH" ]; then
+if [ -n "$CONFIG_FILEPATH" ]; then
     cp "$CONFIG_FILEPATH" "$CONFIG_FILE"
 elif [ -f "$DEFAULT_FILEPATH" ]; then
     cp "$DEFAULT_FILEPATH" "$CONFIG_FILE"
