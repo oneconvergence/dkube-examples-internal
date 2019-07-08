@@ -52,8 +52,8 @@ The config file can be passed to training job in either of the following ways:
 ### As parameter file: 
 The file can be stored locally and selected as a file in the parameters section when starting the training job. Use the below script as start up script in this case.
 ```bash
-bash process.sh $HYPERPARAMS_JSON_FILEPATH
-python model_main.py  --pipeline_config_path=$HYPERPARAMS_JSON_FILEPATH --model_dir=$OUT_DIR
+bash process.sh $CONFIG_FILEPATH
+python model_main.py  --pipeline_config_path=$CONFIG_FILEPATH --model_dir=$OUT_DIR
 ```
 ### As part of workspace:
 The file can be stored in the workspace. Use the below script as start up script in this case.
@@ -63,7 +63,7 @@ python model_main.py  --pipeline_config_path=./pipeline.config --model_dir=$OUT_
 ```
 ## Start a training job
 1. Name : obj-det
-2. Framework : v1.12-objdet
+2. Framework : v1.12
 3. Start-up script :
 - Use the appropriate script from the above section(Prepare config file)
 4. Parameters
