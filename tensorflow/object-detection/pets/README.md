@@ -86,9 +86,11 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 	- Enter a unique name say *pet-detector*
 	- **Container** section
 	  - Tensorflow Version - Leave with default options selected.
-	  - Startup script - `bash process.sh ./pipeline.config; python model_main.py  --pipeline_config_path=./pipeline.config --model_dir=$OUT_DIR`
+	  - Startup script - `bash process.sh; python model_main.py --model_dir=$OUT_DIR`
 	- **GPUs** section - Provide the required number of GPUs. This field is optional, if not provided network will train on CPU.
-	-  **Parameters** section - Input the values for hyperparameters or leave it to default.
+	-  **Parameters** section
+		- Select the pipeline.config file which is stored locally(Download from https://github.com/oneconvergence/dkube-examples/blob/1.2/tensorflow/object-detection/pets/program/training/pipeline.config)
+		- Set the number of steps
 	- **Workspace** section - Please select the workspace *pet-detector* created in *Step1(How to train)*.
 	- **Model** section - Please select the workspace *faster-rcnn* created in *Step2(How to train)*.
 	- **Dataset** section - Please select the dataset *tf-records* created in *Step3(How to Preprocess Data)*.
