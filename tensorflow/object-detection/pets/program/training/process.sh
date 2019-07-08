@@ -15,13 +15,13 @@ else
     exit 1
 fi
 
-echo "Confg file path : $1"
+echo "Confg file path : $CONFIG_FILE"
 
 DATA_DIR="${DATUMS_PATH}/${DATASET_NAME}"
 MODEL_DIR="${MODEL_PATH}/${MODEL_NAME}"
 
 #Set datset path in pipeline config file
-sed -i "s|DATA_PATH|"${DATA_DIR}"|g" $1
+sed -i "s|DATA_PATH|"${DATA_DIR}"|g" $CONFIG_FILE
 
 EXTRACT_PATH="/tmp/object-detection"
 mkdir -p $EXTRACT_PATH
@@ -45,5 +45,5 @@ for file in $MODEL_DIR/*; do
 done
 
 #Set the model path in pipeline.config file to the extracted path
-sed -i "s|MODEL_PATH|"${EXTRACT_PATH}"|g" $1
-sed -i '/num_steps/c\  num_steps : '"${TF_TRAIN_STEPS}"'' $1
+sed -i "s|MODEL_PATH|"${EXTRACT_PATH}"|g" $CONFIG_FILE
+sed -i '/num_steps/c\  num_steps : '"${TF_TRAIN_STEPS}"'' $CONFIG_FILE
