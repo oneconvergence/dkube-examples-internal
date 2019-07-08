@@ -4,13 +4,15 @@ CONFIG_FILE="/tmp/config_file/pipeline.config"
 mkdir -p "/tmp/config_file/"
 DEFAULT_FILEPATH="./pipeline.config"
 
-if [ -z "$CONFIG_FILEPATH" ]; then
-    cp $CONFIG_FILEPATH $CONFIG_FILE
+if [ ! -z "$HYPERPARAMS_FILEPATH" ]; then
+    echo "Using config file from parameters"
+    cp "$HYPERPARAMS_FILEPATH" "$CONFIG_FILE"
 elif [ -f "$DEFAULT_FILEPATH" ]; then
-    cp $DEFAULT_FILEPATH $CONFIG_FILE
+    echo "using config file from workspace"
+    cp "$DEFAULT_FILEPATH" "$CONFIG_FILE"
 else
-	echo "No config file provided"
-	exit 1
+    echo "No config file provided"
+    exit 1
 fi
 
 echo "Confg file path : $1"
