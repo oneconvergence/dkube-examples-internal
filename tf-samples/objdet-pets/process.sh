@@ -5,8 +5,10 @@ mkdir -p "/tmp/config_file/"
 DEFAULT_FILEPATH="./pipeline.config"
 
 if [ -n "$CONFIG_FILEPATH" ]; then
+    echo "Using config file from parameters"
     cp "$CONFIG_FILEPATH" "$CONFIG_FILE"
 elif [ -f "$DEFAULT_FILEPATH" ]; then
+    echo "using config frile from workspace"
     cp "$DEFAULT_FILEPATH" "$CONFIG_FILE"
 else
     echo "No config file provided"
