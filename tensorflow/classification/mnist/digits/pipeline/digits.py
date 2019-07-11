@@ -21,15 +21,14 @@ def d3pipeline(
     training_script="python model.py",
     training_datasets=json.dumps(["mnist"]),
     training_gpus=1,
-    training_envs=json.dumps([{"steps": 100}])):
-
-
+    training_envs=json.dumps([{"steps": 100}]),
+    serving_device='gpu'):
 
     train       = dkube_training_op(auth_token, training_container,
                                     program=training_program, run_script=training_script,
                                     datasets=training_datasets, ngpus=training_gpus,
                                     envs=training_envs, access_url=access_url)
-    serving     = dkube_serving_op(auth_token, train.outputs['artifact'], access_url=access_url).after(train)
+    serving     = dkube_serving_op(auth_token, train.outputs['artifact'], access_url=access_url, device=serving_device).after(train)
     inference   = dkube_viewer_op(auth_token, serving.outputs['servingurl'], 
                                   'digits', viewtype='inference', access_url=access_url).after(serving)
 

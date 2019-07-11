@@ -10,8 +10,8 @@ dkube_serving_op            = components.load_component_from_file("../components
 dkube_viewer_op             = components.load_component_from_file('../components/viewer/component.yaml')
 
 @dsl.pipeline(
-    name='dkube-bolts-pl',
-    description='sample bolts pipeline with dkube components'
+    name='dkube-cats dogs-pl',
+    description='sample cats dogs pipeline with dkube components'
 )
 def d3pipeline(
     access_url,
