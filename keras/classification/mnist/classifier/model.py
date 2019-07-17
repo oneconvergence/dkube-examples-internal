@@ -28,7 +28,7 @@ epochs = int(os.getenv('TF_EPOCHS', 5))
 num_classes = 5
 
 out_dir = os.getenv('OUT_DIR', None)
-save_dir = os.path.join(out_dir, "keras_saved_model")
+save_dir = "/tmp"
 model_name = 'keras_mnist_trained_model.h5'
 
 # input image dimensions
@@ -136,15 +136,12 @@ train_model(model,
             (x_train_gte5, y_train_gte5),
             (x_test_gte5, y_test_gte5), num_classes)
             
-'''# Convert the keras model format to tensorflow model format for serving
+# Convert the keras model format to tensorflow model format for serving
           
 # The export path contains the name and the version of the model
 tf.keras.backend.set_learning_phase(0) # Ignore dropout at inference
 model = tf.keras.models.load_model(os.path.join(save_dir, model_name))
-export_path = os.path.join(out_dir, '1')
-if not os.path.isdir(export_path):
-    os.makedirs(export_path)
-    os.makedirs(export_path + '/variables')
+export_path = os.path.join(save_dir, '1')
 
 
 # Fetch the Keras session and save the model
@@ -155,4 +152,7 @@ with tf.keras.backend.get_session() as sess:
         sess,
         export_path,
         inputs={'input_image': model.input},
-        outputs={t.name:t for t in model.outputs})'''
+        outputs={t.name:t for t in model.outputs})
+        
+# Move the saved model to s3
+tf.gfile.Rename(export_path, out_dir)
