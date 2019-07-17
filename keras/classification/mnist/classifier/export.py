@@ -1,5 +1,6 @@
 # Convert the keras model format to tensorflow model format for serving
 import tensorflow as tf
+import os
 
 out_dir = os.getenv('OUT_DIR', None)
 save_dir = "/tmp"
