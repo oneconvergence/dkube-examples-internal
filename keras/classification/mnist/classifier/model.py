@@ -136,7 +136,7 @@ train_model(model,
             (x_train_gte5, y_train_gte5),
             (x_test_gte5, y_test_gte5), num_classes)
             
-# Convert the keras model format to tensorflow model format for serving
+'''# Convert the keras model format to tensorflow model format for serving
           
 # The export path contains the name and the version of the model
 tf.keras.backend.set_learning_phase(0) # Ignore dropout at inference
@@ -155,4 +155,4 @@ with tf.keras.backend.get_session() as sess:
         sess,
         export_path,
         inputs={'input_image': model.input},
-        outputs={t.name:t for t in model.outputs})
+        outputs={t.name:t for t in model.outputs})'''
