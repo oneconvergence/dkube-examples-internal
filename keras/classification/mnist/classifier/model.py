@@ -144,6 +144,7 @@ model = tf.keras.models.load_model(os.path.join(save_dir, model_name))
 export_path = os.path.join(out_dir, '1')
 if not os.path.isdir(export_path):
     os.makedirs(export_path)
+    os.makedirs(export_path + '/variables')
 
 
 # Fetch the Keras session and save the model
