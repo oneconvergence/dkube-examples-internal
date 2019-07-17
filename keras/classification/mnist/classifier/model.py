@@ -26,8 +26,9 @@ now = datetime.datetime.now
 batch_size = int(os.getenv('TF_BATCH_SIZE', 128))
 epochs = int(os.getenv('TF_EPOCHS', 5))
 num_classes = 5
- 
-save_dir = os.path.join(os.getenv('OUT_DIR', None), "keras_saved_model")
+
+out_dir = os.getenv('OUT_DIR', None)
+save_dir = os.path.join(out_dir, "keras_saved_model")
 model_name = 'keras_mnist_trained_model.h5'
 
 # input image dimensions
@@ -140,7 +141,10 @@ train_model(model,
 # The export path contains the name and the version of the model
 tf.keras.backend.set_learning_phase(0) # Ignore dropout at inference
 model = tf.keras.models.load_model(os.path.join(save_dir, model_name))
-export_path = os.path.join(save_dir, '1')
+export_path = os.path.join(out_dir, '1')
+if not os.path.isdir(export_path):
+    os.makedirs(export_path)
+
 
 # Fetch the Keras session and save the model
 # The signature definition is defined by the input and output tensors
