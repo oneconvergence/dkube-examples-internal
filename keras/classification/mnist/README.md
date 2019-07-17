@@ -1,54 +1,53 @@
 # MNIST network classifier
 This example is derived from [keras example](https://github.com/keras-team/keras/blob/master/examples/mnist_transfer_cnn.py) and modified to run on Dkube Platform.
 
- - This program trains MNIST network on Gray scale Digits data.
+ - This program trains a simple convnet on the MNIST dataset the first 5 digits [0..4].
+ - Freeze convolutional layers and fine-tune dense layers for the classification of digits [5..9].
  - Modified program is configurable and takes Hyperparameters like epochs, batchsize etc from ENV vars. User can input these parameters from Dkube UI which will then be provided for the running instance of program.
 
 # Directories
 
- - **classifier/program** : This directory has training code files implemented on top of Tensorflow framework.
- - **classifier/data**: This directory has processed training data. Program trains on this data.
- - **inference**: This directory has compatible test data images which can be used for inference.
- - **hptuning/tuning.yaml**: Sample YAML showing the configuration format and parameters for tuning.
- - **pipeline/digits.py**: Python DSL defining a sample Dkube pipeline. Pipeline uses Dkube components for all stages.
- - **pipeline/digits.tar.gz**: Compiled python DSL which can be directly uploaded on to Dkube platform.
- - **pipeline/digits.ipynb**: Ipython notebook with the code. Upload the file in Dkube notebook and run all the cells. This notebook will generate and trigger the run of pipeline.
+ - **classifier/program** : This directory has training code files implemented on top of keras framework.
+ - **classifier/docker**: This directory has the docker file used to build docker image for custom training.
+ - **inference/server**: This directory has the custom inference server code.
+ - **inference/docker**: This directory has the docker file used to build docker image for sustom inference.
+ - **inference/images**: This directory has compatible test data images which can be used for inference.
 
 # How to Train
-## Step1: Create a workspace
+## Step1: Create custom docker image
+1. git clone https://github.com/oneconvergence/dkube-examples.git -b keras_custom_training
+2. cd dkube-examples/keras/classification/mnist/classifier
+3. sudo docker build -t ocdr/custom-datascience-keras:training-gpu -f docker/custom-datascience-keras-gpu.dockerfile .
+4. sudo docker push ocdr/custom-datascience-keras:training-gpu
 
+## Step2: Create a workspace
  1. Click *Workspaces* side menu option.
  2. Click *+Workspace* button.
  3. Select *Github* option.
- 4. Enter a unique name say *mnist-digits*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/mnist/digits/classifier/program 
- ](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/mnist/digits/classifier/program)* in the URL text box.
+ 4. Enter a unique name say *keras-mnist*
+ 5. Paste link *[https://github.com/oneconvergence/dkube-https://github.com/oneconvergence/dkube-examples/tree/keras_custom_training/keras/classification/mnist/classifier/program)* in the URL text box.
  6. Click *Add Workspace* button.
  7. Workspace will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
 
-## Step2: Create a dataset
- 1. Click *Datasets* side menu option.
- 2. Click *+Dataset* button.
- 3. Select *Github* option.
- 4. Enter a unique name say *mnist-digits*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/mnist/digits/classifier/data](https://github.com/oneconvergence/dkube-examples/tree/1.2/tensorflow/classification/mnist/digits/classifier/data)* in the URL text box.
- 6. Click *Add Dataset* button.
- 7. Dataset will be created and imported in Dkube. Progress of import can be seen.
- 8. Please wait till status turns to *ready*.
 ## Step3: Start a training job
  1. Click *Jobs* side menu option.
  2. Click *+Training Job* button.
  3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
-	- Enter a unique name say *digits-classifier*
+	- Enter a unique name say *keras-digits-classifier*
 	- **Container** section
-		- Tensorflw version - Leave with default options selected.
+		- Select Container - Select Custom
+		- Docker Image URL - ocdr/custom-datascience-keras:training-gpu created in *Step1*.
+		- Private - Fill in username and password if docker image is private or else leave private disabled.
 		- Start-up script -`python model.py`
 	- **GPUs** section - Provide the required number of GPUs. This field is optional, if not provided network will train on CPU.
-	-  **Parameters** section - Input the values for hyperparameters or leave it to default. This program trains to very good accuracy with the displayed default parameters.
-	- **Workspace** section - Please select the workspace *mnist-digits* created in *Step1*.
+	-  **Hyper parameters** section - Input the values for hyperparameters. Use following values for better result:
+		- Epochs - 5
+		- Batch size - 128
+		- Steps - 100
+	- **Workspace** section - Please select the workspace *keras-mnist* created in *Step2*.
 	- **Model** section - Do not select any model.
-	- **Dataset** section - Please select the dataset *mnist-digits* created in *Step1*.
+	- **Dataset** section - Do not select any model.
 4. Click *Submit* button.
 5. A new entry with name *digits-classifier* will be created in *Jobs* table.
 6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
