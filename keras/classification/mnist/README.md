@@ -2,16 +2,16 @@
 This example is derived from [keras example](https://github.com/keras-team/keras/blob/master/examples/mnist_transfer_cnn.py) and modified to run on Dkube Platform.
 
  - This program trains a simple convnet on the MNIST dataset the first 5 digits [0..4].
- - Freeze convolutional layers and fine-tune dense layers for the classification of digits [5..9].
+ - Freezes convolutional layers and fine-tunes dense layers for the classification of digits [5..9].
  - Modified program is configurable and takes Hyperparameters like epochs, batchsize etc from ENV vars. User can input these parameters from Dkube UI which will then be provided for the running instance of program.
- - Modified the program to convert the keras h5 modle format to tensorflow savednodel.pb format.
+ - Modified the program to convert the keras h5 model format to tensorflow savedmodel.pb format.
 
 # Directories
 
  - **classifier/program** : This directory has training code files implemented on top of keras framework.
  - **classifier/docker**: This directory has the docker file used to build docker image for custom training.
  - **inference/server**: This directory has the custom inference server code.
- - **inference/docker**: This directory has the docker file used to build docker image for sustom inference.
+ - **inference/docker**: This directory has the docker file used to build docker image for custom inference.
  - **inference/images**: This directory has compatible test data images which can be used for inference.
 
 # How to Train
