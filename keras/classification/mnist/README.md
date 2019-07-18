@@ -3,7 +3,7 @@ This example is derived from the [keras example](https://github.com/keras-team/k
 
  - This program trains a simple convnet on the MNIST dataset the first 5 digits [0..4] and freezes convolutional layers and fine-tunes dense layers for the classification of digits [5..9].
  - The modified program is configurable and takes Hyperparameters like epochs, batchsize etc from ENV vars. User can input these parameters from Dkube UI which will then be provided for the running instance of the program.
- - The modified program to converts the keras h5 model format to tensorflow savedmodel.pb format to make it work with dkube model serving.
+ - The modified program converts the keras h5 model format to tensorflow savedmodel.pb format to make it work with dkube model serving.
 
 # Directories
 
