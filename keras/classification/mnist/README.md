@@ -1,10 +1,9 @@
 # MNIST network classifier
-This example is derived from [keras example](https://github.com/keras-team/keras/blob/master/examples/mnist_transfer_cnn.py) and modified to run on Dkube Platform.
+This example is derived from the [keras example](https://github.com/keras-team/keras/blob/master/examples/mnist_transfer_cnn.py) and modified to run on Dkube Platform.
 
- - This program trains a simple convnet on the MNIST dataset the first 5 digits [0..4].
- - Freezes convolutional layers and fine-tunes dense layers for the classification of digits [5..9].
- - Modified program is configurable and takes Hyperparameters like epochs, batchsize etc from ENV vars. User can input these parameters from Dkube UI which will then be provided for the running instance of program.
- - Modified the program to convert the keras h5 model format to tensorflow savedmodel.pb format.
+ - This program trains a simple convnet on the MNIST dataset the first 5 digits [0..4] and freezes convolutional layers and fine-tunes dense layers for the classification of digits [5..9].
+ - The modified program is configurable and takes Hyperparameters like epochs, batchsize etc from ENV vars. User can input these parameters from Dkube UI which will then be provided for the running instance of the program.
+ - The modified program to converts the keras h5 model format to tensorflow savedmodel.pb format to make it work with dkube model serving.
 
 # Directories
 
@@ -22,27 +21,27 @@ This example is derived from [keras example](https://github.com/keras-team/keras
 4. sudo docker push ocdr/custom-datascience-keras:training-gpu
 
 ## Step2: Create a workspace
- 1. Click *Workspaces* side menu option.
- 2. Click *+Workspace* button.
- 3. Select *Github* option.
- 4. Enter a unique name say *keras-mnist*
+ 1. Click on *Workspaces* side menu option.
+ 2. Click on *+Workspace* button.
+ 3. Select the *Github* option.
+ 4. Enter a unique name, say *keras-mnist*
  5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/keras_custom_training/keras/classification/mnist/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/keras_custom_training/keras/classification/mnist/classifier/program)* in the URL text box.
- 6. Click *Add Workspace* button.
- 7. Workspace will be created and imported in Dkube. Progress of import can be seen.
- 8. Please wait till status turns to *ready*.
+ 6. Click on *Add Workspace* button.
+ 7. Workspace will be created and imported in Dkube. The progress of import can be seen in Dkube UI.
+ 8. Wait till status turns to *ready*.
 
 ## Step3: Start a training job
- 1. Click *Jobs* side menu option.
- 2. Click *+Training Job* button.
- 3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
-	- Enter a unique name say *keras-digits-classifier*
+ 1. Click on *Jobs* side menu option.
+ 2. Click on *+Training Job* button.
+ 3. Fill in the fields in the Job form and click on *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form. For advanced usage please refer to **Dkube User Guide**.
+	- Enter a unique name, say *keras-digits-classifier*
 	- **Container** section
 		- Select Container - Select Custom
 		- Docker Image URL - ocdr/custom-datascience-keras:training-gpu created in *Step1*.
 		- Private - Fill in username and password if docker image is private or else leave private disabled.
 		- Start-up script -`python model.py`
-	- **GPUs** section - Provide the required number of GPUs. This field is optional, if not provided network will train on CPU.
-	-  **Hyper parameters** section - Input the values for hyperparameters. Use following values for better result:
+	- **GPUs** section - Provide the required number of GPUs. This field is optional. If not provided network will train on CPU.
+	-  **Hyper parameters** section - Enter the values for hyperparameters. Use the following values for better results:
 		- Epochs - 5
 		- Batch size - 128
 		- Steps - 100
@@ -55,13 +54,13 @@ This example is derived from [keras example](https://github.com/keras-team/keras
 
 # How to Serve
 
- 1. After the job is *complete* from above step. The trained model will get generated inside *Dkube*. Link to which is reflected in the *Model* field of a job in *Job* table.
+ 1. After the job is *complete* from above step, a trained model will get generated inside *Dkube*. Link to this model will be reflected in the *Model* field of a job in *Job* table.
  2. Click the link to see the trained model details.
- 3. Click the *Deploy* button to deploy the trained model for serving. A form will display.
- 4. Input the unique name say *keras-digits-serving*
- 5. Select *CPU* or *GPU* to deploy model on specific device. Unless specifically required, model can be served on CPU.
- 6. Click *Deploy* button.
- 7. Click *Inferences* side menu and check that a serving job is created with the name given i.e, *keras-digits-serving*.
+ 3. Click on the *Deploy* button to deploy the trained model for serving. A form will get displayed.
+ 4. Enter the unique name, say *keras-digits-serving*
+ 5. Select *CPU* or *GPU* to deploy model on a specific device. Unless specifically required, model can be served on CPU.
+ 6. Click on *Deploy* button.
+ 7. Click on *Inferences* side menu and check if a serving job is created with the name given i.e, *keras-digits-serving*.
  8. Wait till *status* field shows *running*.
  9. Copy the *URL* shown in *Endpoint* field of the serving job.
 
