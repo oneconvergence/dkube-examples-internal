@@ -5,6 +5,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import zipfile
 import tarfile
+import argparse
 from tensorflow.python.ops import metrics as metrics_lib
 from dkube import dkubeLoggerHook as logger_hook
 from tensorflow.python.platform import tf_logging as logging
@@ -14,6 +15,7 @@ tf.logging.info('GPU Available {}'.format(tf.test.is_gpu_available()))
 if 'TF_CONFIG' in os.environ:
     tf.logging.info('TF_CONFIG: {}'.format(os.environ["TF_CONFIG"]))
 
+FLAGS = None
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
 MODEL_DIR = os.getenv('OUT_DIR', None)
@@ -45,7 +47,7 @@ def count_epochs(iterator):
             except Exception as OutOfRangeError:
                 if steps_epoch == 0:
                    steps_epoch = TF_TRAIN_STEPS
-                steps_epoch /= EPOCHS
+                steps_epoch /= FLAGS.num_epochs
                 break
 
 def _img_string_to_tensor(image_string, image_size=(299, 299)):
@@ -76,7 +78,7 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
         else:
             dataset = dataset.repeat(num_epochs)
 
-        dataset = dataset.apply(tf.contrib.data.map_and_batch(map_func=_path_to_img, batch_size=BATCH_SIZE))
+        dataset = dataset.apply(tf.contrib.data.map_and_batch(map_func=_path_to_img, batch_size=FLAGS.batch_size))
         (images, labels) = dataset.make_one_shot_iterator().get_next()
         (cimages, clabels) = dataset.make_one_shot_iterator().get_next()
         count_epochs(cimages)
@@ -96,7 +98,7 @@ def model_fn(features, labels, mode, params):
         logits = tf.layers.dense(bottleneck_tensor, units=1, trainable=is_training)
 
     def train_op_fn(loss):
-        optimizer = tf.train.AdamOptimizer(learning_rate=params['learning_rate'])
+        optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate)
         return optimizer.minimize(loss, global_step=tf.train.get_global_step())
 
     if NUM_CLASSES == 2:
@@ -108,6 +110,7 @@ def model_fn(features, labels, mode, params):
         features, mode, logits, labels, train_op_fn=train_op_fn
     )
     if mode == tf.estimator.ModeKeys.TRAIN:
+        tf.summary.scalar('accuracy', metrics_lib.accuracy(labels, spec.predictions['classes'])[1])
         logging_hook = logger_hook({"loss": spec.loss,"accuracy":
             metrics_lib.accuracy(labels, spec.predictions['classes'])[1], 
             "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
@@ -120,12 +123,20 @@ def model_fn(features, labels, mode, params):
     return spec
 
 def train(_):
+    try:
+      fp = open(os.getenv('HP_TUNING_INFO_FILE', 'None'),'r')
+      hyperparams = json.loads(fp.read())
+    except:
+      hyperparams = { "learning_rate":1e-3, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
+      pass
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--learning_rate', type=float, default=float(hyperparams['learning_rate']), help='Learning rate for training.')
+    parser.add_argument('--batch_size', type=int, default=int(hyperparams['batch_size']), help='Batch size for training.')
+    parser.add_argument('--num_epochs', type=int, default=int(hyperparams['num_epochs']), help='Number of epochs to train for.')
+    global FLAGS
+    FLAGS, unparsed = parser.parse_known_args()
     run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
-    if DATUMS_PATH != None:
-        DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
-    else:
-        DATA_DIR = os.getenv('DATA_DIR', None)
-
+    DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
     EXTRACT_PATH = "/tmp/resnet-model"
     ZIP_FILE = DATA_DIR + "/data.zip"
@@ -165,11 +176,11 @@ def train(_):
     input_img_size = hub.get_expected_image_size(hub.Module(TFHUB_CACHE_DIR))
 
     train_files = os.path.join(DATA_DIR, 'train', '**/*.jpg')
-    train_input_fn = make_input_fn(train_files, image_size=input_img_size, shuffle=True)
+    train_input_fn = make_input_fn(train_files, image_size=input_img_size, shuffle=True, batch_size=FLAGS.batch_size, num_epochs=FLAGS.num_epochs)
     train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=TF_TRAIN_STEPS)
 
     eval_files = os.path.join(DATA_DIR, 'valid', '**/*.jpg')
-    eval_input_fn = make_input_fn(eval_files, image_size=input_img_size)
+    eval_input_fn = make_input_fn(eval_files, image_size=input_img_size, shuffle=False, batch_size=FLAGS.batch_size, num_epochs=FLAGS.num_epochs)
     eval_spec = tf.estimator.EvalSpec(eval_input_fn, steps=1, throttle_secs=1, start_delay_secs=1)
 
     tf.estimator.train_and_evaluate(classifier, train_spec, eval_spec)
