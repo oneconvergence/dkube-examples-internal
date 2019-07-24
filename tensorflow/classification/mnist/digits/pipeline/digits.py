@@ -10,27 +10,36 @@ dkube_serving_op            = components.load_component_from_file("../components
 dkube_viewer_op             = components.load_component_from_file('../components/viewer/component.yaml')
 
 @dsl.pipeline(
-    name='dkube-bolts-pl',
-    description='sample bolts pipeline with dkube components'
+    name='dkube-mnist-pl',
+    description='sample mnist digits pipeline with dkube components'
 )
 def d3pipeline(
-    access_url,
+    #Dkube authentication token
     auth_token,
+    #By default tf v1.12 image is used here, v1.10, v1.11 or v1.13 can be used. 
+    #Or any other custom image name can be supplied.
+    #For custom private images, please input username/password
     training_container=json.dumps({'image':'docker.io/ocdr/dkube-datascience-tf-gpu:v1.12', 'username':'', 'password': ''}),
+    #Name of the workspace in dkube. Update accordingly if different name is used while creating a workspace in dkube.	
     training_program="mnist",
+    #Script to run inside the training container    
     training_script="python model.py",
+    #Input datasets for training. Update accordingly if different name is used while creating dataset in dkube.    
     training_datasets=json.dumps(["mnist"]),
+    #Request gpus as needed. Val 0 means no gpu, then training_container=docker.io/ocdr/dkube-datascience-tf-cpu:v1.12    
     training_gpus=1,
+    #Any envs to be passed to the training program    
     training_envs=json.dumps([{"steps": 100}]),
+    #Device to be used for serving - dkube mnist example trained on gpu needs gpu for serving else set this param to 'cpu'
     serving_device='gpu'):
 
     train       = dkube_training_op(auth_token, training_container,
                                     program=training_program, run_script=training_script,
                                     datasets=training_datasets, ngpus=training_gpus,
-                                    envs=training_envs, access_url=access_url)
-    serving     = dkube_serving_op(auth_token, train.outputs['artifact'], access_url=access_url, device=serving_device).after(train)
+                                    envs=training_envs)
+    serving     = dkube_serving_op(auth_token, train.outputs['artifact'], device=serving_device).after(train)
     inference   = dkube_viewer_op(auth_token, serving.outputs['servingurl'], 
-                                  'digits', viewtype='inference', access_url=access_url).after(serving)
+                                  'digits', viewtype='inference').after(serving)
 
 
 if __name__ == '__main__':
