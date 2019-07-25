@@ -113,5 +113,5 @@ This example is derived from the [keras example](https://github.com/keras-team/k
   
   ## Step3: Run Client
   1. Replace the *public ip* with dkube public ip in the above URL.
-  2. Run the below curl command by replacing the *server url* with url obtained in previous step and *image path* with path to test image.  
+  2. Run the below curl command by replacing the *Serving url* with url obtained in previous step and *image path* with path to test image.  
 	`curl <Serving url>/predict --request POST -F "file=@<image path>"`
