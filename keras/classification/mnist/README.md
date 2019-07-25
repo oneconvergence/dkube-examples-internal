@@ -15,7 +15,7 @@ This example is derived from the [keras example](https://github.com/keras-team/k
 
 # How to Train
 ## Step1: Create custom docker image for training
-1. git clone https://github.com/oneconvergence/dkube-examples.git -b keras_custom_training
+1. git clone https://github.com/oneconvergence/dkube-examples.git -b 1.2
 2. cd dkube-examples/keras/classification/mnist/classifier
 3. sudo docker build -t ocdr/custom-datascience-keras:training-gpu -f docker/custom-datascience-keras-gpu.dockerfile .
 4. sudo docker push ocdr/custom-datascience-keras:training-gpu
@@ -25,7 +25,7 @@ This example is derived from the [keras example](https://github.com/keras-team/k
  2. Click on *+Workspace* button.
  3. Select the *Github* option.
  4. Enter a unique name, say *keras-mnist*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/keras_custom_training/keras/classification/mnist/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/keras_custom_training/keras/classification/mnist/classifier/program)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.2/keras/classification/mnist/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/1.2/keras/classification/mnist/classifier/program)* in the URL text box.
  6. Click on *Add Workspace* button.
  7. Workspace will be created and imported in Dkube. The progress of import can be seen in Dkube UI.
  8. Wait till status turns to *ready*.
@@ -66,7 +66,7 @@ This example is derived from the [keras example](https://github.com/keras-team/k
 
 # How to test Inference
 ## Step1: Create custom docker image for inference
-1. git clone https://github.com/oneconvergence/dkube-examples.git -b keras_custom_training
+1. git clone https://github.com/oneconvergence/dkube-examples.git -b 1.2
 2. cd dkube-examples/keras/classification/mnist/inference
 3. sudo docker build -t ocdr/custom-datascience-keras:inf-mnist -f docker/custom-inference-server.dockerfile .
 4. sudo docker push ocdr/custom-datascience-keras:inf-mnist
