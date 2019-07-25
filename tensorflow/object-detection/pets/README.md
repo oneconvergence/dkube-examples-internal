@@ -138,5 +138,5 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
   5. The above command will output a URL, please click the URL to see the UI which can be used for testing inference.
   6. Upload an image for inference, images in **inference** folder can be used.
   7. Upload the labe map file in the file upload section. The pet_label_map.pbtxt file in **inference** cab be used.
-  8. Set the Number of classes to 32
+  8. Set the Number of classes to 37
   7. Click *Detect* button and the image is displayed with detection boxes returned by the model.
