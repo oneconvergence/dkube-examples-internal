@@ -4,6 +4,7 @@ FROM ubuntu:18.04
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         curl \
+        wget \
         git \
         sudo \
         libcurl3-dev \
