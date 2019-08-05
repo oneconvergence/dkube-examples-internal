@@ -4,8 +4,6 @@ CONFIG_FILE="/tmp/config_file/pipeline.config"
 mkdir -p "/tmp/config_file/"
 DEFAULT_FILEPATH="./pipeline.config"
 
-echo $HYPERPARAMS_FILEPATH
-
 if [ ! -z "$HYPERPARAMS_FILEPATH" ]; then
     echo "Using config file from parameters"
     cp "$HYPERPARAMS_FILEPATH" "$CONFIG_FILE"
