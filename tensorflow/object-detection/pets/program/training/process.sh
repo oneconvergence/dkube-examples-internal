@@ -15,7 +15,7 @@ else
     exit 1
 fi
 
-echo "Confg file path : $CONFIG_FILE"
+echo "Config file path : $CONFIG_FILE"
 
 DATA_DIR="${DATUMS_PATH}/${DATASET_NAME}"
 MODEL_DIR="${MODEL_PATH}/${MODEL_NAME}"
