@@ -2,9 +2,9 @@
   "RequestCount": 1,
   "OptimizationType": "maximize",
   "OptimizationGoal": 0.99,
-  "ObjectiveValueName": "train_accuracy_1",
+  "ObjectiveValueName": "accuracy_1",
   "MetricsNames": [
-   "train_accuracy_1"
+   "accuracy_1"
   ],
   "ParameterConfigs": [
    {

@@ -1,9 +1,9 @@
 optimizationtype: maximize
-objectivevaluename: train_accuracy_1
+objectivevaluename: accuracy_1
 optimizationgoal: 0.99
 requestcount: 1
 metricsnames:
- - train_accuracy_1
+ - accuracy_1
 parameterconfigs:
  - name: --learning_rate
    parametertype: double
