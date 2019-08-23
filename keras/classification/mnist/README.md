@@ -104,7 +104,7 @@ This example is derived from the [keras example](https://github.com/keras-team/k
     dockerpassword=""
     #Targetport of service(If job is services)
     #This is the port on which the inference server is running. For flask servers, default port is 5000
-    targetport=5000
+    appport=5000
     #Choice of exposing the service. One of dkubeproxy or nodeport(If job is services)
     exposeas="nodeport"
     ```
