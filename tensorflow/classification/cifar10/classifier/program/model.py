@@ -141,9 +141,9 @@ def train(_):
         for file in archive.namelist():
             if file.startswith('data'):
                 #archive.extract(file, )
-                pass
+                archive.extract(file, EXTRACT_PATH)
         print("Training data successfuly extracted")
-        DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME) + "/data"
+        DATA_DIR = EXTRACT_PATH + "/data"
     params = {
         'module_spec': 'https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/1',
         'module_name': 'resnet_v2_50',
