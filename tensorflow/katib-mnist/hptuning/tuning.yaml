@@ -1,5 +1,3 @@
-studyName: tfjob-example
-owner: crd
 optimizationtype: maximize
 objectivevaluename: accuracy_1
 optimizationgoal: 0.99
@@ -22,3 +20,6 @@ parameterconfigs:
    feasible:
      min: "1"
      max: "10"
+suggestionSpec:
+    suggestionAlgorithm: "random"
+    requestNumber: 3
