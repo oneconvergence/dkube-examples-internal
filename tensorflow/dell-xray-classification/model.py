@@ -90,12 +90,13 @@ def model_fn(features, labels, mode, params):
     is_training = mode == tf.estimator.ModeKeys.TRAIN
 
     NUM_CLASSES = len(params['label_vocab'])
+    logit_units = 1 if NUM_CLASSES == 2 else NUM_CLASSES
 
     module = hub.Module(TFHUB_CACHE_DIR, trainable=is_training and params['train_module'], name=params['module_name'])
     bottleneck_tensor = module(features['inputs'])
 
     with tf.name_scope('final_retrain_ops'):
-        logits = tf.layers.dense(bottleneck_tensor, units=1, trainable=is_training)
+        logits = tf.layers.dense(bottleneck_tensor, units=logit_units, trainable=is_training)
 
     def train_op_fn(loss):
         optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate)
@@ -106,7 +107,7 @@ def model_fn(features, labels, mode, params):
     else:
         head = tf.contrib.estimator.multi_class_head(n_classes=NUM_CLASSES, label_vocabulary=params['label_vocab'])
 
-    spec =  head.create_estimator_spec(
+    spec = head.create_estimator_spec(
         features, mode, logits, labels, train_op_fn=train_op_fn
     )
     if mode == tf.estimator.ModeKeys.TRAIN:
@@ -127,7 +128,7 @@ def train(_):
       fp = open(os.getenv('HP_TUNING_INFO_FILE', 'None'),'r')
       hyperparams = json.loads(fp.read())
     except:
-      hyperparams = { "learning_rate":1e-3, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
+      hyperparams = { "learning_rate":1e-7, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
       pass
     parser = argparse.ArgumentParser()
     parser.add_argument('--learning_rate', type=float, default=float(hyperparams['learning_rate']), help='Learning rate for training.')
@@ -152,8 +153,8 @@ def train(_):
     params = {
         'module_spec': 'https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/1',
         'module_name': 'resnet_v2_50',
-        'learning_rate': 1e-3,
-        'train_module': False,  # Whether we want to finetune the module
+        'learning_rate': 1e-7,
+        'train_module': True,  # Whether we want to finetune the module
         'label_vocab': os.listdir(os.path.join(DATA_DIR, 'valid'))
     }
     global TFHUB_CACHE_DIR
@@ -172,6 +173,13 @@ def train(_):
         config=run_config,
         params=params
     )
+    # def my_auc(labels, predictions, features):
+    #     auc_metric = tf.keras.metrics.AUC(name="my_auc")
+    #     auc_metric.update_state(y_true=labels, y_pred=predictions['logistic'],
+    #                             sample_weight=features['weight'])
+    #     return {'auc': auc_metric}
+
+    # classifier = tf.estimator.add_metrics(classifier, my_auc)
 
     input_img_size = hub.get_expected_image_size(hub.Module(TFHUB_CACHE_DIR))
 
