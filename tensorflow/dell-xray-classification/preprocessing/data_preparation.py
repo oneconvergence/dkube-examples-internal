@@ -27,7 +27,8 @@ MIN_CASES = 1000
 # resizes the image to 224 x 224
 RESIZE_IMAGE = (224, 224)
 # zip file of preprocessed data
-OUTPUT_ZIP_FILENAME = "./data.zip"
+INPUT_DATA_DIR = "./data"
+OUTPUT_ZIP_FILENAME = "data.zip"
 
 
 class DataPreparation:
@@ -39,16 +40,16 @@ class DataPreparation:
         # store images: path key-value pair
         self.metadata = None
         self.classes = None
-        self.train_dir = os.path.join(self.output_dir, "train")
-        self.valid_dir = os.path.join(self.output_dir, "valid")
+        self.train_dir = os.path.join(INPUT_DATA_DIR, "train")
+        self.valid_dir = os.path.join(INPUT_DATA_DIR, "valid")
 
     def run(self):
         """Run Data Preparation steps."""
-        print("input_dir: {}\nOutput_dir: {}".format(
-            self.input_dir, self.output_dir))
+        # print("input_dir: {}\nOutput_dir: {}".format(
+        #     self.input_dir, self.output_dir))
 
         # 1. Untar all tar files and save all images to DATA_FOLDER
-        # self.extract_tarfiles()
+        self.extract_tarfiles()
         # 2. Load the metadata from indices CSV file
         metadata = self.load_metadata()
         # 3. Preprocessing of the metadata DataFrames
@@ -62,6 +63,8 @@ class DataPreparation:
         self.create_dataset(train, valid)
         # 7. Creating dataset zipfile
         self.zip()
+        # 8. Remove dataset
+        self.remove_directory()
 
     # @staticmethod
     # def untar(tar_file):
@@ -74,10 +77,14 @@ class DataPreparation:
         Untar all TarFiles in the directory and save images to DATA_FOLDER.
         """
         for file in os.listdir(self.input_dir):
-            if tarfile.is_tarfile(file):
-                print("file: ", file)
-                with tarfile.open(file) as opener:
-                    opener.extractall(path=DATA_FOLDER)
+            try:
+                if tarfile.is_tarfile(file):
+                    print("Extracting TarFile: {} to {}".format(
+                        file, DATA_FOLDER))
+                    with tarfile.open(file) as opener:
+                        opener.extractall(path=DATA_FOLDER)
+            except IsADirectoryError:
+                pass
 
         # # with multiprocessing
         # with multiprocessing.Pool() as pool:
@@ -184,15 +191,16 @@ class DataPreparation:
                 os.makedirs(os.path.join(self.valid_dir, label))
 
     def remove_directory(self):
-        for label in self.classes:
-            if os.path.exists(os.path.join(self.output_dir, label)):
-                shutil.rmtree(os.path.join(self.output_dir, label))
+        if os.path.exists(INPUT_DATA_DIR):
+            shutil.rmtree(INPUT_DATA_DIR)
 
     def create_dataset(self, train, valid):
         """
         Create dataset from train and valid dataframes.
         Copy images to their respective classes.
         """
+        print("Preparing train and valid Dataset, this may take time "
+              "based on the data available.")
         self.copy_images(train=train)
         self.copy_images(valid=valid)
 
@@ -207,8 +215,6 @@ class DataPreparation:
             dst_dir = self.valid_dir
             dataframe = pd.DataFrame(valid)
 
-        print("dst_dir: ", dst_dir)
-
         for index, image_data in dataframe.iterrows():
             image_index = image_data.get('Image Index')
             labels = image_data.get('Finding Labels').split("|")
@@ -222,13 +228,15 @@ class DataPreparation:
                         dst_dir, label))
 
     def zip(self):
-        print("Creating dataset zip file.")
-        with zipfile.ZipFile(OUTPUT_ZIP_FILENAME, 'w') as zip_ref:
+        output_zip_filename = os.path.join(
+            self.output_dir, OUTPUT_ZIP_FILENAME)
+        print("Creating dataset zip file. ")
+        with zipfile.ZipFile(output_zip_filename, 'w') as zip_ref:
             # writing each file one by one
-            for root, dirs, files in os.walk(self.output_dir):
+            for root, dirs, files in os.walk(INPUT_DATA_DIR):
                 for file in files:
                     zip_ref.write(os.path.join(root, file))
-        print("Dataset is available here: %s" % (OUTPUT_ZIP_FILENAME))
+        print("Dataset is available here: %s" % (output_zip_filename))
 
 
 # time decorator
@@ -251,7 +259,7 @@ def main():
                         help="video directory path")
     parser.add_argument(
         '--output-dir',
-        default='{}/'.format(os.getenv("OUT_DIR", "./data")),
+        default='{}/'.format(os.getenv("OUT_DIR", ".")),
         help='Where to save the Output dataset zip file.')
     args = parser.parse_args()
     input_dir = args.input_dir
