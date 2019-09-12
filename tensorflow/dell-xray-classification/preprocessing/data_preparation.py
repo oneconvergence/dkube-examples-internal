@@ -6,7 +6,6 @@ Common Thorax Disease Categories.
 """
 
 import argparse
-# import multiprocessing
 import os
 import sys
 import shutil
@@ -14,21 +13,16 @@ import tarfile
 import time
 import zipfile
 
-import numpy as np
-import pandas as pd
 from itertools import chain
 from glob import glob
+
+import numpy as np
+import pandas as pd
+
 from sklearn.model_selection import train_test_split
 
-# CONSTANTS
-DATA_FOLDER = '/tmp/data/'
-INDICES_FILE = './Data_Entry_2017.csv'
-MIN_CASES = 1000
-# resizes the image to 224 x 224
-RESIZE_IMAGE = (224, 224)
-# zip file of preprocessed data
-INPUT_DATA_DIR = "./data"
-OUTPUT_ZIP_FILENAME = "data.zip"
+import params
+from data_augmentation import DataAugmentation
 
 
 class DataPreparation:
@@ -39,16 +33,16 @@ class DataPreparation:
         self.output_dir = output_dir
         # store images: path key-value pair
         self.metadata = None
-        self.classes = None
-        self.train_dir = os.path.join(INPUT_DATA_DIR, "train")
-        self.valid_dir = os.path.join(INPUT_DATA_DIR, "valid")
+        self.class_list = None
+        self.train_dir = os.path.join(params.INPUT_DATA_DIR, "train")
+        self.valid_dir = os.path.join(params.INPUT_DATA_DIR, "valid")
 
     def run(self):
         """Run Data Preparation steps."""
         # print("input_dir: {}\nOutput_dir: {}".format(
         #     self.input_dir, self.output_dir))
 
-        # 1. Untar all tar files and save all images to DATA_FOLDER
+        # # 1. Untar all tar files and save all images to DATA_FOLDER
         self.extract_tarfiles()
         # 2. Load the metadata from indices CSV file
         metadata = self.load_metadata()
@@ -57,41 +51,35 @@ class DataPreparation:
         # 4. Creates a train/test stratification of the dataset
         train, valid = self.stratify_train_test_split(metadata)
         # 5. Create folder for each label to classify images
-        self.classes = labels
+        self.class_list = labels
         self.create_directory()
-        # 6. create dataset and copy images into classes
-        self.create_dataset(train, valid)
-        # 7. Creating dataset zipfile
-        self.zip()
-        # 8. Remove dataset
-        self.remove_directory()
+        # Perform Data Augmentation
+        # self.data_augmentation()
 
-    # @staticmethod
-    # def untar(tar_file):
-    #     print("tarfile: ", tar_file)
-    #     with tarfile.open(tar_file) as opener:
-    #         opener.extractall(path=DATA_FOLDER)
+        # # 6. create dataset and copy images into classes
+        self.create_dataset(train, valid)
+        # # 7. Creating dataset zipfile
+        self.zip()
+        # # 8. Remove dataset
+        self.remove_directory()
 
     def extract_tarfiles(self):
         """
         Untar all TarFiles in the directory and save images to DATA_FOLDER.
         """
+        print("\n\n")
         for file in os.listdir(self.input_dir):
             try:
                 if tarfile.is_tarfile(file):
                     print("Extracting TarFile: {} to {}".format(
-                        file, DATA_FOLDER))
+                        file, params.DATA_FOLDER))
                     with tarfile.open(file) as opener:
-                        opener.extractall(path=DATA_FOLDER)
+                        opener.extractall(path=params.DATA_FOLDER)
             except IsADirectoryError:
                 pass
 
-        # # with multiprocessing
-        # with multiprocessing.Pool() as pool:
-        #     pool.map(self.untar, os.listdir(self.input_dir))
-
-    def load_metadata(self, data_folder=DATA_FOLDER,
-                      metadata_file=INDICES_FILE):
+    def load_metadata(self, data_folder=params.DATA_FOLDER,
+                      metadata_file=params.INDICES_FILE):
         """
         Loads the metadata from the indices csv file and scans the
         file system to map the png files to the metadata records.
@@ -119,7 +107,8 @@ class DataPreparation:
 
         return metadata
 
-    def preprocess_metadata(self, metadata, minimum_cases=MIN_CASES):
+    @staticmethod
+    def preprocess_metadata(metadata, minimum_cases=params.MIN_CASES):
         """
         Preprocessing of the metadata df.
         We remove the 'No Finding' records and all labels with less
@@ -147,8 +136,8 @@ class DataPreparation:
                 metadata[c_label] = metadata['Finding Labels'].map(
                     lambda finding: 1.0 if c_label in finding else 0)
 
-        labels = [c_label for c_label in labels if metadata[c_label].
-                  sum() > minimum_cases]
+        # labels = [c_label for c_label in labels if metadata[c_label].
+        #           sum() > minimum_cases]
 
         sample_weights = metadata['Finding Labels'].map(
             lambda x: len(x.split('|')) if len(x) > 0 else 0).values + 4e-2
@@ -164,7 +153,8 @@ class DataPreparation:
 
         return metadata, labels
 
-    def stratify_train_test_split(self, metadata):
+    @staticmethod
+    def stratify_train_test_split(metadata):
         """
         Creates a train/test stratification of the dataset
 
@@ -184,15 +174,16 @@ class DataPreparation:
 
     def create_directory(self):
         """Create directory for each classes inside train and valid."""
-        for label in self.classes:
+        for label in self.class_list:
             if not os.path.exists(os.path.join(self.train_dir, label)):
                 os.makedirs(os.path.join(self.train_dir, label))
             if not os.path.exists(os.path.join(self.valid_dir, label)):
                 os.makedirs(os.path.join(self.valid_dir, label))
 
-    def remove_directory(self):
-        if os.path.exists(INPUT_DATA_DIR):
-            shutil.rmtree(INPUT_DATA_DIR)
+    @staticmethod
+    def remove_directory():
+        if os.path.exists(params.INPUT_DATA_DIR):
+            shutil.rmtree(params.INPUT_DATA_DIR)
 
     def create_dataset(self, train, valid):
         """
@@ -215,7 +206,7 @@ class DataPreparation:
             dst_dir = self.valid_dir
             dataframe = pd.DataFrame(valid)
 
-        for index, image_data in dataframe.iterrows():
+        for _, image_data in dataframe.iterrows():
             image_index = image_data.get('Image Index')
             labels = image_data.get('Finding Labels').split("|")
             image_path = self.metadata.get(image_index)
@@ -223,20 +214,38 @@ class DataPreparation:
 
             # copy image to its respective classes inside train dir
             for label in labels:
-                if image_path and label in self.classes:
+                if image_path and label in self.class_list:
                     shutil.copy(image_path, os.path.join(
                         dst_dir, label))
 
     def zip(self):
+        """Prepare Dataset Zip file."""
         output_zip_filename = os.path.join(
-            self.output_dir, OUTPUT_ZIP_FILENAME)
+            self.output_dir, params.OUTPUT_ZIP_FILENAME)
         print("Creating dataset zip file. ")
         with zipfile.ZipFile(output_zip_filename, 'w') as zip_ref:
             # writing each file one by one
-            for root, dirs, files in os.walk(INPUT_DATA_DIR):
+            for root, dirs, files in os.walk(params.INPUT_DATA_DIR):
                 for file in files:
                     zip_ref.write(os.path.join(root, file))
         print("Dataset is available here: %s" % (output_zip_filename))
+
+    @staticmethod
+    def data_augmentation():
+        """
+        Data augmentation methods like Resize,
+        """
+        augment_obj = DataAugmentation()
+        # Resize all the images
+        print("\nResizing all the images inside Data Folder: {} "
+              "to size: {}".format(params.DATA_FOLDER, params.RESIZE_IMAGE))
+        augment_obj.resize_images()
+        # # HFlip all the images
+        # print("\nFlip all the images horizontally.")
+        # augment_obj.horizontal_flip()
+        # # adjust Brightness of all the images
+        # print("\nAdjust brightness of all the images.")
+        # augment_obj.random_brightness()
 
 
 # time decorator
