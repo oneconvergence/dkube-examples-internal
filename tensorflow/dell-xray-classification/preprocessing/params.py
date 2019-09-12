@@ -1,7 +1,6 @@
 # CONSTANTS used for performing Data Augmentation
 
 DATA_FOLDER = '/tmp/data/'
-# DATA_FOLDER = '/home/hrishi/dataset/'
 INDICES_FILE = './Data_Entry_2017.csv'
 MIN_CASES = 1000
 # resizes the image to 224 x 224

@@ -22,7 +22,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 import params
-from data_augmentation import DataAugmentation
+# from data_augmentation import DataAugmentation
 
 
 class DataPreparation:
@@ -69,6 +69,7 @@ class DataPreparation:
         """
         print("\n\n")
         for file in os.listdir(self.input_dir):
+            file = os.path.join(self.input_dir, file)
             try:
                 if tarfile.is_tarfile(file):
                     print("Extracting TarFile: {} to {}".format(
@@ -92,7 +93,7 @@ class DataPreparation:
           The metadata DataFrame with a file system mapping of the images
         """
 
-        metadata = pd.read_csv(os.path.join(self.input_dir, metadata_file))
+        metadata = pd.read_csv(metadata_file)
         file_system_scan = {os.path.basename(x): x for x in
                             glob(os.path.join(data_folder, 'images', '*.png'))}
         # if len(file_system_scan) != metadata.shape[0]:
@@ -156,7 +157,7 @@ class DataPreparation:
     @staticmethod
     def stratify_train_test_split(metadata):
         """
-        Creates a train/test stratification of the dataset
+        Creates a 70/30 train/test stratification of the dataset
 
         Args:
           metadata: The metadata DataFrame
@@ -166,10 +167,11 @@ class DataPreparation:
         """
         stratify = metadata['Finding Labels'].map(lambda x: x[:4])
         train, valid = train_test_split(metadata,
-                                        test_size=0.25,
+                                        test_size=0.3,
                                         random_state=2018,
                                         stratify=stratify)
-        # print("train: {}\nvalid: {}".format(train, valid))
+        print("Number of training images: ", train.shape[0])
+        print("Number of validation images: ", valid.shape[0])
         return train, valid
 
     def create_directory(self):
@@ -230,22 +232,22 @@ class DataPreparation:
                     zip_ref.write(os.path.join(root, file))
         print("Dataset is available here: %s" % (output_zip_filename))
 
-    @staticmethod
-    def data_augmentation():
-        """
-        Data augmentation methods like Resize,
-        """
-        augment_obj = DataAugmentation()
-        # Resize all the images
-        print("\nResizing all the images inside Data Folder: {} "
-              "to size: {}".format(params.DATA_FOLDER, params.RESIZE_IMAGE))
-        augment_obj.resize_images()
-        # # HFlip all the images
-        # print("\nFlip all the images horizontally.")
-        # augment_obj.horizontal_flip()
-        # # adjust Brightness of all the images
-        # print("\nAdjust brightness of all the images.")
-        # augment_obj.random_brightness()
+    # @staticmethod
+    # def data_augmentation():
+    #     """
+    #     Data augmentation methods like Resize,
+    #     """
+    #     augment_obj = DataAugmentation()
+    #     # Resize all the images
+    #     print("\nResizing all the images inside Data Folder: {} "
+    #           "to size: {}".format(params.DATA_FOLDER, params.RESIZE_IMAGE))
+    #     augment_obj.resize_images()
+    #     # # HFlip all the images
+    #     # print("\nFlip all the images horizontally.")
+    #     # augment_obj.horizontal_flip()
+    #     # # adjust Brightness of all the images
+    #     # print("\nAdjust brightness of all the images.")
+    #     # augment_obj.random_brightness()
 
 
 # time decorator
