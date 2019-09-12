@@ -56,8 +56,15 @@ def _img_string_to_tensor(image_string, image_size=(299, 299)):
     image_decoded_as_float = tf.image.convert_image_dtype(image_decoded, dtype=tf.float32)
     # Resize to expected
     image_resized = tf.image.resize_images(image_decoded_as_float, size=image_size)
+    # random horizontal flip
+    # image_fliped = tf.image.flip_left_right(image_resized)
+    # image brightness
+    # image_brightened = tf.image.random_brightness(image_fliped, 0.8)
+
+    # Subtract off the mean and divide by the variance of the pixels.
+    output_image = tf.image.per_image_standardization(image_resized)
     
-    return image_resized
+    return output_image
 
 def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size=BATCH_SIZE, num_epochs=EPOCHS, buffer_size=4096):
     
@@ -96,10 +103,16 @@ def model_fn(features, labels, mode, params):
     bottleneck_tensor = module(features['inputs'])
 
     with tf.name_scope('final_retrain_ops'):
-        logits = tf.layers.dense(bottleneck_tensor, units=logit_units, trainable=is_training)
+        #flatten = tf.layers.average_pooling2d(inputs=bottleneck_tensor, pool_size=[224, 224], strides=1)
+        dropout = tf.layers.dropout(bottleneck_tensor, rate=0.2)
+        logits = tf.layers.dense(dropout, units=logit_units, trainable=is_training,
+            activation=tf.nn.sigmoid,
+            kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-1),
+            bias_regularizer=tf.contrib.layers.l2_regularizer(1e-1))
 
     def train_op_fn(loss):
-        optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate)
+        optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate,
+                                           epsilon=0.01)
         return optimizer.minimize(loss, global_step=tf.train.get_global_step())
 
     if NUM_CLASSES == 2:
@@ -173,13 +186,6 @@ def train(_):
         config=run_config,
         params=params
     )
-    # def my_auc(labels, predictions, features):
-    #     auc_metric = tf.keras.metrics.AUC(name="my_auc")
-    #     auc_metric.update_state(y_true=labels, y_pred=predictions['logistic'],
-    #                             sample_weight=features['weight'])
-    #     return {'auc': auc_metric}
-
-    # classifier = tf.estimator.add_metrics(classifier, my_auc)
 
     input_img_size = hub.get_expected_image_size(hub.Module(TFHUB_CACHE_DIR))
 
