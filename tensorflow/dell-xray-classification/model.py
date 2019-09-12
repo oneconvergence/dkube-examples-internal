@@ -56,8 +56,15 @@ def _img_string_to_tensor(image_string, image_size=(299, 299)):
     image_decoded_as_float = tf.image.convert_image_dtype(image_decoded, dtype=tf.float32)
     # Resize to expected
     image_resized = tf.image.resize_images(image_decoded_as_float, size=image_size)
+    # random horizontal flip
+    # image_fliped = tf.image.flip_left_right(image_resized)
+    # image brightness
+    # image_brightened = tf.image.random_brightness(image_fliped, 0.8)
+
+    # Subtract off the mean and divide by the variance of the pixels.
+    output_image = tf.image.per_image_standardization(image_resized)
     
-    return image_resized
+    return output_image
 
 def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size=BATCH_SIZE, num_epochs=EPOCHS, buffer_size=4096):
     
@@ -90,15 +97,22 @@ def model_fn(features, labels, mode, params):
     is_training = mode == tf.estimator.ModeKeys.TRAIN
 
     NUM_CLASSES = len(params['label_vocab'])
+    logit_units = 1 if NUM_CLASSES == 2 else NUM_CLASSES
 
     module = hub.Module(TFHUB_CACHE_DIR, trainable=is_training and params['train_module'], name=params['module_name'])
     bottleneck_tensor = module(features['inputs'])
 
     with tf.name_scope('final_retrain_ops'):
-        logits = tf.layers.dense(bottleneck_tensor, units=1, trainable=is_training)
+        #flatten = tf.layers.average_pooling2d(inputs=bottleneck_tensor, pool_size=[224, 224], strides=1)
+        dropout = tf.layers.dropout(bottleneck_tensor, rate=0.2)
+        logits = tf.layers.dense(dropout, units=logit_units, trainable=is_training,
+            activation=tf.nn.sigmoid,
+            kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-1),
+            bias_regularizer=tf.contrib.layers.l2_regularizer(1e-1))
 
     def train_op_fn(loss):
-        optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate)
+        optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate,
+                                           epsilon=0.01)
         return optimizer.minimize(loss, global_step=tf.train.get_global_step())
 
     if NUM_CLASSES == 2:
@@ -106,7 +120,7 @@ def model_fn(features, labels, mode, params):
     else:
         head = tf.contrib.estimator.multi_class_head(n_classes=NUM_CLASSES, label_vocabulary=params['label_vocab'])
 
-    spec =  head.create_estimator_spec(
+    spec = head.create_estimator_spec(
         features, mode, logits, labels, train_op_fn=train_op_fn
     )
     if mode == tf.estimator.ModeKeys.TRAIN:
@@ -127,7 +141,7 @@ def train(_):
       fp = open(os.getenv('HP_TUNING_INFO_FILE', 'None'),'r')
       hyperparams = json.loads(fp.read())
     except:
-      hyperparams = { "learning_rate":1e-3, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
+      hyperparams = { "learning_rate":1e-7, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
       pass
     parser = argparse.ArgumentParser()
     parser.add_argument('--learning_rate', type=float, default=float(hyperparams['learning_rate']), help='Learning rate for training.')
@@ -152,7 +166,7 @@ def train(_):
     params = {
         'module_spec': 'https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/1',
         'module_name': 'resnet_v2_50',
-        'learning_rate': 1e-3,
+        'learning_rate': 1e-7,
         'train_module': False,  # Whether we want to finetune the module
         'label_vocab': os.listdir(os.path.join(DATA_DIR, 'valid'))
     }
@@ -175,11 +189,11 @@ def train(_):
 
     input_img_size = hub.get_expected_image_size(hub.Module(TFHUB_CACHE_DIR))
 
-    train_files = os.path.join(DATA_DIR, 'train', '**/*.jpg')
+    train_files = os.path.join(DATA_DIR, 'train', '**/*.png')
     train_input_fn = make_input_fn(train_files, image_size=input_img_size, shuffle=True, batch_size=FLAGS.batch_size, num_epochs=FLAGS.num_epochs)
     train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=TF_TRAIN_STEPS)
 
-    eval_files = os.path.join(DATA_DIR, 'valid', '**/*.jpg')
+    eval_files = os.path.join(DATA_DIR, 'valid', '**/*.png')
     eval_input_fn = make_input_fn(eval_files, image_size=input_img_size, shuffle=False, batch_size=FLAGS.batch_size, num_epochs=FLAGS.num_epochs)
     eval_spec = tf.estimator.EvalSpec(eval_input_fn, steps=1, throttle_secs=1, start_delay_secs=1)
 
