@@ -20,11 +20,11 @@ TARGET_DATASET = "chexnet-preprocessed"
 STEPS = 20000  # max no of steps
 EPOCHS = 1
 BATCHSIZE = 32
-SERVING_EXAMPLE = "catsdogs"
+SERVING_EXAMPLE = "ChexNet"
 
 
 @dsl.pipeline(name='Dkube-Dell-xray-classification-pl',
-              description=('Dell Chest X-Ray pipeline'
+              description=('Dell ChexNet pipeline'
                            'with dkube components'))
 def d3pipeline(
     auth_token,
