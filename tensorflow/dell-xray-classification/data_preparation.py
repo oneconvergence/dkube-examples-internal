@@ -21,8 +21,8 @@ import pandas as pd
 
 from sklearn.model_selection import train_test_split
 
-import params
-# from data_augmentation import DataAugmentation
+import preprocessing.params as params
+# from preprocessing.data_augmentation import DataAugmentation
 
 
 class DataPreparation:
