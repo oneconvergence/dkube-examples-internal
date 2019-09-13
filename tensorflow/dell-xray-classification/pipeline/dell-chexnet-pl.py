@@ -23,7 +23,7 @@ BATCHSIZE = 32
 SERVING_EXAMPLE = "ChexNet"
 
 
-@dsl.pipeline(name='Dkube-Dell-xray-classification-pl',
+@dsl.pipeline(name='Dkube-ChexNet-pl',
               description=('Dell ChexNet pipeline'
                            'with dkube components'))
 def d3pipeline(
