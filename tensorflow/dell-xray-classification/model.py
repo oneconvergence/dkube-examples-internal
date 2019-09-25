@@ -20,15 +20,17 @@ DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
 MODEL_DIR = os.getenv('OUT_DIR', None)
 TFHUB_CACHE_DIR = os.getenv('TFHUB_CACHE_DIR',None)
-BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 10))
+BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 32))
 EPOCHS = int(os.getenv('TF_EPOCHS', 1))
-TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
+TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS', 1000))
 summary_interval = 100
+# Derived from ImageNet data
+MEAN_RGB = [0.485, 0.456, 0.406]
+STDDEV_RGB = [0.229, 0.224, 0.225]
+
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
 steps_epoch  = 0
-#if not os.path.isdir(MODEL_DIR):
-#    os.makedirs(MODEL_DIR)
 
 def count_epochs(iterator):
     cluster_spec = json.loads(os.getenv('TF_CONFIG',None))
@@ -50,6 +52,16 @@ def count_epochs(iterator):
                 steps_epoch /= FLAGS.num_epochs
                 break
 
+def _normalize(image):
+    """Normalize the image to zero mean and unit variance."""
+    offset = tf.constant(MEAN_RGB, shape=[1, 1, 3])
+    image -= offset
+
+    scale = tf.constant(STDDEV_RGB, shape=[1, 1, 3])
+    image /= scale
+
+    return image
+
 def _img_string_to_tensor(image_string, image_size=(299, 299)):
     image_decoded = tf.image.decode_jpeg(image_string, channels=3)
     # Convert from full range of uint8 to range [0,1] of float32.
@@ -57,12 +69,11 @@ def _img_string_to_tensor(image_string, image_size=(299, 299)):
     # Resize to expected
     image_resized = tf.image.resize_images(image_decoded_as_float, size=image_size)
     # random horizontal flip
-    # image_fliped = tf.image.flip_left_right(image_resized)
-    # image brightness
-    # image_brightened = tf.image.random_brightness(image_fliped, 0.8)
-
-    # Subtract off the mean and divide by the variance of the pixels.
-    output_image = tf.image.per_image_standardization(image_resized)
+    image_fliped = tf.image.random_flip_left_right(image_resized)
+    # random image brightness for all
+    image_brightened = tf.image.random_brightness(image_fliped, 0.125)
+    # Normalize the image
+    output_image = _normalize(image_brightened)
     
     return output_image
 
@@ -71,7 +82,6 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
     def _path_to_img(path):
         # Get the parent folder of this file to get it's class name
         label = tf.string_split([path], delimiter='/').values[-2]
-        
         # Read in the image from disk
         image_string = tf.read_file(path)
         image_resized = _img_string_to_tensor(image_string, image_size)
@@ -85,7 +95,8 @@ def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size
         else:
             dataset = dataset.repeat(num_epochs)
 
-        dataset = dataset.apply(tf.contrib.data.map_and_batch(map_func=_path_to_img, batch_size=FLAGS.batch_size))
+        #threads = multiprocessing.cpu_count()
+        dataset = dataset.apply(tf.contrib.data.map_and_batch(map_func=_path_to_img, batch_size=batch_size))
         (images, labels) = dataset.make_one_shot_iterator().get_next()
         (cimages, clabels) = dataset.make_one_shot_iterator().get_next()
         count_epochs(cimages)
@@ -99,15 +110,12 @@ def model_fn(features, labels, mode, params):
     NUM_CLASSES = len(params['label_vocab'])
     logit_units = 1 if NUM_CLASSES == 2 else NUM_CLASSES
 
-    module = hub.Module(TFHUB_CACHE_DIR, trainable=is_training and params['train_module'], name=params['module_name'], tags={"train"})
+    module = hub.Module(TFHUB_CACHE_DIR, trainable=is_training and params['train_module'], name=params['module_name'])
     bottleneck_tensor = module(features['inputs'])
 
     with tf.name_scope('final_retrain_ops'):
-        # input_layer = tf.reshape(bottleneck_tensor, shape=[-1, 224, 224, 1])
-        # flatten = tf.layers.average_pooling2d(inputs=input_layer, pool_size=[2, 2], strides=1)
         dropout = tf.layers.dropout(bottleneck_tensor, rate=0.2)
         logits = tf.layers.dense(dropout, units=logit_units, trainable=is_training,
-            activation=tf.nn.sigmoid,
             kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-1),
             bias_regularizer=tf.contrib.layers.l2_regularizer(1e-1))
 
@@ -116,28 +124,37 @@ def model_fn(features, labels, mode, params):
                                            epsilon=0.01)
         return optimizer.minimize(loss, global_step=tf.train.get_global_step())
 
-    if NUM_CLASSES == 2:
-        head = tf.contrib.estimator.binary_classification_head(label_vocabulary=params['label_vocab'])
-    else:
-        head = tf.contrib.estimator.multi_class_head(n_classes=NUM_CLASSES, label_vocabulary=params['label_vocab'])
+    # head = tf.contrib.estimator.multi_label_head(n_classes=NUM_CLASSES,
+    #                                              label_vocabulary=params['label_vocab'],
+    #                                              classes_for_class_based_metrics=params['label_vocab'])
+
+    head = tf.contrib.estimator.multi_label_head(n_classes=NUM_CLASSES,
+                                                 label_vocabulary=params['label_vocab'],
+                                                 thresholds=[0.5])
+    #convert labels to sparse tensor
+    # This is required as multi_label_head is looking for it
+    if mode == tf.estimator.ModeKeys.TRAIN or \
+        mode == tf.estimator.ModeKeys.EVAL:
+        labels = tf.string_split(labels)
 
     spec = head.create_estimator_spec(
-        features, mode, logits, labels, train_op_fn=train_op_fn
+        features=features, mode=mode, logits=logits, labels=labels, train_op_fn=train_op_fn
     )
 
-    if mode == tf.estimator.ModeKeys.TRAIN:
-        #tf.summary.scalar('auc', tf.metrics.auc(labels, spec.predictions['class_ids']))
-        tf.summary.scalar('accuracy', metrics_lib.accuracy(labels, spec.predictions['classes'])[1])
-        logging_hook = logger_hook({"loss": spec.loss,"accuracy":
-            metrics_lib.accuracy(labels, spec.predictions['classes'])[1], 
-            "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
-        spec = spec._replace(training_hooks = [logging_hook])
-    if mode == tf.estimator.ModeKeys.EVAL:
-        #tf.summary.scalar('auc', tf.metrics.auc(labels, spec.predictions['class_ids']))
-        logging_hook = logger_hook({"loss": spec.loss, "accuracy":
-            spec.eval_metric_ops['accuracy'][1], "step" : 
-            tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode": "eval"}, every_n_iter=summary_interval)
-        spec = spec._replace(evaluation_hooks = [logging_hook])
+    # if mode == tf.estimator.ModeKeys.TRAIN:
+    #     import pdb;pdb.set_trace()
+    #     #tf.summary.scalar('auc', tf.metrics.auc(labels, spec.predictions['class_ids']))
+    #     tf.summary.scalar('accuracy', metrics_lib.accuracy(labels, spec.predictions['classes'])[1])
+    #     logging_hook = logger_hook({"loss": spec.loss,"accuracy":
+    #         metrics_lib.accuracy(labels, spec.predictions['classes'])[1], 
+    #         "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
+    #     spec = spec._replace(training_hooks = [logging_hook])
+    # if mode == tf.estimator.ModeKeys.EVAL:
+    #     #tf.summary.scalar('auc', tf.metrics.auc(labels, spec.predictions['class_ids']))
+    #     logging_hook = logger_hook({"loss": spec.loss, "accuracy":
+    #         spec.eval_metric_ops["accuracy/positive_threshold_0.25"], "step" : 
+    #         tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode": "eval"}, every_n_iter=summary_interval)
+    #     spec = spec._replace(evaluation_hooks = [logging_hook])
     return spec
 
 def train(_):
@@ -145,7 +162,7 @@ def train(_):
       fp = open(os.getenv('HP_TUNING_INFO_FILE', 'None'),'r')
       hyperparams = json.loads(fp.read())
     except:
-      hyperparams = { "learning_rate":1e-7, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
+      hyperparams = { "learning_rate":2e-5, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
       pass
     parser = argparse.ArgumentParser()
     parser.add_argument('--learning_rate', type=float, default=float(hyperparams['learning_rate']), help='Learning rate for training.')
@@ -168,11 +185,11 @@ def train(_):
         DATA_DIR = EXTRACT_PATH + "/data"    
 
     params = {
-        'module_spec': 'https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/1',
+        'module_spec': 'https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/3',
         'module_name': 'resnet_v2_50',
-        'learning_rate': 1e-7,
-        'train_module': True,  # Whether we want to finetune the module
-        'label_vocab': os.listdir(os.path.join(DATA_DIR, 'valid'))
+        'learning_rate': 2e-5,
+        'train_module': False,  # Whether we want to finetune the module
+        'label_vocab': sorted(os.listdir(os.path.join(DATA_DIR, 'valid')))
     }
     global TFHUB_CACHE_DIR
     if TFHUB_CACHE_DIR != None:
@@ -190,12 +207,6 @@ def train(_):
         config=run_config,
         params=params
     )
-
-    # def my_auc(labels, predictions):
-    #     probabilities = predictions["probabilities"]
-    #     return {'auc': tf.metrics.auc(labels, probabilities)}
-
-    # classifier = tf.contrib.estimator.add_metrics(classifier, my_auc)
 
     input_img_size = hub.get_expected_image_size(hub.Module(TFHUB_CACHE_DIR))
 
@@ -239,3 +250,4 @@ def run():
 
 if __name__ == '__main__':
     run()
+
