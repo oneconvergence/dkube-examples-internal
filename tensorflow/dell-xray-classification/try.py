@@ -27,10 +27,6 @@ summary_interval = 100
 # Derived from ImageNet data
 MEAN_RGB = [0.485, 0.456, 0.406]
 STDDEV_RGB = [0.229, 0.224, 0.225]
-LABELS = ['Atelectasis', 'Cardiomegaly','Consolidation',
-          'Edema', 'Effusion', 'Emphysema',
-          'Fibrosis', 'Hernia', 'Infiltration', 'Mass',
-          'Nodule', 'Pleural_Thickening', 'Pneumonia','Pneumothorax']
 
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
@@ -83,41 +79,24 @@ def _img_string_to_tensor(image_string, image_size=(299, 299)):
 
 def make_input_fn(file_pattern, image_size=(299, 299), shuffle=False, batch_size=BATCH_SIZE, num_epochs=EPOCHS, buffer_size=4096):
     
-    label_defaults = [0.0 for _ in range(14)]
-    # path field
-    field_defaults = [''] + label_defaults
-    def _parse_line(line):
-        # parse csv file to prepare dataset
-        # Decode the line into its fields
-
-        fields = tf.decode_csv(line, field_defaults)
-
-        #first item in row is image name
-        image_path = os.path.join('.', "/".join(file_pattern.split('/')[:-1])) + "/images/" + fields[0]
-        #remaining items n row are class indicator in (0,1) format
-        labels = fields[1:]
-
+    def _path_to_img(path):
+        # Get the parent folder of this file to get it's class name
+        label = tf.string_split([path], delimiter='/').values[-2]
         # Read in the image from disk
-        if image_path != '':
-            image_string = tf.read_file(image_path)
-            image_resized = _img_string_to_tensor(image_string, image_size)
-
-        # return features, labels
-        return {'inputs': image_resized}, labels
-
+        image_string = tf.read_file(path)
+        image_resized = _img_string_to_tensor(image_string, image_size)
+        
+        return { 'inputs': image_resized }, label
+    
     def _input_fn():
-        # dataset = tf.data.Dataset.list_files(file_pattern)
-        dataset = tf.data.TextLineDataset(file_pattern).skip(1)
-        # dataset = tf.data.TextLineDataset(file_pattern).skip(1).map(
-        #     _parse_line)
+        dataset = tf.data.Dataset.list_files(file_pattern)
         if shuffle:
-            dataset = dataset.apply(tf.contrib.data.shuffle_and_repeat(
-                buffer_size, num_epochs))
+            dataset = dataset.apply(tf.contrib.data.shuffle_and_repeat(buffer_size, num_epochs))
         else:
             dataset = dataset.repeat(num_epochs)
 
-        dataset = dataset.apply(tf.contrib.data.map_and_batch(
-            map_func=_parse_line, batch_size=FLAGS.batch_size))
+        #threads = multiprocessing.cpu_count()
+        dataset = dataset.apply(tf.contrib.data.map_and_batch(map_func=_path_to_img, batch_size=batch_size))
         (images, labels) = dataset.make_one_shot_iterator().get_next()
         (cimages, clabels) = dataset.make_one_shot_iterator().get_next()
         count_epochs(cimages)
@@ -150,12 +129,13 @@ def model_fn(features, labels, mode, params):
     #                                              classes_for_class_based_metrics=params['label_vocab'])
 
     head = tf.contrib.estimator.multi_label_head(n_classes=NUM_CLASSES,
+                                                 label_vocabulary=params['label_vocab'],
                                                  thresholds=[0.5])
     #convert labels to sparse tensor
     # This is required as multi_label_head is looking for it
-    # if mode == tf.estimator.ModeKeys.TRAIN or \
-    #     mode == tf.estimator.ModeKeys.EVAL:
-    #     labels = tf.string_split(labels)
+    if mode == tf.estimator.ModeKeys.TRAIN or \
+        mode == tf.estimator.ModeKeys.EVAL:
+        labels = tf.string_split(labels)
 
     spec = head.create_estimator_spec(
         features=features, mode=mode, logits=logits, labels=labels, train_op_fn=train_op_fn
@@ -202,14 +182,14 @@ def train(_):
             if file.startswith('data'):
                 archive.extract(file, EXTRACT_PATH)
         print("Training data successfuly extracted")
-    DATA_DIR = EXTRACT_PATH + "/data"    
+        DATA_DIR = EXTRACT_PATH + "/data"    
 
     params = {
         'module_spec': 'https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/3',
         'module_name': 'resnet_v2_50',
         'learning_rate': 2e-5,
         'train_module': False,  # Whether we want to finetune the module
-        'label_vocab': LABELS
+        'label_vocab': sorted(os.listdir(os.path.join(DATA_DIR, 'valid')))
     }
     global TFHUB_CACHE_DIR
     if TFHUB_CACHE_DIR != None:
@@ -230,12 +210,11 @@ def train(_):
 
     input_img_size = hub.get_expected_image_size(hub.Module(TFHUB_CACHE_DIR))
 
-    train_files = os.path.join(DATA_DIR, 'dataset_train.csv')
+    train_files = os.path.join(DATA_DIR, 'train', '**/*.png')
     train_input_fn = make_input_fn(train_files, image_size=input_img_size, shuffle=True, batch_size=FLAGS.batch_size, num_epochs=FLAGS.num_epochs)
     train_spec = tf.estimator.TrainSpec(train_input_fn, max_steps=TF_TRAIN_STEPS)
 
-    # eval_files = os.path.join(DATA_DIR, 'valid', '**/*.png')
-    eval_files = os.path.join(DATA_DIR, 'dataset_validation.csv')
+    eval_files = os.path.join(DATA_DIR, 'valid', '**/*.png')
     eval_input_fn = make_input_fn(eval_files, image_size=input_img_size, shuffle=False, batch_size=FLAGS.batch_size, num_epochs=FLAGS.num_epochs)
     eval_spec = tf.estimator.EvalSpec(eval_input_fn, steps=1, throttle_secs=1, start_delay_secs=1)
 
@@ -265,8 +244,6 @@ def run():
     if TF_TRAIN_STEPS%100 < 10 and TF_TRAIN_STEPS < 1000:
         summary_interval = TF_TRAIN_STEPS/10
     if TF_TRAIN_STEPS <= 100:
-        summary_interval = 10;
-    if BATCH_SIZE > 1000:
         summary_interval = 10;
     tf.logging.set_verbosity(tf.logging.INFO)
     tf.app.run(main=train)
