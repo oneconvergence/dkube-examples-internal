@@ -32,8 +32,6 @@ from sklearn.model_selection import train_test_split
 DATA_FOLDER = '/tmp/data/'
 INDICES_FILE = './Data_Entry_2017.csv'
 MIN_CASES = 1000
-# resizes the image to 224 x 224
-RESIZE_IMAGE = (224, 224)
 # zip file of preprocessed data
 INPUT_DATA_DIR = "./data"
 OUTPUT_ZIP_FILENAME = "data.zip"

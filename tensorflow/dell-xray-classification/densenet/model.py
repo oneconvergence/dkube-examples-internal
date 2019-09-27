@@ -66,15 +66,32 @@ class AucRoc(keras.callbacks.Callback):
         return
 
 
+# def load_train_valid_labels(train_label, validation_label):
+
+#     with open(train_label+'/training_labels_new.pkl', 'rb') as f:
+#         training_labels = pickle.load(f)
+#     training_files = np.asarray(list(training_labels.keys()))
+
+#     with open(FLAGS.validation_label+'/validation_labels_new.pkl', 'rb') as f:
+#         validation_labels = pickle.load(f)
+#     validation_files = np.asarray(list(validation_labels.keys()))
+#     #labels = dict(training_labels.items() +  validation_labels.items())
+#     labels = dict(list(training_labels.items()) +
+#                   list(validation_labels.items()))
+#     return labels, training_files, validation_files
 def load_train_valid_labels(train_label, validation_label):
+    with open(train_label, mode='r') as infile:
+        reader = csv.reader(infile)
+        reader.next()
+        training_labels = {rows[0]:rows[3:] for rows in reader}
+        training_files = np.asarray(list(training_labels.keys()))
 
-    with open(train_label+'/training_labels_new.pkl', 'rb') as f:
-        training_labels = pickle.load(f)
-    training_files = np.asarray(list(training_labels.keys()))
+    with open(validation_label, mode='r') as infile:
+        reader = csv.reader(infile)
+        reader.next()
+        validation_labels = {rows[0]:rows[3:] for rows in reader}
+        validation_files = np.asarray(list(validation_labels.keys()))
 
-    with open(FLAGS.validation_label+'/validation_labels_new.pkl', 'rb') as f:
-        validation_labels = pickle.load(f)
-    validation_files = np.asarray(list(validation_labels.keys()))
     #labels = dict(training_labels.items() +  validation_labels.items())
     labels = dict(list(training_labels.items()) +
                   list(validation_labels.items()))
@@ -266,11 +283,11 @@ if __name__ == '__main__':
         help='Number of epochs to train')
 
     parser.add_argument(
-        '--train_label', type=str, default=DATA_DIR,
+        '--train_label', type=str, default="./train.csv",
         help='Path to the training label file')
 
     parser.add_argument(
-        '--validation_label', type=str, default=DATA_DIR,
+        '--validation_label', type=str, default="./valiadtion.csv",
         help='Path to the validation label file')
     FLAGS, _ = parser.parse_known_args()
 
