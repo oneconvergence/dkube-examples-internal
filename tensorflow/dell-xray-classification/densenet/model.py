@@ -7,7 +7,10 @@ import numpy as np
 import PIL.Image as pil
 import PIL.ImageOps
 import keras
+import zipfile
+import csv
 import tensorflow as tf
+import pandas as pd
 from keras.applications import DenseNet121
 from keras.utils import multi_gpu_model
 from keras.models import Model
@@ -19,10 +22,8 @@ from keras import optimizers
 #from auc_callback import AucRoc
 #import horovod.keras as hvd
 import time
-from sklearn.metrics import roc_auc_score
+#from sklearn.metrics import roc_auc_score
 
-
-FLAGS = None
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
 MODEL_DIR = os.getenv('OUT_DIR', None)
@@ -31,7 +32,6 @@ EPOCHS = int(os.getenv('TF_EPOCHS', 1))
 TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS', 1000))
 DATASET_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
 EXTRACT_PATH = "/tmp/dataset"
-DATA_DIR =  None
 
 
 class AucRoc(keras.callbacks.Callback):
@@ -80,17 +80,19 @@ class AucRoc(keras.callbacks.Callback):
 #                   list(validation_labels.items()))
 #     return labels, training_files, validation_files
 def load_train_valid_labels(train_label, validation_label):
-    with open(train_label, mode='r') as infile:
-        reader = csv.reader(infile)
-        reader.next()
-        training_labels = {rows[0]:rows[3:] for rows in reader}
-        training_files = np.asarray(list(training_labels.keys()))
-
-    with open(validation_label, mode='r') as infile:
-        reader = csv.reader(infile)
-        reader.next()
-        validation_labels = {rows[0]:rows[3:] for rows in reader}
-        validation_files = np.asarray(list(validation_labels.keys()))
+    training_labels = dict()
+    validation_labels = dict()
+    training_files = []
+    validation_files = []
+    train_df = pd.read_csv(train_label, usecols=[0,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
+    val_df = pd.read_csv(validation_label, usecols=[0,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
+    for index, row in train_df.iterrows():
+        training_labels.update({row['Image Index']: (row.values)[1:]})
+        training_files.append(row['Image Index'])
+    
+    for index, row in val_df.iterrows():
+        validation_labels.update({row['Image Index']: (row.values)[1:]})
+        validation_files.append(row['Image Index'])
 
     #labels = dict(training_labels.items() +  validation_labels.items())
     labels = dict(list(training_labels.items()) +
@@ -102,13 +104,16 @@ def load_batch(batch_of_files, labels, is_training=False):
     batch_images = []
     batch_labels = []
     for filename in batch_of_files:
-        img = pil.open(os.path.join(FLAGS.data_dir, filename))
-        img = img.convert('RGB')
-        img = img.resize((FLAGS.image_size, FLAGS.image_size), pil.NEAREST)
-        if is_training and np.random.randint(2):
-            img = PIL.ImageOps.mirror(img)
-        batch_images.append(np.asarray(img))
-        batch_labels.append(labels[filename])
+        try:
+            img = pil.open(os.path.join(FLAGS.data_dir, filename))
+            img = img.convert('RGB')
+            img = img.resize((FLAGS.image_size, FLAGS.image_size), pil.NEAREST)
+            if is_training and np.random.randint(2):
+                img = PIL.ImageOps.mirror(img)
+            batch_images.append(np.asarray(img))
+            batch_labels.append(labels[filename])
+        except Exception as err:
+            pass
     return preprocess_input(np.float32(np.asarray(batch_images))), np.asarray(batch_labels)
 
 
@@ -174,11 +179,13 @@ def main():
     weights_file = "/tmp/model.h5"
 
     # Callbacks
-    steps_per_epoch = 77871 // FLAGS.batch_size
-    val_steps = 8653 // FLAGS.batch_size
+    # steps_per_epoch = 77871 // FLAGS.batch_size
+    # val_steps = 8653 // FLAGS.batch_size
+    steps_per_epoch = 104266 // FLAGS.batch_size
+    val_steps = 6336 // FLAGS.batch_size
     lr_reducer = ReduceLROnPlateau(monitor='val_loss', factor=0.1, epsilon=0.01,
                                    cooldown=0, patience=1, min_lr=1e-15, verbose=2)
-    auc = AucRoc(val_generator(val_steps, validation_files, labels), val_steps)
+    #auc = AucRoc(val_generator(val_steps, validation_files, labels), val_steps)
     model_checkpoint = ModelCheckpoint(weights_file, monitor="val_loss", save_best_only=True,
                                        save_weights_only=True, verbose=2)
 
@@ -232,7 +239,6 @@ def main():
 
 
 if __name__ == '__main__':
-    global FLAGS
     ZIP_FILE = DATASET_DIR + "/data.zip"
     if os.path.exists(ZIP_FILE):
         print("Extracting compressed training data...")
@@ -241,13 +247,12 @@ if __name__ == '__main__':
             if file.startswith('data'):
                 archive.extract(file, EXTRACT_PATH)
         print("Training data successfuly extracted")
-        global DATA_DIR
         DATA_DIR = EXTRACT_PATH + "/data"
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        '--data_dir', type=str, default=DATA_DIR + "/images",
+        '--data_dir', type=str, default=DATA_DIR + "/images/images",
         help='The directory where the input data is stored.')
 
     parser.add_argument(
@@ -255,7 +260,7 @@ if __name__ == '__main__':
         help='The directory where the model will be stored.')
 
     parser.add_argument(
-        '--batch_size', type=int, default=BATCH_SIZE,
+        '--batch_size', type=int, default=16,
         help='Batch size for SGD')
 
     parser.add_argument(
@@ -279,7 +284,7 @@ if __name__ == '__main__':
         help='Learning rate for optimizer')
 
     parser.add_argument(
-        '--epochs', type=int, default=15,
+        '--epochs', type=int, default=1,
         help='Number of epochs to train')
 
     parser.add_argument(
@@ -287,8 +292,10 @@ if __name__ == '__main__':
         help='Path to the training label file')
 
     parser.add_argument(
-        '--validation_label', type=str, default="./valiadtion.csv",
+        '--validation_label', type=str, default="./validation.csv",
         help='Path to the validation label file')
     FLAGS, _ = parser.parse_known_args()
+    FLAGS.epochs = EPOCHS
+    FLAGS.batch_size = BATCH_SIZE
 
     main()
