@@ -30,7 +30,6 @@ import pandas as pd
 #from sklearn.model_selection import train_test_split
 
 DATA_FOLDER = './data'
-IMAGES_FOLDER = DATA_FOLDER + "/images"
 # INDICES_FILE = './Data_Entry_2017.csv'
 # MIN_CASES = 1000
 # # zip file of preprocessed data
@@ -77,8 +76,8 @@ class DataPreparation:
         """
         Untar all TarFiles in the directory and save images to DATA_FOLDER.
         """
-        if not os.path.exists(IMAGES_FOLDER):
-            os.makedirs(IMAGES_FOLDER)
+        if not os.path.exists(DATA_FOLDER):
+            os.makedirs(DATA_FOLDER)
         print("\n\n")
         for file in os.listdir(self.input_dir):
             file = os.path.join(self.input_dir, file)
@@ -87,7 +86,7 @@ class DataPreparation:
                     print("Extracting TarFile: {} to {}".format(
                         file, DATA_FOLDER))
                     with tarfile.open(file) as opener:
-                        opener.extractall(path=IMAGES_FOLDER)
+                        opener.extractall(path=DATA_FOLDER)
             except IsADirectoryError:
                 pass
 

@@ -2,27 +2,30 @@ from __future__ import print_function
 
 import os
 import argparse
-import pickle
 import numpy as np
 import PIL.Image as pil
 import PIL.ImageOps
 import keras
 import zipfile
-import csv
+import requests
+import json
 import tensorflow as tf
 import pandas as pd
 from keras.applications import DenseNet121
-from keras.utils import multi_gpu_model
 from keras.models import Model
 from keras.applications.densenet import preprocess_input
-from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, TensorBoard
 from keras.layers import GlobalAveragePooling2D, Dense
 from keras import optimizers
-#from auc_callback import AucRoc
-#import horovod.keras as hvd
+from keras import backend as K
+from keras.models import load_model
+from tensorflow.python.saved_model import builder as saved_model_builder
+from tensorflow.python.saved_model.signature_def_utils import predict_signature_def
+from tensorflow.python.saved_model import tag_constants
+# from auc_callback import AucRoc
+# import horovod.keras as hvd
 import time
-#from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score
 
 DATUMS_PATH = os.getenv('DATUMS_PATH', None)
 DATASET_NAME = os.getenv('DATASET_NAME', None)
@@ -32,6 +35,11 @@ EPOCHS = int(os.getenv('TF_EPOCHS', 1))
 TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS', 1000))
 DATASET_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
 EXTRACT_PATH = "/tmp/dataset"
+USE_COLUMNS = [0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+CLASS_NAMES = ["Atelectasis", "Cardiomegaly", "Effusion", "Infiltration",
+               "Mass", "Nodule", "Pneumonia", "Pneumothorax", "Consolidation",
+               "Edema", "Emphysema", "Fibrosis",
+               "Pleural_Thickening", "Hernia"]
 
 
 class AucRoc(keras.callbacks.Callback):
@@ -56,14 +64,41 @@ class AucRoc(keras.callbacks.Callback):
             probs.extend(self.model.predict_on_batch(batch_images))
             labels.extend(batch_labels)
         for i in range(14):
-            print(roc_auc_score(np.asarray(labels)
-                                [:, i], np.asarray(probs)[:, i]))
+            roc_auc = roc_auc_score(np.asarray(labels)[:, i],
+                                    np.asarray(probs)[:, i])
+            print("ROC AUC for {} = {}".format(CLASS_NAMES[i], roc_auc))
+            #tf.summary.scalar("roc_auc", roc_auc, family=CLASS_NAMES[i])
 
     def on_batch_begin(self, batch, logs={}):
         return
 
     def on_batch_end(self, batch, logs={}):
         return
+
+
+def dkubeLoggerHook(epoch, logs):
+    train_metrics = {
+        'mode': "train",
+        'accuracy': logs.get('acc', 0),
+        'loss': logs.get('loss', 0),
+        'epoch': int(epoch),
+        'jobid': os.getenv('JOBID'),
+        'username': os.getenv('USERNAME')
+    }
+    eval_metrics = {
+        'mode': "eval",
+        'accuracy': logs.get('val_acc', 0),
+        'loss': logs.get('val_loss', 0),
+        'epoch': int(epoch),
+        'jobid': os.getenv('JOBID'),
+        'username': os.getenv('USERNAME')
+    }
+    try:
+        url = "http://dkube-ext.dkube:9401/export-training-info"
+        requests.post(url, data=json.dumps({'data': [train_metrics]}))
+        requests.post(url, data=json.dumps({'data': [eval_metrics]}))
+    except Exception as exc:
+        print(exc)
 
 
 # def load_train_valid_labels(train_label, validation_label):
@@ -84,12 +119,11 @@ def load_train_valid_labels(train_label, validation_label):
     validation_labels = dict()
     training_files = []
     validation_files = []
-    train_df = pd.read_csv(train_label, usecols=[0,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
-    val_df = pd.read_csv(validation_label, usecols=[0,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
+    train_df = pd.read_csv(train_label, usecols=USE_COLUMNS)
+    val_df = pd.read_csv(validation_label, usecols=USE_COLUMNS)
     for index, row in train_df.iterrows():
         training_labels.update({row['Image Index']: (row.values)[1:]})
         training_files.append(row['Image Index'])
-    
     for index, row in val_df.iterrows():
         validation_labels.update({row['Image Index']: (row.values)[1:]})
         validation_files.append(row['Image Index'])
@@ -105,14 +139,18 @@ def load_batch(batch_of_files, labels, is_training=False):
     batch_labels = []
     for filename in batch_of_files:
         try:
-            img = pil.open(os.path.join(FLAGS.data_dir, filename))
-            img = img.convert('RGB')
-            img = img.resize((FLAGS.image_size, FLAGS.image_size), pil.NEAREST)
-            if is_training and np.random.randint(2):
-                img = PIL.ImageOps.mirror(img)
-            batch_images.append(np.asarray(img))
-            batch_labels.append(labels[filename])
-        except Exception as err:
+            image_path = os.path.join(FLAGS.data_dir, filename)
+            if os.path.exists(image_path):
+                img = pil.open(image_path)
+                img = img.convert('RGB')
+                img = img.resize((FLAGS.image_size, FLAGS.image_size),
+                                 pil.NEAREST)
+                if is_training and np.random.randint(2):
+                    img = PIL.ImageOps.mirror(img)
+                batch_images.append(np.asarray(img))
+                batch_labels.append(
+                    np.asarray(labels[filename], dtype=np.float32))
+        except Exception:
             pass
     return preprocess_input(np.float32(np.asarray(batch_images))), np.asarray(batch_labels)
 
@@ -141,6 +179,32 @@ def val_generator(num_of_steps, validation_files, labels):
             yield batch_images, batch_labels
 
 
+def export_h5_to_pb(model_file):
+    export_path = FLAGS.model_dir + "/1"
+    # Set the learning phase to Test since the model is already trained.
+    K.set_learning_phase(0)
+
+    # Load the Keras model
+    keras_model = load_model(model_file)
+
+    # Build the Protocol Buffer SavedModel at 'export_path'
+    builder = saved_model_builder.SavedModelBuilder(export_path)
+
+    # Create prediction signature to be used by TensorFlow Serving Predict API
+    signature = predict_signature_def(
+        inputs={"inputs": keras_model.input},
+        outputs={"predictions": keras_model.output})
+
+    with K.get_session() as sess:
+        # Save the meta graph and the variables
+        builder.add_meta_graph_and_variables(
+            sess=sess,
+            tags=[tag_constants.SERVING],
+            signature_def_map={"serving_default": signature})
+
+    builder.save()
+
+
 def main():
 
     train_label = FLAGS.train_label
@@ -148,18 +212,19 @@ def main():
     labels, training_files, validation_files = load_train_valid_labels(
         train_label, validation_label)
 
-    #hvd.init()
+    # hvd.init()
 
-    #np.random.seed(hvd.rank())
+    # np.random.seed(hvd.rank())
 
     # Horovod: print logs on the first worker.
-    #verbose = 2 if hvd.rank() == 0 else 0
+    # verbose = 2 if hvd.rank() == 0 else 0
     verbose = 2
 
     print("Running with the following config:")
     for item in FLAGS.__dict__.items():
         print('%s = %s' % (item[0], str(item[1])))
 
+    keras.backend.get_session().run(tf.global_variables_initializer())
     base_model = DenseNet121(include_top=False,
                              weights='imagenet',
                              input_shape=(FLAGS.image_size, FLAGS.image_size, 3))
@@ -170,32 +235,41 @@ def main():
 
     opt = optimizers.Adam(lr=FLAGS.lr)
 
-    #hvd_opt = hvd.DistributedOptimizer(opt)
+    # hvd_opt = hvd.DistributedOptimizer(opt)
 
     model.compile(loss='binary_crossentropy',
                   optimizer=opt,
                   metrics=['accuracy'])
     # Path to weights file
-    weights_file = "/tmp/model.h5"
+    weights_file = "/tmp/weights.h5"
 
     # Callbacks
     # steps_per_epoch = 77871 // FLAGS.batch_size
     # val_steps = 8653 // FLAGS.batch_size
     steps_per_epoch = 104266 // FLAGS.batch_size
     val_steps = 6336 // FLAGS.batch_size
-    lr_reducer = ReduceLROnPlateau(monitor='val_loss', factor=0.1, epsilon=0.01,
-                                   cooldown=0, patience=1, min_lr=1e-15, verbose=2)
-    #auc = AucRoc(val_generator(val_steps, validation_files, labels), val_steps)
-    model_checkpoint = ModelCheckpoint(weights_file, monitor="val_loss", save_best_only=True,
-                                       save_weights_only=True, verbose=2)
-
+    lr_reducer = ReduceLROnPlateau(monitor='val_loss', factor=0.1,
+                                   epsilon=0.01, cooldown=0, patience=1,
+                                   min_lr=1e-15, verbose=2)
     tf_summary_logs_path = FLAGS.model_dir + "/logs"
+    file_writer = tf.contrib.summary.create_file_writer(tf_summary_logs_path)
+    file_writer.set_as_default()
+    auc = AucRoc(val_generator(val_steps, validation_files, labels), val_steps)
+    model_checkpoint = ModelCheckpoint(weights_file, monitor="val_loss",
+                                       save_best_only=True,
+                                       save_weights_only=True, verbose=2)
+    dkube_logger_callback = keras.callbacks.LambdaCallback(
+        on_epoch_end=lambda epoch, logs: dkubeLoggerHook(epoch, logs))
+
     callbacks = [
-        #hvd.callbacks.BroadcastGlobalVariablesCallback(0),
-        #hvd.callbacks.MetricAverageCallback(),
-        keras.callbacks.TensorBoard(
-            log_dir=tf_summary_logs_path, histogram_freq=0, batch_size=64),
-        lr_reducer
+        # hvd.callbacks.BroadcastGlobalVariablesCallback(0),
+        # hvd.callbacks.MetricAverageCallback(),
+        TensorBoard(log_dir=tf_summary_logs_path,
+                    histogram_freq=0,
+                    update_freq='epoch'),
+        lr_reducer,
+        auc,
+        dkube_logger_callback
     ]
 
     # if hvd.rank() == 0:
@@ -210,49 +284,51 @@ def main():
         steps_per_epoch=steps_per_epoch,
         epochs=FLAGS.epochs,
         validation_data=val_generator(
-            3 * val_steps, validation_files, labels),
-        validation_steps=3 * val_steps,
+            val_steps, validation_files, labels),
+        validation_steps=val_steps,
         callbacks=callbacks,
         verbose=verbose)
+
+    # Set the learning phase to Test since the model is already trained.
+    K.set_learning_phase(0)
+
+    export_path = FLAGS.model_dir + "/1"
+    # Build the Protocol Buffer SavedModel at 'export_path'
+    builder = saved_model_builder.SavedModelBuilder(export_path)
+
+    # Create prediction signature to be used by TensorFlow Serving Predict API
+    signature = predict_signature_def(
+        inputs={"inputs": model.input},
+        outputs={"predictions": model.output})
+
+    with K.get_session() as sess:
+        # Save the meta graph and the variables
+        builder.add_meta_graph_and_variables(
+            sess=sess,
+            tags=[tag_constants.SERVING],
+            signature_def_map={"serving_default": signature})
+
+    builder.save()
+    del model
+
     end_time = time.time()
     print("start time: {} , end time: {} , elapsed time: {}".format(
-        start_time, end_time, end_time-start_time))
-
-    # The export path contains the name and the version of the model
-    tf.keras.backend.set_learning_phase(0) # Ignore dropout at inference
-    model = tf.keras.models.load_model(weights_file)
-    export_path = FLAGS.model_dir + "/1"
-    tf.gfile.MkDir(export_path)
-
-    # Fetch the Keras session and save the model
-    # The signature definition is defined by the input and output tensors
-    # And stored with the default serving key
-    with tf.keras.backend.get_session() as sess:
-        tf.saved_model.simple_save(
-            sess,
-            export_path,
-            inputs={'input_image': model.input},
-            outputs={t.name:t for t in model.outputs})
-
-    #copy weight file
-    #tf.gfile.Copy(weights_file, FLAGS.model_dir + "model.h5")
+          start_time, end_time, end_time - start_time))
 
 
 if __name__ == '__main__':
     ZIP_FILE = DATASET_DIR + "/data.zip"
     if os.path.exists(ZIP_FILE):
         print("Extracting compressed training data...")
-        archive = zipfile.ZipFile(ZIP_FILE)
-        for file in archive.namelist():
-            if file.startswith('data'):
-                archive.extract(file, EXTRACT_PATH)
+        with zipfile.ZipFile(ZIP_FILE, 'r') as zip_ref:
+            zip_ref.extractall(EXTRACT_PATH)
         print("Training data successfuly extracted")
         DATA_DIR = EXTRACT_PATH + "/data"
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        '--data_dir', type=str, default=DATA_DIR + "/images/images",
+        '--data_dir', type=str, default=DATA_DIR + "/images",
         help='The directory where the input data is stored.')
 
     parser.add_argument(
