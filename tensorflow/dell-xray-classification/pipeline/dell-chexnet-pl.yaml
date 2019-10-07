@@ -1,0 +1,389 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: dkube-chexnet-pl-
+spec:
+  arguments:
+    parameters:
+      - name: preprocess-container
+        value: '{"image": "docker.io/ocdr/dkube-datascience-tf-cpu:v1.14"}'
+      - name: preprocess-script
+        value: python preprocess.py
+      - name: preprocess-program
+        value: chexnet-ws
+      - name: preprocess-target-name
+        value: chexnet-preprocessed
+      - name: preprocess-datasets
+        value: '["chexnet"]'
+      - name: training-container
+        value: '{"image": "docker.io/ocdr/dkube-datascience-tf-gpu:v1.14"}'
+      - name: training-program
+        value: chexnet-ws
+      - name: training-script
+        value: python model.py
+      - name: training-gpus
+        value: '1'
+      - name: training-envs
+        value: '[{"steps": 20000, "epochs": 1, "batchsize": 32}]'
+  entrypoint: dkube-chexnet-pl
+  serviceAccountName: pipeline-runner
+  templates:
+    - dag:
+        tasks:
+          - arguments:
+              parameters:
+                - name: preprocess-container
+                  value: '{{inputs.parameters.preprocess-container}}'
+                - name: preprocess-datasets
+                  value: '{{inputs.parameters.preprocess-datasets}}'
+                - name: preprocess-program
+                  value: '{{inputs.parameters.preprocess-program}}'
+                - name: preprocess-script
+                  value: '{{inputs.parameters.preprocess-script}}'
+                - name: preprocess-target-name
+                  value: '{{inputs.parameters.preprocess-target-name}}'
+            name: dkube-preprocess
+            template: dkube-preprocess
+          - arguments:
+              parameters:
+                - name: dkube-training-artifact
+                  value: >-
+                    {{tasks.dkube-training.outputs.parameters.dkube-training-artifact}}
+            dependencies:
+              - dkube-training
+            name: dkube-serving
+            template: dkube-serving
+          - arguments:
+              parameters:
+                - name: preprocess-target-name
+                  value: '{{inputs.parameters.preprocess-target-name}}'
+                - name: training-container
+                  value: '{{inputs.parameters.training-container}}'
+                - name: training-envs
+                  value: '{{inputs.parameters.training-envs}}'
+                - name: training-gpus
+                  value: '{{inputs.parameters.training-gpus}}'
+                - name: training-program
+                  value: '{{inputs.parameters.training-program}}'
+                - name: training-script
+                  value: '{{inputs.parameters.training-script}}'
+            dependencies:
+              - dkube-preprocess
+            name: dkube-training
+            template: dkube-training
+          - arguments:
+              parameters:
+                - name: dkube-serving-servingurl
+                  value: >-
+                    {{tasks.dkube-serving.outputs.parameters.dkube-serving-servingurl}}
+            dependencies:
+              - dkube-serving
+            name: dkube-viewer
+            template: dkube-viewer
+      inputs:
+        parameters:
+          - name: preprocess-container
+          - name: preprocess-datasets
+          - name: preprocess-program
+          - name: preprocess-script
+          - name: preprocess-target-name
+          - name: training-container
+          - name: training-envs
+          - name: training-gpus
+          - name: training-program
+          - name: training-script
+      name: dkube-chexnet-pl
+    - container:
+        args:
+          - preprocess
+          - '--accessurl'
+          - ''
+          - '--token'
+          - >-
+            eyJTZXNzaW9uIjp0cnVlLCJUb2tlbiI6ImV5SmhiR2NpT2lKSVV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpqY21WaGRHVmtJam94TlRjd01qVXpOell3TENKeWIyeGxJam9pYjNCbGNtRjBiM0lpTENKMWMyVnlibUZ0WlNJNkltOWpaR3QxWW1VaWZRLmxDckpvOFRpYXFZRjFXVXBkRmpvNTB4bFJFM3JfdmhaTzRkSnRJdnRmR1kifQ==
+          - '--target'
+          - '{{inputs.parameters.preprocess-target-name}}-1570427264'
+          - '--container'
+          - '{{inputs.parameters.preprocess-container}}'
+          - '--script'
+          - '{{inputs.parameters.preprocess-script}}'
+          - '--program'
+          - '{{inputs.parameters.preprocess-program}}'
+          - '--datasets'
+          - '{{inputs.parameters.preprocess-datasets}}'
+          - '--config'
+          - ''
+          - '--envs'
+          - '[]'
+          - '--runid'
+          - '{{pod.name}}'
+        command:
+          - dkubepl
+        image: 'ocdr/dkubepl:1.4.0'
+      inputs:
+        parameters:
+          - name: preprocess-container
+          - name: preprocess-datasets
+          - name: preprocess-program
+          - name: preprocess-script
+          - name: preprocess-target-name
+      metadata:
+        annotations:
+          platform: Dkube
+        labels:
+          platform: Dkube
+          runid: '{{pod.name}}'
+          stage: preprocess
+          wfid: '{{workflow.uid}}'
+      name: dkube-preprocess
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+        parameters:
+          - name: dkube-preprocess-artifact
+            valueFrom:
+              path: /tmp/artifact
+          - name: dkube-preprocess-rundetails
+            valueFrom:
+              path: /tmp/rundetails
+    - container:
+        args:
+          - serving
+          - '--accessurl'
+          - ''
+          - '--token'
+          - >-
+            eyJTZXNzaW9uIjp0cnVlLCJUb2tlbiI6ImV5SmhiR2NpT2lKSVV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpqY21WaGRHVmtJam94TlRjd01qVXpOell3TENKeWIyeGxJam9pYjNCbGNtRjBiM0lpTENKMWMyVnlibUZ0WlNJNkltOWpaR3QxWW1VaWZRLmxDckpvOFRpYXFZRjFXVXBkRmpvNTB4bFJFM3JfdmhaTzRkSnRJdnRmR1kifQ==
+          - '--model'
+          - '{{inputs.parameters.dkube-training-artifact}}'
+          - '--device'
+          - cpu
+          - '--runid'
+          - '{{pod.name}}'
+        command:
+          - dkubepl
+        image: 'ocdr/dkubepl:1.4.0'
+      inputs:
+        parameters:
+          - name: dkube-training-artifact
+      metadata:
+        annotations:
+          platform: Dkube
+        labels:
+          platform: Dkube
+          runid: '{{pod.name}}'
+          stage: serving
+          wfid: '{{workflow.uid}}'
+      name: dkube-serving
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+        parameters:
+          - name: dkube-serving-rundetails
+            valueFrom:
+              path: /tmp/rundetails
+          - name: dkube-serving-servingurl
+            valueFrom:
+              path: /tmp/servingurl
+    - container:
+        args:
+          - training
+          - '--accessurl'
+          - ''
+          - '--token'
+          - >-
+            eyJTZXNzaW9uIjp0cnVlLCJUb2tlbiI6ImV5SmhiR2NpT2lKSVV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpqY21WaGRHVmtJam94TlRjd01qVXpOell3TENKeWIyeGxJam9pYjNCbGNtRjBiM0lpTENKMWMyVnlibUZ0WlNJNkltOWpaR3QxWW1VaWZRLmxDckpvOFRpYXFZRjFXVXBkRmpvNTB4bFJFM3JfdmhaTzRkSnRJdnRmR1kifQ==
+          - '--container'
+          - '{{inputs.parameters.training-container}}'
+          - '--script'
+          - '{{inputs.parameters.training-script}}'
+          - '--program'
+          - '{{inputs.parameters.training-program}}'
+          - '--datasets'
+          - '["{{inputs.parameters.preprocess-target-name}}-1570427264"]'
+          - '--models'
+          - '[]'
+          - '--ngpus'
+          - '{{inputs.parameters.training-gpus}}'
+          - '--nworkers'
+          - '0'
+          - '--auto'
+          - 'false'
+          - '--config'
+          - ''
+          - '--tuning'
+          - ''
+          - '--envs'
+          - '{{inputs.parameters.training-envs}}'
+          - '--gdrdma'
+          - 'false'
+          - '--runid'
+          - '{{pod.name}}'
+        command:
+          - dkubepl
+        image: 'ocdr/dkubepl:1.4.0'
+      inputs:
+        parameters:
+          - name: preprocess-target-name
+          - name: training-container
+          - name: training-envs
+          - name: training-gpus
+          - name: training-program
+          - name: training-script
+      metadata:
+        annotations:
+          platform: Dkube
+        labels:
+          platform: Dkube
+          runid: '{{pod.name}}'
+          stage: training
+          wfid: '{{workflow.uid}}'
+      name: dkube-training
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+        parameters:
+          - name: dkube-training-artifact
+            valueFrom:
+              path: /tmp/artifact
+          - name: dkube-training-rundetails
+            valueFrom:
+              path: /tmp/rundetails
+    - container:
+        args:
+          - viewer
+          - '--accessurl'
+          - ''
+          - '--viewtype'
+          - inference
+          - '--token'
+          - >-
+            eyJTZXNzaW9uIjp0cnVlLCJUb2tlbiI6ImV5SmhiR2NpT2lKSVV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpqY21WaGRHVmtJam94TlRjd01qVXpOell3TENKeWIyeGxJam9pYjNCbGNtRjBiM0lpTENKMWMyVnlibUZ0WlNJNkltOWpaR3QxWW1VaWZRLmxDckpvOFRpYXFZRjFXVXBkRmpvNTB4bFJFM3JfdmhaTzRkSnRJdnRmR1kifQ==
+          - '--servingurl'
+          - '{{inputs.parameters.dkube-serving-servingurl}}'
+          - '--servingexample'
+          - chesnet
+          - '--runid'
+          - '{{pod.name}}'
+        command:
+          - dkubepl
+        image: 'ocdr/dkubepl:chestnet'
+      inputs:
+        parameters:
+          - name: dkube-serving-servingurl
+      metadata:
+        annotations:
+          platform: Dkube
+        labels:
+          platform: Dkube
+          runid: '{{pod.name}}'
+          stage: viewer
+          wfid: '{{workflow.uid}}'
+      name: dkube-viewer
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+        parameters:
+          - name: dkube-viewer-rundetails
+            valueFrom:
+              path: /tmp/rundetails
