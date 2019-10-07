@@ -2,6 +2,7 @@ import kfp.dsl as dsl
 from kfp import components
 import json
 import time
+import os
 
 dkube_preprocess_op = components.load_component_from_file(
     "components/preprocess/component.yaml")
@@ -27,7 +28,7 @@ SERVING_EXAMPLE = "chestnet"
               description=('Dell ChexNet pipeline'
                            'with dkube components'))
 def d3pipeline(
-    auth_token,
+    auth_token=os.getenv("ACCESS_TOKEN"),
     preprocess_container=json.dumps(
         {'image': 'docker.io/ocdr/dkube-datascience-tf-cpu:v1.14'}),
     preprocess_script="python preprocess.py",

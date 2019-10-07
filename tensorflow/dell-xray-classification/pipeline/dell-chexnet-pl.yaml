@@ -337,7 +337,7 @@ spec:
           - '--servingurl'
           - '{{inputs.parameters.dkube-serving-servingurl}}'
           - '--servingexample'
-          - chesnet
+          - chestnet
           - '--runid'
           - '{{pod.name}}'
         command:
