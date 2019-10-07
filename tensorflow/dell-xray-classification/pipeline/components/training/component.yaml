@@ -31,9 +31,16 @@ inputs:
      description: 'Optional. Number of workers for training, >0 for distributed training.'}
   - {name: auto_distribute, type: String,   optional: true,     default: 'false',
      description: 'Optional. Should Dkube auto distribute based on available number of resources.'}
-  - {name: config_files,    type: List,     optional: true,     default: '[]',
-     description: 'Optional. List of files for training program containing configuration / hyperparameters.
-                   Supported sources are local://<path>, http://<path>.'}
+  - {name: config,          type: String,   optional: true,      default: '',
+    description: 'Optional. HP file or configuration data required for training program.
+                  Supported inputs - 
+                  d3s://<path> - Path to a file in dkube storage.
+                  <string> - Inline data'}
+  - {name: tuning,          type: String,   optional: true,     default: '',
+     description: 'Optional. HP tuning information. Can be a URL to a file with hptuning definition or inline data.
+                   Supported inputs -
+                   d3s://<path> - Path to a file in dkube storage.
+                   <string> - Inline data, only json formatted string is valid.'}
   - {name: envs,            type: List,     optional: true,     default: '[]',
      description: 'Optional. Environments for training program. Exact key value will be made available for the container'}
   - {name: gdrdma,          type: String,   optional: true,     default: 'false',
@@ -45,7 +52,7 @@ outputs:
   - {name: artifact,        description: 'Identifier in Dkube storage where artifacts of training are stored.'}
 implementation:
   container:
-    image: ocdr/dkubepl:1.3.4
+    image: ocdr/dkubepl:1.4.0
     command: ['dkubepl']
     args: [
       training,
@@ -59,7 +66,8 @@ implementation:
       --ngpus, {inputValue: ngpus},
       --nworkers, {inputValue: nworkers},
       --auto, {inputValue: auto_distribute},
-      --files, {inputValue: config_files},
+      --config, {inputValue: config},
+      --tuning, {inputValue: tuning},
       --envs, {inputValue: envs},
       --gdrdma, {inputValue: gdrdma},
       --runid, '{{pod.name}}'

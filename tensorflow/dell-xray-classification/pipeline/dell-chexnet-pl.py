@@ -20,7 +20,7 @@ TARGET_DATASET = "chexnet-preprocessed"
 STEPS = 20000  # max no of steps
 EPOCHS = 1
 BATCHSIZE = 32
-SERVING_EXAMPLE = "ChexNet"
+SERVING_EXAMPLE = "chestnet"
 
 
 @dsl.pipeline(name='Dkube-ChexNet-pl',
@@ -29,14 +29,14 @@ SERVING_EXAMPLE = "ChexNet"
 def d3pipeline(
     auth_token,
     preprocess_container=json.dumps(
-        {'image': 'docker.io/ocdr/dkube-datascience-tf-cpu:v1.13'}),
-    preprocess_script="python data_preparation.py",
+        {'image': 'docker.io/ocdr/dkube-datascience-tf-cpu:v1.14'}),
+    preprocess_script="python preprocess.py",
     preprocess_program=WORKSPACE,
     preprocess_target_name=TARGET_DATASET,  # dataset
     # RAW dataset containing zip files of Chest X-Rays from NIH
     preprocess_datasets=json.dumps([PREPROCESS_DATASET]),
     training_container=json.dumps(
-        {'image': 'docker.io/ocdr/dkube-datascience-tf-gpu:v1.13'}),
+        {'image': 'docker.io/ocdr/dkube-datascience-tf-gpu:v1.14'}),
     training_program=WORKSPACE,
     training_script="python model.py",
     training_gpus=1,
