@@ -45,10 +45,6 @@ def d3pipeline(
                                "epochs": EPOCHS,
                                "batchsize": BATCHSIZE}])):
 
-    # generate random preprocess_target_name
-    preprocess_target_name = "{}-{}".format(preprocess_target_name,
-                                            str(int(time.time())))
-
     # preprocessing stage
     preprocess = dkube_preprocess_op(auth_token, preprocess_target_name,
                                      preprocess_container,
@@ -57,7 +53,7 @@ def d3pipeline(
                                      run_script=preprocess_script)
 
     # training stage
-    preprocess_dataset_name = json.dumps([preprocess_target_name])
+    preprocess_dataset_name = json.dumps([str(preprocess_target_name)])
     train = dkube_training_op(auth_token, training_container,
                               program=training_program,
                               run_script=training_script,
