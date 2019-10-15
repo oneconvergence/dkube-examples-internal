@@ -28,7 +28,7 @@ SERVING_EXAMPLE = "chestnet"
               description=('Dell ChexNet pipeline'
                            'with dkube components'))
 def d3pipeline(
-    auth_token=os.getenv("ACCESS_TOKEN"),
+    auth_token,
     preprocess_container=json.dumps(
         {'image': 'docker.io/ocdr/dkube-datascience-tf-cpu:v1.14'}),
     preprocess_script="python preprocess.py",
