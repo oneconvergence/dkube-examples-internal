@@ -1,0 +1,10 @@
+Multi GPU training - Change below parameters while running pipeline for multi gpu training.
+batchsize = 32*ngpus in “training-envs” parameter
+training-gpus=ngpus
+training-script” should be “python model.py --ngpus=<ngpus>”
+
+For example, for running multi gpu training with 2 gpus change values as below,
+batchsize = 64
+training-gpus=2
+training-script” should be “python model.py --ngpus=2”
+

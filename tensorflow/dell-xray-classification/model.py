@@ -253,7 +253,20 @@ def main():
         print('%s = %s' % (item[0], str(item[1])))
 
     keras.backend.get_session().run(tf.global_variables_initializer())
-    with tf.device('/cpu:0'):
+    num_gpus = int(FLAGS.ngpus)
+
+    if num_gpus > 1:
+        with tf.device('/cpu:0'):
+            base_model = DenseNet121(include_top=False,
+                                     weights='imagenet',
+                                     input_shape=(FLAGS.image_size, FLAGS.image_size, 3))
+            x = base_model.output
+            x = GlobalAveragePooling2D()(x)
+            predictions = Dense(14, activation='sigmoid', bias_initializer='ones')(x)
+            model = Model(inputs=base_model.input, outputs=predictions)
+        parallel_model = multi_gpu_model(model, gpus=num_gpus,
+                                         cpu_merge=True, cpu_relocation=False)
+    else:
         base_model = DenseNet121(include_top=False,
                                  weights='imagenet',
                                  input_shape=(FLAGS.image_size, FLAGS.image_size, 3))
@@ -261,10 +274,6 @@ def main():
         x = GlobalAveragePooling2D()(x)
         predictions = Dense(14, activation='sigmoid', bias_initializer='ones')(x)
         model = Model(inputs=base_model.input, outputs=predictions)
-
-    if FLAGS.ngpus > 1:
-        parallel_model = multi_gpu_model(model, FLAGS.ngpus)
-    else:
         parallel_model = model
 
     opt = optimizers.Adam(lr=FLAGS.lr)
@@ -313,7 +322,7 @@ def main():
 
     start_time = time.time()
 
-    workers = FLAGS.workers
+    workers = num_gpus
     print("Running batch generator with {} workers".format(str(workers)))
     # specify training params and start training
     parallel_model.fit_generator(
@@ -414,14 +423,9 @@ if __name__ == '__main__':
     parser.add_argument(
         '--ngpus', type=int, default=1,
         help='Number of gpus')
-    parser.add_argument(
-        '--workers', type=int, default=4,
-        help='Number of workers for preprocessing')
+
     FLAGS, _ = parser.parse_known_args()
     FLAGS.epochs = EPOCHS
     FLAGS.batch_size = BATCH_SIZE
-    if FLAGS.workers > 16:
-        print("maximum workers allowed are 16, please specify workers <= 16")
-        sys.exit(0)
 
     main()
