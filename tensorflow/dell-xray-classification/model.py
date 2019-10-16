@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os
+import sys
 import argparse
 import numpy as np
 import PIL.Image as pil
@@ -193,7 +194,7 @@ def train_generator(num_of_steps, training_files, labels):
                 batch_of_files, labels, True)
             yield batch_images, batch_labels
 
-
+@threadsafe_generator
 def val_generator(num_of_steps, validation_files, labels):
     while True:
         np.random.shuffle(validation_files)
@@ -261,7 +262,10 @@ def main():
         predictions = Dense(14, activation='sigmoid', bias_initializer='ones')(x)
         model = Model(inputs=base_model.input, outputs=predictions)
 
-    parallel_model = multi_gpu_model(model, FLAGS.ngpus)
+    if FLAGS.ngpus > 1:
+        parallel_model = multi_gpu_model(model, FLAGS.ngpus)
+    else:
+        parallel_model = model
 
     opt = optimizers.Adam(lr=FLAGS.lr)
 
@@ -308,6 +312,9 @@ def main():
     callbacks.append(model_checkpoint)
 
     start_time = time.time()
+
+    workers = FLAGS.workers
+    print("Running batch generator with {} workers".format(str(workers)))
     # specify training params and start training
     parallel_model.fit_generator(
         train_generator(steps_per_epoch, training_files, labels),
@@ -318,7 +325,7 @@ def main():
         validation_steps=val_steps,
         callbacks=callbacks,
         verbose=verbose,
-        workers=4,
+        workers=workers,
         use_multiprocessing=True,
         max_queue_size=20)
 
@@ -407,8 +414,14 @@ if __name__ == '__main__':
     parser.add_argument(
         '--ngpus', type=int, default=1,
         help='Number of gpus')
+    parser.add_argument(
+        '--workers', type=int, default=4,
+        help='Number of workers for preprocessing')
     FLAGS, _ = parser.parse_known_args()
     FLAGS.epochs = EPOCHS
     FLAGS.batch_size = BATCH_SIZE
+    if FLAGS.workers > 16:
+        print("maximum workers allowed are 16, please specify workers <= 16")
+        sys.exit(0)
 
     main()
