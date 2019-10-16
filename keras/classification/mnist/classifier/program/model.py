@@ -27,11 +27,11 @@ from tensorflow.python.saved_model import tag_constants
 
 now = datetime.datetime.now
 
-batch_size = int(os.getenv('TF_BATCH_SIZE', 128))
-epochs = int(os.getenv('TF_EPOCHS', 5))
+batch_size = int(os.getenv('BATCHSIZE', 128))
+epochs = int(os.getenv('EPOCHS', 5))
 num_classes = 5
 
-out_dir = os.getenv('OUT_DIR', None)
+out_dir = os.getenv('DKUBE_JOB_OUTPUT_S3', None)
 save_dir = "/tmp"
 model_name = 'keras_mnist_trained_model.h5'
 

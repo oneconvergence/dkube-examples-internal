@@ -50,7 +50,7 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 	- **Container** section - 
 	    - Docker Image URL : docker.io/ocdr/dkube-datascience-preprocess:1.1
 	    - Private : If image is private, select private and provide dockerhub username and password
-	    - Start-up script : `python extract.py; python create_pet_tf_record.py --data_dir=/tmp/dataset/ --output_dir=$OUT_DIR --label_map_path=pet_label_map.pbtxt`
+	    - Start-up script : `python extract.py; python create_pet_tf_record.py --data_dir=/tmp/dataset/ --output_dir=$DKUBE_JOB_OUTPUT_SHAREDDIR --label_map_path=pet_label_map.pbtxt`
 	-  **Parameters** section - Leave it to default.
 	- **Workspace** section - Please select the workspace *pet-detector-preprocessing* created in *Step1*.
 	- **Dataset** section - Please select the dataset *pets* created in *Step2*.
@@ -86,7 +86,7 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 	- Enter a unique name say *pet-detector*
 	- **Container** section
 	  - Tensorflow Version - Leave with default options selected.
-	  - Startup script - `bash process.sh; python model_main.py --model_dir=$OUT_DIR`
+	  - Startup script - `bash process.sh; python model_main.py --model_dir=$DKUBE_JOB_OUTPUT_SHAREDDIR`
 	- **GPUs** section - Provide the required number of GPUs. This field is optional, if not provided network will train on CPU.
 	-  **Parameters** section
 		- Select the pipeline.config file which is stored locally(Download from https://github.com/oneconvergence/dkube-examples/blob/master/tensorflow/object-detection/pets/program/training/pipeline.config)

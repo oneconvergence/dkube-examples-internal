@@ -4,9 +4,9 @@ CONFIG_FILE="/tmp/config_file/pipeline.config"
 mkdir -p "/tmp/config_file/"
 DEFAULT_FILEPATH="./pipeline.config"
 
-if [ ! -z "$HYPERPARAMS_FILEPATH" ]; then
+if [ ! -z "$DKUBE_JOB_CONFIG_FILE" ]; then
     echo "Using config file from parameters"
-    cp "$HYPERPARAMS_FILEPATH" "$CONFIG_FILE"
+    cp "$DKUBE_JOB_CONFIG_FILE" "$CONFIG_FILE"
 elif [ -f "$DEFAULT_FILEPATH" ]; then
     echo "using config file from workspace"
     cp "$DEFAULT_FILEPATH" "$CONFIG_FILE"
@@ -17,8 +17,11 @@ fi
 
 echo "Config file path : $CONFIG_FILE"
 
-DATA_DIR="${DATUMS_PATH}/${DATASET_NAME}"
-MODEL_DIR="${MODEL_PATH}/${MODEL_NAME}"
+IFS=',' read -ra DATASETS <<< "$DKUBE_INPUT_DATASETS"
+DATA_DIR="${DATASETS[0]}"
+
+IFS=',' read -ra MODELS <<< "$DKUBE_INPUT_MODELS"
+MODEL_DIR="${MODELS[0]}"
 
 #Set datset path in pipeline config file
 sed -i "s|DATA_PATH|"${DATA_DIR}"|g" $CONFIG_FILE
@@ -46,4 +49,4 @@ done
 
 #Set the model path in pipeline.config file to the extracted path
 sed -i "s|MODEL_PATH|"${EXTRACT_PATH}"|g" $CONFIG_FILE
-sed -i '/num_steps/c\  num_steps : '"${TF_TRAIN_STEPS}"'' $CONFIG_FILE
+sed -i '/num_steps/c\  num_steps : '"${STEPS}"'' $CONFIG_FILE

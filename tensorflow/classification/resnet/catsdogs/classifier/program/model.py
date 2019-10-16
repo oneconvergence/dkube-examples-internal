@@ -16,13 +16,14 @@ if 'TF_CONFIG' in os.environ:
     tf.logging.info('TF_CONFIG: {}'.format(os.environ["TF_CONFIG"]))
 
 FLAGS = None
-DATUMS_PATH = os.getenv('DATUMS_PATH', None)
-DATASET_NAME = os.getenv('DATASET_NAME', None)
-MODEL_DIR = os.getenv('OUT_DIR', None)
+DATA_DIR = os.getenv('DKUBE_INPUT_DATASETS', None)
+if DATA_DIR is not None:
+    DATA_DIR = DATA_DIR.split(",")[0]
+MODEL_DIR = os.getenv('DKUBE_JOB_OUTPUT_S3', None)
 TFHUB_CACHE_DIR = os.getenv('TFHUB_CACHE_DIR',None)
-BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 10))
-EPOCHS = int(os.getenv('TF_EPOCHS', 1))
-TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
+BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
+EPOCHS = int(os.getenv('EPOCHS', 1))
+TF_TRAIN_STEPS = int(os.getenv('STEPS',1000))
 summary_interval = 100
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
@@ -124,7 +125,7 @@ def model_fn(features, labels, mode, params):
 
 def train(_):
     try:
-      fp = open(os.getenv('HP_TUNING_INFO_FILE', 'None'),'r')
+      fp = open(os.getenv('DKUBE_JOB_HP_TUNING_INFO_FILE', 'None'),'r')
       hyperparams = json.loads(fp.read())
     except:
       hyperparams = { "learning_rate":1e-3, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
@@ -133,10 +134,9 @@ def train(_):
     parser.add_argument('--learning_rate', type=float, default=float(hyperparams['learning_rate']), help='Learning rate for training.')
     parser.add_argument('--batch_size', type=int, default=int(hyperparams['batch_size']), help='Batch size for training.')
     parser.add_argument('--num_epochs', type=int, default=int(hyperparams['num_epochs']), help='Number of epochs to train for.')
-    global FLAGS
+    global FLAGS, DATA_DIR
     FLAGS, unparsed = parser.parse_known_args()
     run_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
-    DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
     print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
     EXTRACT_PATH = "/tmp/resnet-model"
     ZIP_FILE = DATA_DIR + "/data.zip"
