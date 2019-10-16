@@ -39,7 +39,7 @@ def d3pipeline(
     training_container=json.dumps(
         {'image': 'docker.io/ocdr/dkube-datascience-tf-gpu:v1.14'}),
     training_program=WORKSPACE,
-    training_script="python model.py",
+    training_script="python model.py --ngpus=1",
     training_gpus=1,
     training_envs=json.dumps([{"steps": STEPS,
                                "epochs": EPOCHS,

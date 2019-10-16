@@ -21,7 +21,7 @@ spec:
       - name: training-program
         value: chexnet-ws
       - name: training-script
-        value: python model.py
+        value: python model.py --ngpus=1
       - name: training-gpus
         value: '1'
       - name: training-envs

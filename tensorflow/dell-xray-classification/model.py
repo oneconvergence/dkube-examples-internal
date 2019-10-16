@@ -9,6 +9,7 @@ import keras
 import zipfile
 import requests
 import json
+import threading
 import tensorflow as tf
 import pandas as pd
 from keras.applications import DenseNet121
@@ -19,6 +20,7 @@ from keras.layers import GlobalAveragePooling2D, Dense
 from keras import optimizers
 from keras import backend as K
 from keras.models import load_model
+from keras.utils import multi_gpu_model
 from tensorflow.python.saved_model import builder as saved_model_builder
 from tensorflow.python.saved_model.signature_def_utils import predict_signature_def
 from tensorflow.python.saved_model import tag_constants
@@ -40,6 +42,30 @@ CLASS_NAMES = ["Atelectasis", "Cardiomegaly", "Effusion", "Infiltration",
                "Mass", "Nodule", "Pneumonia", "Pneumothorax", "Consolidation",
                "Edema", "Emphysema", "Fibrosis",
                "Pleural_Thickening", "Hernia"]
+
+
+class threadsafe_iter:
+    """Takes an iterator/generator and makes it thread-safe by
+    serializing call to the `next` method of given iterator/generator.
+    """
+    def __init__(self, it):
+        self.it = it
+        self.lock = threading.Lock()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        with self.lock:
+            return self.it.__next__()
+
+
+def threadsafe_generator(f):
+    """A decorator that takes a generator function and makes it thread-safe.
+    """
+    def g(*a, **kw):
+        return threadsafe_iter(f(*a, **kw))
+    return g
 
 
 class AucRoc(keras.callbacks.Callback):
@@ -155,6 +181,7 @@ def load_batch(batch_of_files, labels, is_training=False):
     return preprocess_input(np.float32(np.asarray(batch_images))), np.asarray(batch_labels)
 
 
+@threadsafe_generator
 def train_generator(num_of_steps, training_files, labels):
     while True:
         np.random.shuffle(training_files)
@@ -225,21 +252,24 @@ def main():
         print('%s = %s' % (item[0], str(item[1])))
 
     keras.backend.get_session().run(tf.global_variables_initializer())
-    base_model = DenseNet121(include_top=False,
-                             weights='imagenet',
-                             input_shape=(FLAGS.image_size, FLAGS.image_size, 3))
-    x = base_model.output
-    x = GlobalAveragePooling2D()(x)
-    predictions = Dense(14, activation='sigmoid', bias_initializer='ones')(x)
-    model = Model(inputs=base_model.input, outputs=predictions)
+    with tf.device('/cpu:0'):
+        base_model = DenseNet121(include_top=False,
+                                 weights='imagenet',
+                                 input_shape=(FLAGS.image_size, FLAGS.image_size, 3))
+        x = base_model.output
+        x = GlobalAveragePooling2D()(x)
+        predictions = Dense(14, activation='sigmoid', bias_initializer='ones')(x)
+        model = Model(inputs=base_model.input, outputs=predictions)
+
+    parallel_model = multi_gpu_model(model, FLAGS.ngpus)
 
     opt = optimizers.Adam(lr=FLAGS.lr)
 
     # hvd_opt = hvd.DistributedOptimizer(opt)
 
-    model.compile(loss='binary_crossentropy',
-                  optimizer=opt,
-                  metrics=['accuracy'])
+    parallel_model.compile(loss='binary_crossentropy',
+                           optimizer=opt,
+                           metrics=['accuracy'])
     # Path to weights file
     weights_file = "/tmp/weights.h5"
 
@@ -279,7 +309,7 @@ def main():
 
     start_time = time.time()
     # specify training params and start training
-    model.fit_generator(
+    parallel_model.fit_generator(
         train_generator(steps_per_epoch, training_files, labels),
         steps_per_epoch=steps_per_epoch,
         epochs=FLAGS.epochs,
@@ -287,7 +317,10 @@ def main():
             val_steps, validation_files, labels),
         validation_steps=val_steps,
         callbacks=callbacks,
-        verbose=verbose)
+        verbose=verbose,
+        workers=4,
+        use_multiprocessing=True,
+        max_queue_size=20)
 
     # Set the learning phase to Test since the model is already trained.
     K.set_learning_phase(0)
@@ -298,18 +331,18 @@ def main():
 
     # Create prediction signature to be used by TensorFlow Serving Predict API
     signature = predict_signature_def(
-        inputs={"inputs": model.input},
-        outputs={"predictions": model.output})
+        inputs={"inputs": model.get_input_at(0)},
+        outputs={"predictions": model.get_output_at(0)})
 
     with K.get_session() as sess:
         # Save the meta graph and the variables
         builder.add_meta_graph_and_variables(
             sess=sess,
             tags=[tag_constants.SERVING],
+            clear_devices=True,
             signature_def_map={"serving_default": signature})
 
     builder.save()
-    del model
 
     end_time = time.time()
     print("start time: {} , end time: {} , elapsed time: {}".format(
@@ -370,6 +403,10 @@ if __name__ == '__main__':
     parser.add_argument(
         '--validation_label', type=str, default="./validation.csv",
         help='Path to the validation label file')
+
+    parser.add_argument(
+        '--ngpus', type=int, default=1,
+        help='Number of gpus')
     FLAGS, _ = parser.parse_known_args()
     FLAGS.epochs = EPOCHS
     FLAGS.batch_size = BATCH_SIZE
