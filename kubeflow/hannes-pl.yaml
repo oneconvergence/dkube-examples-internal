@@ -1,0 +1,595 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: complaint-model-pipeline-kubeflow-
+spec:
+  arguments:
+    parameters: []
+  entrypoint: complaint-model-pipeline-kubeflow
+  serviceAccountName: pipeline-runner
+  templates:
+  - dag:
+      tasks:
+      - name: csvexamplegen
+        template: csvexamplegen
+      - arguments:
+          parameters:
+          - name: csvexamplegen-examples
+            value: '{{tasks.csvexamplegen.outputs.parameters.csvexamplegen-examples}}'
+          - name: trainer-output
+            value: '{{tasks.trainer.outputs.parameters.trainer-output}}'
+        dependencies:
+        - csvexamplegen
+        - trainer
+        name: evaluator
+        template: evaluator
+      - arguments:
+          parameters:
+          - name: schemagen-output
+            value: '{{tasks.schemagen.outputs.parameters.schemagen-output}}'
+          - name: statisticsgen-output
+            value: '{{tasks.statisticsgen.outputs.parameters.statisticsgen-output}}'
+        dependencies:
+        - schemagen
+        - statisticsgen
+        name: examplevalidator
+        template: examplevalidator
+      - arguments:
+          parameters:
+          - name: csvexamplegen-examples
+            value: '{{tasks.csvexamplegen.outputs.parameters.csvexamplegen-examples}}'
+          - name: trainer-output
+            value: '{{tasks.trainer.outputs.parameters.trainer-output}}'
+        dependencies:
+        - csvexamplegen
+        - trainer
+        name: modelvalidator
+        template: modelvalidator
+      - arguments:
+          parameters:
+          - name: modelvalidator-blessing
+            value: '{{tasks.modelvalidator.outputs.parameters.modelvalidator-blessing}}'
+          - name: trainer-output
+            value: '{{tasks.trainer.outputs.parameters.trainer-output}}'
+        dependencies:
+        - modelvalidator
+        - trainer
+        name: pusher
+        template: pusher
+      - arguments:
+          parameters:
+          - name: statisticsgen-output
+            value: '{{tasks.statisticsgen.outputs.parameters.statisticsgen-output}}'
+        dependencies:
+        - statisticsgen
+        name: schemagen
+        template: schemagen
+      - arguments:
+          parameters:
+          - name: csvexamplegen-examples
+            value: '{{tasks.csvexamplegen.outputs.parameters.csvexamplegen-examples}}'
+        dependencies:
+        - csvexamplegen
+        name: statisticsgen
+        template: statisticsgen
+      - arguments:
+          parameters:
+          - name: schemagen-output
+            value: '{{tasks.schemagen.outputs.parameters.schemagen-output}}'
+          - name: transform-transform-output
+            value: '{{tasks.transform.outputs.parameters.transform-transform-output}}'
+          - name: transform-transformed-examples
+            value: '{{tasks.transform.outputs.parameters.transform-transformed-examples}}'
+        dependencies:
+        - schemagen
+        - transform
+        name: trainer
+        template: trainer
+      - arguments:
+          parameters:
+          - name: csvexamplegen-examples
+            value: '{{tasks.csvexamplegen.outputs.parameters.csvexamplegen-examples}}'
+          - name: schemagen-output
+            value: '{{tasks.schemagen.outputs.parameters.schemagen-output}}'
+        dependencies:
+        - csvexamplegen
+        - schemagen
+        name: transform
+        template: transform
+    name: complaint-model-pipeline-kubeflow
+  - container:
+      args:
+      - --exec_properties
+      - '{"output": "{\n  \"splitConfig\": {\n    \"splits\": [\n      {\n        \"name\":
+        \"train\",\n        \"hashBuckets\": 2\n      },\n      {\n        \"name\":
+        \"eval\",\n        \"hashBuckets\": 1\n      }\n    ]\n  }\n}", "output_dir":
+        "gs://oc-kf-pipelines/tfx/complaint_model_pipeline_kubeflow", "log_root": "/var/tmp/tfx/logs",
+        "beam_pipeline_args": ["--runner=DirectRunner", "--experiments=shuffle_mode=auto",
+        "--project=dkube-project", "--temp_location=gs://oc-kf-pipelines/tmp", "--region=us-central1"]}'
+      - --outputs
+      - '{"examples": [{"artifact": {"properties": {"type_name": {"stringValue": "ExamplesPath"},
+        "split": {"stringValue": "train"}}}, "artifact_type": {"name": "ExamplesPath",
+        "properties": {"name": "STRING", "type_name": "STRING", "split": "STRING",
+        "state": "STRING", "span": "INT"}}}, {"artifact": {"properties": {"type_name":
+        {"stringValue": "ExamplesPath"}, "split": {"stringValue": "eval"}}}, "artifact_type":
+        {"name": "ExamplesPath", "properties": {"type_name": "STRING", "split": "STRING",
+        "state": "STRING", "span": "INT", "name": "STRING"}}}]}'
+      - --executor_class_path
+      - tfx.components.example_gen.csv_example_gen.executor.Executor
+      - CsvExampleGen
+      - --input-base
+      - '[{"artifact": {"uri": "gs://oc-kf-pipelines/data/", "properties": {"type_name":
+        {"stringValue": "ExternalPath"}, "split": {"stringValue": ""}}}, "artifact_type":
+        {"name": "ExternalPath", "properties": {"split": "STRING", "state": "STRING",
+        "span": "INT", "name": "STRING", "type_name": "STRING"}}}]'
+      command:
+      - python
+      - /tfx-src/tfx/orchestration/kubeflow/container_entrypoint.py
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: WORKFLOW_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['workflows.argoproj.io/workflow']
+      image: tensorflow/tfx:0.13.0
+      volumeMounts:
+      - mountPath: /secret/gcp-credentials
+        name: gcp-credentials-user-gcp-sa
+    name: csvexamplegen
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+      parameters:
+      - name: csvexamplegen-examples
+        valueFrom:
+          path: /output/ml_metadata/examples
+  - container:
+      args:
+      - --exec_properties
+      - '{"feature_slicing_spec": "{\n  \"specs\": [\n    {\n      \"columnForSlicing\":
+        [\n        \"trip_start_hour\"\n      ]\n    }\n  ]\n}", "output_dir": "gs://oc-kf-pipelines/tfx/complaint_model_pipeline_kubeflow",
+        "log_root": "/var/tmp/tfx/logs", "beam_pipeline_args": ["--runner=DirectRunner",
+        "--experiments=shuffle_mode=auto", "--project=dkube-project", "--temp_location=gs://oc-kf-pipelines/tmp",
+        "--region=us-central1"]}'
+      - --outputs
+      - '{"output": [{"artifact": {"properties": {"split": {"stringValue": ""}, "type_name":
+        {"stringValue": "ModelEvalPath"}}}, "artifact_type": {"name": "ModelEvalPath",
+        "properties": {"split": "STRING", "state": "STRING", "span": "INT", "name":
+        "STRING", "type_name": "STRING"}}}]}'
+      - --executor_class_path
+      - tfx.components.evaluator.executor.Executor
+      - Evaluator
+      - --examples
+      - '{{inputs.parameters.csvexamplegen-examples}}'
+      - --model_exports
+      - '{{inputs.parameters.trainer-output}}'
+      command:
+      - python
+      - /tfx-src/tfx/orchestration/kubeflow/container_entrypoint.py
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: WORKFLOW_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['workflows.argoproj.io/workflow']
+      image: tensorflow/tfx:0.13.0
+      volumeMounts:
+      - mountPath: /secret/gcp-credentials
+        name: gcp-credentials-user-gcp-sa
+    inputs:
+      parameters:
+      - name: csvexamplegen-examples
+      - name: trainer-output
+    name: evaluator
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+      parameters:
+      - name: evaluator-output
+        valueFrom:
+          path: /output/ml_metadata/output
+  - container:
+      args:
+      - --exec_properties
+      - '{"output_dir": "gs://oc-kf-pipelines/tfx/complaint_model_pipeline_kubeflow",
+        "log_root": "/var/tmp/tfx/logs", "beam_pipeline_args": ["--runner=DirectRunner",
+        "--experiments=shuffle_mode=auto", "--project=dkube-project", "--temp_location=gs://oc-kf-pipelines/tmp",
+        "--region=us-central1"]}'
+      - --outputs
+      - '{"output": [{"artifact": {"properties": {"type_name": {"stringValue": "ExampleValidationPath"},
+        "split": {"stringValue": ""}}}, "artifact_type": {"name": "ExampleValidationPath",
+        "properties": {"type_name": "STRING", "split": "STRING", "state": "STRING",
+        "span": "INT", "name": "STRING"}}}]}'
+      - --executor_class_path
+      - tfx.components.example_validator.executor.Executor
+      - ExampleValidator
+      - --stats
+      - '{{inputs.parameters.statisticsgen-output}}'
+      - --schema
+      - '{{inputs.parameters.schemagen-output}}'
+      command:
+      - python
+      - /tfx-src/tfx/orchestration/kubeflow/container_entrypoint.py
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: WORKFLOW_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['workflows.argoproj.io/workflow']
+      image: tensorflow/tfx:0.13.0
+      volumeMounts:
+      - mountPath: /secret/gcp-credentials
+        name: gcp-credentials-user-gcp-sa
+    inputs:
+      parameters:
+      - name: schemagen-output
+      - name: statisticsgen-output
+    name: examplevalidator
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+      parameters:
+      - name: examplevalidator-output
+        valueFrom:
+          path: /output/ml_metadata/output
+  - container:
+      args:
+      - --exec_properties
+      - '{"blessed_model": null, "blessed_model_id": null, "output_dir": "gs://oc-kf-pipelines/tfx/complaint_model_pipeline_kubeflow",
+        "log_root": "/var/tmp/tfx/logs", "beam_pipeline_args": ["--runner=DirectRunner",
+        "--experiments=shuffle_mode=auto", "--project=dkube-project", "--temp_location=gs://oc-kf-pipelines/tmp",
+        "--region=us-central1"]}'
+      - --outputs
+      - '{"blessing": [{"artifact": {"properties": {"type_name": {"stringValue": "ModelBlessingPath"},
+        "split": {"stringValue": ""}}}, "artifact_type": {"name": "ModelBlessingPath",
+        "properties": {"name": "STRING", "type_name": "STRING", "split": "STRING",
+        "state": "STRING", "span": "INT"}}}], "results": [{"artifact": {"properties":
+        {"type_name": {"stringValue": "ModelValidationPath"}, "split": {"stringValue":
+        ""}}}, "artifact_type": {"name": "ModelValidationPath", "properties": {"name":
+        "STRING", "type_name": "STRING", "split": "STRING", "state": "STRING", "span":
+        "INT"}}}]}'
+      - --executor_class_path
+      - tfx.components.model_validator.executor.Executor
+      - ModelValidator
+      - --examples
+      - '{{inputs.parameters.csvexamplegen-examples}}'
+      - --model
+      - '{{inputs.parameters.trainer-output}}'
+      command:
+      - python
+      - /tfx-src/tfx/orchestration/kubeflow/container_entrypoint.py
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: WORKFLOW_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['workflows.argoproj.io/workflow']
+      image: tensorflow/tfx:0.13.0
+      volumeMounts:
+      - mountPath: /secret/gcp-credentials
+        name: gcp-credentials-user-gcp-sa
+    inputs:
+      parameters:
+      - name: csvexamplegen-examples
+      - name: trainer-output
+    name: modelvalidator
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+      parameters:
+      - name: modelvalidator-blessing
+        valueFrom:
+          path: /output/ml_metadata/blessing
+      - name: modelvalidator-results
+        valueFrom:
+          path: /output/ml_metadata/results
+  - container:
+      args:
+      - --exec_properties
+      - '{"push_destination": "{\n  \"filesystem\": {\n    \"baseDirectory\": \"gs://oc-kf-pipelines/serving_model/complaint_model\"\n  }\n}",
+        "output_dir": "gs://oc-kf-pipelines/tfx/complaint_model_pipeline_kubeflow",
+        "log_root": "/var/tmp/tfx/logs", "beam_pipeline_args": ["--runner=DirectRunner",
+        "--experiments=shuffle_mode=auto", "--project=dkube-project", "--temp_location=gs://oc-kf-pipelines/tmp",
+        "--region=us-central1"]}'
+      - --outputs
+      - '{"model_push": [{"artifact": {"properties": {"type_name": {"stringValue":
+        "ModelPushPath"}, "split": {"stringValue": ""}}}, "artifact_type": {"name":
+        "ModelPushPath", "properties": {"split": "STRING", "state": "STRING", "span":
+        "INT", "name": "STRING", "type_name": "STRING"}}}]}'
+      - --executor_class_path
+      - tfx.components.pusher.executor.Executor
+      - Pusher
+      - --model_export
+      - '{{inputs.parameters.trainer-output}}'
+      - --model_blessing
+      - '{{inputs.parameters.modelvalidator-blessing}}'
+      command:
+      - python
+      - /tfx-src/tfx/orchestration/kubeflow/container_entrypoint.py
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: WORKFLOW_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['workflows.argoproj.io/workflow']
+      image: tensorflow/tfx:0.13.0
+      volumeMounts:
+      - mountPath: /secret/gcp-credentials
+        name: gcp-credentials-user-gcp-sa
+    inputs:
+      parameters:
+      - name: modelvalidator-blessing
+      - name: trainer-output
+    name: pusher
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+      parameters:
+      - name: pusher-model-push
+        valueFrom:
+          path: /output/ml_metadata/model_push
+  - container:
+      args:
+      - --exec_properties
+      - '{"output_dir": "gs://oc-kf-pipelines/tfx/complaint_model_pipeline_kubeflow",
+        "log_root": "/var/tmp/tfx/logs", "beam_pipeline_args": ["--runner=DirectRunner",
+        "--experiments=shuffle_mode=auto", "--project=dkube-project", "--temp_location=gs://oc-kf-pipelines/tmp",
+        "--region=us-central1"]}'
+      - --outputs
+      - '{"output": [{"artifact": {"properties": {"type_name": {"stringValue": "SchemaPath"},
+        "split": {"stringValue": ""}}}, "artifact_type": {"name": "SchemaPath", "properties":
+        {"split": "STRING", "state": "STRING", "span": "INT", "name": "STRING", "type_name":
+        "STRING"}}}]}'
+      - --executor_class_path
+      - tfx.components.schema_gen.executor.Executor
+      - SchemaGen
+      - --stats
+      - '{{inputs.parameters.statisticsgen-output}}'
+      command:
+      - python
+      - /tfx-src/tfx/orchestration/kubeflow/container_entrypoint.py
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: WORKFLOW_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['workflows.argoproj.io/workflow']
+      image: tensorflow/tfx:0.13.0
+      volumeMounts:
+      - mountPath: /secret/gcp-credentials
+        name: gcp-credentials-user-gcp-sa
+    inputs:
+      parameters:
+      - name: statisticsgen-output
+    name: schemagen
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+      parameters:
+      - name: schemagen-output
+        valueFrom:
+          path: /output/ml_metadata/output
+  - container:
+      args:
+      - --exec_properties
+      - '{"output_dir": "gs://oc-kf-pipelines/tfx/complaint_model_pipeline_kubeflow",
+        "log_root": "/var/tmp/tfx/logs", "beam_pipeline_args": ["--runner=DirectRunner",
+        "--experiments=shuffle_mode=auto", "--project=dkube-project", "--temp_location=gs://oc-kf-pipelines/tmp",
+        "--region=us-central1"]}'
+      - --outputs
+      - '{"output": [{"artifact": {"properties": {"type_name": {"stringValue": "ExampleStatisticsPath"},
+        "split": {"stringValue": "train"}}}, "artifact_type": {"name": "ExampleStatisticsPath",
+        "properties": {"type_name": "STRING", "split": "STRING", "state": "STRING",
+        "span": "INT", "name": "STRING"}}}, {"artifact": {"properties": {"split":
+        {"stringValue": "eval"}, "type_name": {"stringValue": "ExampleStatisticsPath"}}},
+        "artifact_type": {"name": "ExampleStatisticsPath", "properties": {"name":
+        "STRING", "type_name": "STRING", "split": "STRING", "state": "STRING", "span":
+        "INT"}}}]}'
+      - --executor_class_path
+      - tfx.components.statistics_gen.executor.Executor
+      - StatisticsGen
+      - --input_data
+      - '{{inputs.parameters.csvexamplegen-examples}}'
+      command:
+      - python
+      - /tfx-src/tfx/orchestration/kubeflow/container_entrypoint.py
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: WORKFLOW_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['workflows.argoproj.io/workflow']
+      image: tensorflow/tfx:0.13.0
+      volumeMounts:
+      - mountPath: /secret/gcp-credentials
+        name: gcp-credentials-user-gcp-sa
+    inputs:
+      parameters:
+      - name: csvexamplegen-examples
+    name: statisticsgen
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+      parameters:
+      - name: statisticsgen-output
+        valueFrom:
+          path: /output/ml_metadata/output
+  - container:
+      args:
+      - --exec_properties
+      - '{"train_args": "{\n  \"numSteps\": 10000\n}", "eval_args": "{\n  \"numSteps\":
+        5000\n}", "module_file": "gs://oc-kf-pipelines/tfx/utils.py", "output_dir": "gs://oc-kf-pipelines/tfx/complaint_model_pipeline_kubeflow",
+        "log_root": "/var/tmp/tfx/logs", "beam_pipeline_args": ["--runner=DirectRunner",
+        "--experiments=shuffle_mode=auto", "--project=dkube-project", "--temp_location=gs://oc-kf-pipelines/tmp",
+        "--region=us-central1"]}'
+      - --outputs
+      - '{"output": [{"artifact": {"properties": {"type_name": {"stringValue": "ModelExportPath"},
+        "split": {"stringValue": ""}}}, "artifact_type": {"name": "ModelExportPath",
+        "properties": {"type_name": "STRING", "split": "STRING", "state": "STRING",
+        "span": "INT", "name": "STRING"}}}]}'
+      - --executor_class_path
+      - tfx.components.trainer.executor.Executor
+      - Trainer
+      - --transformed_examples
+      - '{{inputs.parameters.transform-transformed-examples}}'
+      - --transform_output
+      - '{{inputs.parameters.transform-transform-output}}'
+      - --schema
+      - '{{inputs.parameters.schemagen-output}}'
+      command:
+      - python
+      - /tfx-src/tfx/orchestration/kubeflow/container_entrypoint.py
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: WORKFLOW_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['workflows.argoproj.io/workflow']
+      image: tensorflow/tfx:0.13.0
+      volumeMounts:
+      - mountPath: /secret/gcp-credentials
+        name: gcp-credentials-user-gcp-sa
+    inputs:
+      parameters:
+      - name: schemagen-output
+      - name: transform-transform-output
+      - name: transform-transformed-examples
+    name: trainer
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+      parameters:
+      - name: trainer-output
+        valueFrom:
+          path: /output/ml_metadata/output
+  - container:
+      args:
+      - --exec_properties
+      - '{"module_file": "gs://oc-kf-pipelines/tfx/utils.py", "output_dir": "gs://oc-kf-pipelines/tfx/complaint_model_pipeline_kubeflow",
+        "log_root": "/var/tmp/tfx/logs", "beam_pipeline_args": ["--runner=DirectRunner",
+        "--experiments=shuffle_mode=auto", "--project=dkube-project", "--temp_location=gs://oc-kf-pipelines/tmp",
+        "--region=us-central1"]}'
+      - --outputs
+      - '{"transform_output": [{"artifact": {"properties": {"type_name": {"stringValue":
+        "TransformPath"}, "split": {"stringValue": ""}}}, "artifact_type": {"name":
+        "TransformPath", "properties": {"split": "STRING", "state": "STRING", "span":
+        "INT", "name": "STRING", "type_name": "STRING"}}}], "transformed_examples":
+        [{"artifact": {"properties": {"type_name": {"stringValue": "ExamplesPath"},
+        "split": {"stringValue": "train"}}}, "artifact_type": {"name": "ExamplesPath",
+        "properties": {"name": "STRING", "type_name": "STRING", "split": "STRING",
+        "state": "STRING", "span": "INT"}}}, {"artifact": {"properties": {"split":
+        {"stringValue": "eval"}, "type_name": {"stringValue": "ExamplesPath"}}}, "artifact_type":
+        {"name": "ExamplesPath", "properties": {"type_name": "STRING", "split": "STRING",
+        "state": "STRING", "span": "INT", "name": "STRING"}}}]}'
+      - --executor_class_path
+      - tfx.components.transform.executor.Executor
+      - Transform
+      - --input_data
+      - '{{inputs.parameters.csvexamplegen-examples}}'
+      - --schema
+      - '{{inputs.parameters.schemagen-output}}'
+      command:
+      - python
+      - /tfx-src/tfx/orchestration/kubeflow/container_entrypoint.py
+      env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+        value: /secret/gcp-credentials/user-gcp-sa.json
+      - name: WORKFLOW_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['workflows.argoproj.io/workflow']
+      image: tensorflow/tfx:0.13.0
+      volumeMounts:
+      - mountPath: /secret/gcp-credentials
+        name: gcp-credentials-user-gcp-sa
+    inputs:
+      parameters:
+      - name: csvexamplegen-examples
+      - name: schemagen-output
+    name: transform
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+      parameters:
+      - name: transform-transform-output
+        valueFrom:
+          path: /output/ml_metadata/transform_output
+      - name: transform-transformed-examples
+        valueFrom:
+          path: /output/ml_metadata/transformed_examples
+  volumes:
+  - name: gcp-credentials-user-gcp-sa
+    secret:
+      secretName: user-gcp-sa
+
