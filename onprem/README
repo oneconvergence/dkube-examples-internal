@@ -1,0 +1,6 @@
+1. create pv using create-pv.yaml using below command on dkube master node. change name evrytime you create pv.
+   $kubectl apply -f chicago-pv.yaml
+
+2. Above pv creation command create mount path "/mnt/data" on host. copy "./taxi-cab-classification" to "/mnt/data" on master node.
+
+3. run pipeline
