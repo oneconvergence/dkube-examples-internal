@@ -173,7 +173,6 @@ def kubeflow_deploy_op(model: 'TensorFlow model', tf_server_name, pvc_name,
     description='Example pipeline that does classification with model analysis based on a public BigQuery dataset for on-prem cluster.'
 )
 def taxi_cab_classification(
-        rok_url,
         pvc_size='1Gi',
         project='tfx-taxi-pipeline-on-prem',
         column_names='taxi-cab-classification/column-names.json',
@@ -191,29 +190,29 @@ def taxi_cab_classification(
 
     vop = dsl.VolumeOp(
         name='create-volume',
-        resource_name='taxi-cab-data',
-        annotations={"rok/origin": rok_url},
+        resource_name='chicago-taxi-cab-data',
+        modes=dsl.VOLUME_MODE_RWM,
         size=pvc_size
     )
 
     validation = dataflow_tf_data_validation_op(
-        '/mnt/%s' % train,
-        '/mnt/%s' % evaluation,
-        '/mnt/%s' % column_names,
+        '/chicago-taxi-cab-data/%s' % train,
+        '/chicago-taxi-cab-data/%s' % evaluation,
+        '/chicago-taxi-cab-data/%s' % column_names,
         key_columns,
         project,
         mode,
-        '/mnt',
+        '/chicago-taxi-cab-data',
         vop.volume
     )
 
     preprocess = dataflow_tf_transform_op(
-        '/mnt/%s' % train,
-        '/mnt/%s' % evaluation,
+        '/chicago-taxi-cab-data/%s' % train,
+        '/chicago-taxi-cab-data/%s' % evaluation,
         validation.outputs['schema'],
         project, mode,
-        '/mnt/%s' % preprocess_module,
-        '/mnt',
+        '/chicago-taxi-cab-data/%s' % preprocess_module,
+        '/chicago-taxi-cab-data',
         vop.volume
     )
 
@@ -224,42 +223,42 @@ def taxi_cab_classification(
         hidden_layer_size,
         steps,
         'tips',
-        '/mnt/%s' % preprocess_module,
-        '/mnt',
+        '/chicago-taxi-cab-data/%s' % preprocess_module,
+        '/chicago-taxi-cab-data',
         vop.volume
     )
 
     analysis = dataflow_tf_model_analyze_op(
         training.output,
-        '/mnt/%s' % evaluation,
+        '/chicago-taxi-cab-data/%s' % evaluation,
         validation.outputs['schema'],
         project,
         mode,
         analyze_slice_column,
-        '/mnt',
+        '/chicago-taxi-cab-data',
         vop.volume
     )
 
     prediction = dataflow_tf_predict_op(
-        '/mnt/%s' % evaluation,
+        '/chicago-taxi-cab-data/%s' % evaluation,
         validation.outputs['schema'],
         'tips',
         training.output,
         mode,
         project,
-        '/mnt',
+        '/chicago-taxi-cab-data',
         vop.volume
     )
 
     cm = confusion_matrix_op(
         prediction.output,
-        '/mnt',
+        '/chicago-taxi-cab-data',
         vop.volume
     )
 
     roc = roc_op(
         prediction.output,
-        '/mnt',
+        '/chicago-taxi-cab-data',
         vop.volume
     )
 
@@ -267,7 +266,7 @@ def taxi_cab_classification(
         training.output,
         tf_server_name,
         vop.output,
-        {'/mnt': vop.volume}
+        {'/chicago-taxi-cab-data': vop.volume}
     )
 
 

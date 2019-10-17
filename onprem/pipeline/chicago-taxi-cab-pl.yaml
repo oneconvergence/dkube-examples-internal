@@ -37,7 +37,7 @@ spec:
           - '--model'
           - '{{inputs.parameters.training-train}}'
           - '--eval'
-          - '/mnt/{{inputs.parameters.evaluation}}'
+          - '/chicago-taxi-cab-data/{{inputs.parameters.evaluation}}'
           - '--schema'
           - '{{inputs.parameters.validation-schema}}'
           - '--project'
@@ -47,11 +47,11 @@ spec:
           - '--slice-columns'
           - '{{inputs.parameters.analyze-slice-column}}'
           - '--output'
-          - '/mnt/{{workflow.name}}/analysis'
+          - '/chicago-taxi-cab-data/{{workflow.name}}/analysis'
         image: >-
           gcr.io/ml-pipeline/ml-pipeline-dataflow-tfma:6ad2601ec7d04e842c212c50d5c78e548e12ddea
         volumeMounts:
-          - mountPath: /mnt
+          - mountPath: /chicago-taxi-cab-data
             name: create-volume
       inputs:
         parameters:
@@ -98,7 +98,7 @@ spec:
     - container:
         args:
           - '--output'
-          - '/mnt/{{workflow.name}}/confusionmatrix'
+          - '/chicago-taxi-cab-data/{{workflow.name}}/confusionmatrix'
           - '--predictions'
           - '{{inputs.parameters.prediction-prediction}}'
           - '--target_lambda'
@@ -106,7 +106,7 @@ spec:
         image: >-
           gcr.io/ml-pipeline/ml-pipeline-local-confusion-matrix:5df2cdc1ed145320204e8bc73b59cdbd7b3da28f
         volumeMounts:
-          - mountPath: /mnt
+          - mountPath: /chicago-taxi-cab-data
             name: create-volume
       inputs:
         parameters:
@@ -162,7 +162,7 @@ spec:
           apiVersion: v1
           kind: PersistentVolumeClaim
           metadata:
-            name: '{{workflow.name}}-taxi-cab-data'
+            name: '{{workflow.name}}-chicago-taxi-cab-data'
           spec:
             accessModes:
             - ReadWriteMany
@@ -182,7 +182,7 @@ spec:
         image: >-
           gcr.io/ml-pipeline/ml-pipeline-kubeflow-deployer:727c48c690c081b505c1f0979d11930bf1ef07c0
         volumeMounts:
-          - mountPath: /mnt
+          - mountPath: /chicago-taxi-cab-data
             name: create-volume
       inputs:
         parameters:
@@ -220,7 +220,7 @@ spec:
     - container:
         args:
           - '--data'
-          - '/mnt/{{inputs.parameters.evaluation}}'
+          - '/chicago-taxi-cab-data/{{inputs.parameters.evaluation}}'
           - '--schema'
           - '{{inputs.parameters.validation-schema}}'
           - '--target'
@@ -232,11 +232,11 @@ spec:
           - '--project'
           - '{{inputs.parameters.project}}'
           - '--output'
-          - '/mnt/{{workflow.name}}/predict'
+          - '/chicago-taxi-cab-data/{{workflow.name}}/predict'
         image: >-
           gcr.io/ml-pipeline/ml-pipeline-dataflow-tf-predict:6ad2601ec7d04e842c212c50d5c78e548e12ddea
         volumeMounts:
-          - mountPath: /mnt
+          - mountPath: /chicago-taxi-cab-data
             name: create-volume
       inputs:
         parameters:
@@ -282,9 +282,9 @@ spec:
     - container:
         args:
           - '--train'
-          - '/mnt/{{inputs.parameters.train}}'
+          - '/chicago-taxi-cab-data/{{inputs.parameters.train}}'
           - '--eval'
-          - '/mnt/{{inputs.parameters.evaluation}}'
+          - '/chicago-taxi-cab-data/{{inputs.parameters.evaluation}}'
           - '--schema'
           - '{{inputs.parameters.validation-schema}}'
           - '--project'
@@ -292,13 +292,13 @@ spec:
           - '--mode'
           - '{{inputs.parameters.mode}}'
           - '--preprocessing-module'
-          - '/mnt/{{inputs.parameters.preprocess-module}}'
+          - '/chicago-taxi-cab-data/{{inputs.parameters.preprocess-module}}'
           - '--output'
-          - '/mnt/{{workflow.name}}/transformed'
+          - '/chicago-taxi-cab-data/{{workflow.name}}/transformed'
         image: >-
           gcr.io/ml-pipeline/ml-pipeline-dataflow-tft:6ad2601ec7d04e842c212c50d5c78e548e12ddea
         volumeMounts:
-          - mountPath: /mnt
+          - mountPath: /chicago-taxi-cab-data
             name: create-volume
       inputs:
         parameters:
@@ -345,7 +345,7 @@ spec:
     - container:
         args:
           - '--output'
-          - '/mnt/{{workflow.name}}/roc'
+          - '/chicago-taxi-cab-data/{{workflow.name}}/roc'
           - '--predictions'
           - '{{inputs.parameters.prediction-prediction}}'
           - '--target_lambda'
@@ -353,7 +353,7 @@ spec:
         image: >-
           gcr.io/ml-pipeline/ml-pipeline-local-roc:5df2cdc1ed145320204e8bc73b59cdbd7b3da28f
         volumeMounts:
-          - mountPath: /mnt
+          - mountPath: /chicago-taxi-cab-data
             name: create-volume
       inputs:
         parameters:
@@ -575,13 +575,13 @@ spec:
           - '--target'
           - tips
           - '--preprocessing-module'
-          - '/mnt/{{inputs.parameters.preprocess-module}}'
+          - '/chicago-taxi-cab-data/{{inputs.parameters.preprocess-module}}'
           - '--job-dir'
-          - '/mnt/{{workflow.name}}/train'
+          - '/chicago-taxi-cab-data/{{workflow.name}}/train'
         image: >-
           gcr.io/ml-pipeline/ml-pipeline-kubeflow-tf-trainer:5df2cdc1ed145320204e8bc73b59cdbd7b3da28f
         volumeMounts:
-          - mountPath: /mnt
+          - mountPath: /chicago-taxi-cab-data
             name: create-volume
       inputs:
         parameters:
@@ -628,11 +628,11 @@ spec:
     - container:
         args:
           - '--csv-data-for-inference'
-          - '/mnt/{{inputs.parameters.train}}'
+          - '/chicago-taxi-cab-data/{{inputs.parameters.train}}'
           - '--csv-data-to-validate'
-          - '/mnt/{{inputs.parameters.evaluation}}'
+          - '/chicago-taxi-cab-data/{{inputs.parameters.evaluation}}'
           - '--column-names'
-          - '/mnt/{{inputs.parameters.column-names}}'
+          - '/chicago-taxi-cab-data/{{inputs.parameters.column-names}}'
           - '--key-columns'
           - '{{inputs.parameters.key-columns}}'
           - '--project'
@@ -640,11 +640,11 @@ spec:
           - '--mode'
           - '{{inputs.parameters.mode}}'
           - '--output'
-          - '/mnt/{{workflow.name}}/validation'
+          - '/chicago-taxi-cab-data/{{workflow.name}}/validation'
         image: >-
           gcr.io/ml-pipeline/ml-pipeline-dataflow-tfdv:6ad2601ec7d04e842c212c50d5c78e548e12ddea
         volumeMounts:
-          - mountPath: /mnt
+          - mountPath: /chicago-taxi-cab-data
             name: create-volume
       inputs:
         parameters:

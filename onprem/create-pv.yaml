@@ -10,4 +10,4 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/mnt/data"
+    path: "/chicago-taxi-cab-data"
