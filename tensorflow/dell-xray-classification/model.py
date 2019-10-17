@@ -104,19 +104,20 @@ class AucRoc(keras.callbacks.Callback):
 
 
 def dkubeLoggerHook(epoch, logs):
+    epoch = epoch + 1
     train_metrics = {
         'mode': "train",
-        'accuracy': logs.get('accuracy', 0),
+        'accuracy': float(logs.get('accuracy', 0)),
         'loss': logs.get('loss', 0),
-        'epoch': int(epoch) + 1,
+        'epoch': epoch,
         'jobid': os.getenv('JOBID'),
         'username': os.getenv('USERNAME')
     }
     eval_metrics = {
         'mode': "eval",
-        'accuracy': logs.get('val_accuracy', 0),
+        'accuracy': float(logs.get('val_accuracy', 0)),
         'loss': logs.get('val_loss', 0),
-        'epoch': int(epoch) + 1,
+        'epoch': epoch,
         'jobid': os.getenv('JOBID'),
         'username': os.getenv('USERNAME')
     }
