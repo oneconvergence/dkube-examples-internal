@@ -1,0 +1,697 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: taxi-cab-on-prem-
+spec:
+  arguments:
+    parameters:
+      - name: pvc-size
+        value: 1Gi
+      - name: project
+        value: tfx-taxi-pipeline-on-prem
+      - name: column-names
+        value: taxi-cab-classification/column-names.json
+      - name: key-columns
+        value: trip_start_timestamp
+      - name: train
+        value: taxi-cab-classification/train.csv
+      - name: evaluation
+        value: taxi-cab-classification/eval.csv
+      - name: mode
+        value: local
+      - name: preprocess-module
+        value: taxi-cab-classification/preprocessing.py
+      - name: learning-rate
+        value: '0.1'
+      - name: hidden-layer-size
+        value: '1500'
+      - name: steps
+        value: '3000'
+      - name: analyze-slice-column
+        value: trip_start_hour
+  entrypoint: taxi-cab-on-prem
+  serviceAccountName: pipeline-runner
+  templates:
+    - container:
+        args:
+          - '--model'
+          - '{{inputs.parameters.training-train}}'
+          - '--eval'
+          - '/mnt/{{inputs.parameters.evaluation}}'
+          - '--schema'
+          - '{{inputs.parameters.validation-schema}}'
+          - '--project'
+          - '{{inputs.parameters.project}}'
+          - '--mode'
+          - '{{inputs.parameters.mode}}'
+          - '--slice-columns'
+          - '{{inputs.parameters.analyze-slice-column}}'
+          - '--output'
+          - '/mnt/{{workflow.name}}/analysis'
+        image: >-
+          gcr.io/ml-pipeline/ml-pipeline-dataflow-tfma:6ad2601ec7d04e842c212c50d5c78e548e12ddea
+        volumeMounts:
+          - mountPath: /mnt
+            name: create-volume
+      inputs:
+        parameters:
+          - name: analyze-slice-column
+          - name: create-volume-name
+          - name: evaluation
+          - name: mode
+          - name: project
+          - name: training-train
+          - name: validation-schema
+      name: analysis
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+        parameters:
+          - name: analysis-analysis
+            valueFrom:
+              path: /output.txt
+    - container:
+        args:
+          - '--output'
+          - '/mnt/{{workflow.name}}/confusionmatrix'
+          - '--predictions'
+          - '{{inputs.parameters.prediction-prediction}}'
+          - '--target_lambda'
+          - 'lambda x: (x[''target''] > x[''fare''] * 0.2)'
+        image: >-
+          gcr.io/ml-pipeline/ml-pipeline-local-confusion-matrix:5df2cdc1ed145320204e8bc73b59cdbd7b3da28f
+        volumeMounts:
+          - mountPath: /mnt
+            name: create-volume
+      inputs:
+        parameters:
+          - name: create-volume-name
+          - name: prediction-prediction
+      name: confusion-matrix
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+    - inputs:
+        parameters:
+          - name: pvc-size
+      name: create-volume
+      outputs:
+        parameters:
+          - name: create-volume-manifest
+            valueFrom:
+              jsonPath: '{}'
+          - name: create-volume-name
+            valueFrom:
+              jsonPath: '{.metadata.name}'
+          - name: create-volume-size
+            valueFrom:
+              jsonPath: '{.status.capacity.storage}'
+      resource:
+        action: create
+        manifest: |
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: '{{workflow.name}}-taxi-cab-data'
+          spec:
+            accessModes:
+            - ReadWriteMany
+            resources:
+              requests:
+                storage: '{{inputs.parameters.pvc-size}}'
+    - container:
+        args:
+          - '--cluster-name'
+          - tfx-taxi-pipeline-on-prem
+          - '--model-export-path'
+          - '{{inputs.parameters.training-train}}'
+          - '--server-name'
+          - 'taxi-cab-classification-model-{{workflow.name}}'
+          - '--pvc-name'
+          - '{{inputs.parameters.create-volume-name}}'
+        image: >-
+          gcr.io/ml-pipeline/ml-pipeline-kubeflow-deployer:727c48c690c081b505c1f0979d11930bf1ef07c0
+        volumeMounts:
+          - mountPath: /mnt
+            name: create-volume
+      inputs:
+        parameters:
+          - name: create-volume-name
+          - name: training-train
+      name: deploy
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+    - container:
+        args:
+          - '--data'
+          - '/mnt/{{inputs.parameters.evaluation}}'
+          - '--schema'
+          - '{{inputs.parameters.validation-schema}}'
+          - '--target'
+          - tips
+          - '--model'
+          - '{{inputs.parameters.training-train}}'
+          - '--mode'
+          - '{{inputs.parameters.mode}}'
+          - '--project'
+          - '{{inputs.parameters.project}}'
+          - '--output'
+          - '/mnt/{{workflow.name}}/predict'
+        image: >-
+          gcr.io/ml-pipeline/ml-pipeline-dataflow-tf-predict:6ad2601ec7d04e842c212c50d5c78e548e12ddea
+        volumeMounts:
+          - mountPath: /mnt
+            name: create-volume
+      inputs:
+        parameters:
+          - name: create-volume-name
+          - name: evaluation
+          - name: mode
+          - name: project
+          - name: training-train
+          - name: validation-schema
+      name: prediction
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+        parameters:
+          - name: prediction-prediction
+            valueFrom:
+              path: /output.txt
+    - container:
+        args:
+          - '--train'
+          - '/mnt/{{inputs.parameters.train}}'
+          - '--eval'
+          - '/mnt/{{inputs.parameters.evaluation}}'
+          - '--schema'
+          - '{{inputs.parameters.validation-schema}}'
+          - '--project'
+          - '{{inputs.parameters.project}}'
+          - '--mode'
+          - '{{inputs.parameters.mode}}'
+          - '--preprocessing-module'
+          - '/mnt/{{inputs.parameters.preprocess-module}}'
+          - '--output'
+          - '/mnt/{{workflow.name}}/transformed'
+        image: >-
+          gcr.io/ml-pipeline/ml-pipeline-dataflow-tft:6ad2601ec7d04e842c212c50d5c78e548e12ddea
+        volumeMounts:
+          - mountPath: /mnt
+            name: create-volume
+      inputs:
+        parameters:
+          - name: create-volume-name
+          - name: evaluation
+          - name: mode
+          - name: preprocess-module
+          - name: project
+          - name: train
+          - name: validation-schema
+      name: preprocess
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+        parameters:
+          - name: preprocess-transformed
+            valueFrom:
+              path: /output.txt
+    - container:
+        args:
+          - '--output'
+          - '/mnt/{{workflow.name}}/roc'
+          - '--predictions'
+          - '{{inputs.parameters.prediction-prediction}}'
+          - '--target_lambda'
+          - 'lambda x: 1 if (x[''target''] > x[''fare''] * 0.2) else 0'
+        image: >-
+          gcr.io/ml-pipeline/ml-pipeline-local-roc:5df2cdc1ed145320204e8bc73b59cdbd7b3da28f
+        volumeMounts:
+          - mountPath: /mnt
+            name: create-volume
+      inputs:
+        parameters:
+          - name: create-volume-name
+          - name: prediction-prediction
+      name: roc
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+    - dag:
+        tasks:
+          - arguments:
+              parameters:
+                - name: analyze-slice-column
+                  value: '{{inputs.parameters.analyze-slice-column}}'
+                - name: create-volume-name
+                  value: >-
+                    {{tasks.create-volume.outputs.parameters.create-volume-name}}
+                - name: evaluation
+                  value: '{{inputs.parameters.evaluation}}'
+                - name: mode
+                  value: '{{inputs.parameters.mode}}'
+                - name: project
+                  value: '{{inputs.parameters.project}}'
+                - name: training-train
+                  value: '{{tasks.training.outputs.parameters.training-train}}'
+                - name: validation-schema
+                  value: '{{tasks.validation.outputs.parameters.validation-schema}}'
+            dependencies:
+              - create-volume
+              - training
+              - validation
+            name: analysis
+            template: analysis
+          - arguments:
+              parameters:
+                - name: create-volume-name
+                  value: >-
+                    {{tasks.create-volume.outputs.parameters.create-volume-name}}
+                - name: prediction-prediction
+                  value: >-
+                    {{tasks.prediction.outputs.parameters.prediction-prediction}}
+            dependencies:
+              - create-volume
+              - prediction
+            name: confusion-matrix
+            template: confusion-matrix
+          - arguments:
+              parameters:
+                - name: pvc-size
+                  value: '{{inputs.parameters.pvc-size}}'
+            name: create-volume
+            template: create-volume
+          - arguments:
+              parameters:
+                - name: create-volume-name
+                  value: >-
+                    {{tasks.create-volume.outputs.parameters.create-volume-name}}
+                - name: training-train
+                  value: '{{tasks.training.outputs.parameters.training-train}}'
+            dependencies:
+              - create-volume
+              - training
+            name: deploy
+            template: deploy
+          - arguments:
+              parameters:
+                - name: create-volume-name
+                  value: >-
+                    {{tasks.create-volume.outputs.parameters.create-volume-name}}
+                - name: evaluation
+                  value: '{{inputs.parameters.evaluation}}'
+                - name: mode
+                  value: '{{inputs.parameters.mode}}'
+                - name: project
+                  value: '{{inputs.parameters.project}}'
+                - name: training-train
+                  value: '{{tasks.training.outputs.parameters.training-train}}'
+                - name: validation-schema
+                  value: '{{tasks.validation.outputs.parameters.validation-schema}}'
+            dependencies:
+              - create-volume
+              - training
+              - validation
+            name: prediction
+            template: prediction
+          - arguments:
+              parameters:
+                - name: create-volume-name
+                  value: >-
+                    {{tasks.create-volume.outputs.parameters.create-volume-name}}
+                - name: evaluation
+                  value: '{{inputs.parameters.evaluation}}'
+                - name: mode
+                  value: '{{inputs.parameters.mode}}'
+                - name: preprocess-module
+                  value: '{{inputs.parameters.preprocess-module}}'
+                - name: project
+                  value: '{{inputs.parameters.project}}'
+                - name: train
+                  value: '{{inputs.parameters.train}}'
+                - name: validation-schema
+                  value: '{{tasks.validation.outputs.parameters.validation-schema}}'
+            dependencies:
+              - create-volume
+              - validation
+            name: preprocess
+            template: preprocess
+          - arguments:
+              parameters:
+                - name: create-volume-name
+                  value: >-
+                    {{tasks.create-volume.outputs.parameters.create-volume-name}}
+                - name: prediction-prediction
+                  value: >-
+                    {{tasks.prediction.outputs.parameters.prediction-prediction}}
+            dependencies:
+              - create-volume
+              - prediction
+            name: roc
+            template: roc
+          - arguments:
+              parameters:
+                - name: create-volume-name
+                  value: >-
+                    {{tasks.create-volume.outputs.parameters.create-volume-name}}
+                - name: hidden-layer-size
+                  value: '{{inputs.parameters.hidden-layer-size}}'
+                - name: learning-rate
+                  value: '{{inputs.parameters.learning-rate}}'
+                - name: preprocess-module
+                  value: '{{inputs.parameters.preprocess-module}}'
+                - name: preprocess-transformed
+                  value: >-
+                    {{tasks.preprocess.outputs.parameters.preprocess-transformed}}
+                - name: steps
+                  value: '{{inputs.parameters.steps}}'
+                - name: validation-schema
+                  value: '{{tasks.validation.outputs.parameters.validation-schema}}'
+            dependencies:
+              - create-volume
+              - preprocess
+              - validation
+            name: training
+            template: training
+          - arguments:
+              parameters:
+                - name: column-names
+                  value: '{{inputs.parameters.column-names}}'
+                - name: create-volume-name
+                  value: >-
+                    {{tasks.create-volume.outputs.parameters.create-volume-name}}
+                - name: evaluation
+                  value: '{{inputs.parameters.evaluation}}'
+                - name: key-columns
+                  value: '{{inputs.parameters.key-columns}}'
+                - name: mode
+                  value: '{{inputs.parameters.mode}}'
+                - name: project
+                  value: '{{inputs.parameters.project}}'
+                - name: train
+                  value: '{{inputs.parameters.train}}'
+            dependencies:
+              - create-volume
+            name: validation
+            template: validation
+      inputs:
+        parameters:
+          - name: analyze-slice-column
+          - name: column-names
+          - name: evaluation
+          - name: hidden-layer-size
+          - name: key-columns
+          - name: learning-rate
+          - name: mode
+          - name: preprocess-module
+          - name: project
+          - name: pvc-size
+          - name: steps
+          - name: train
+      name: taxi-cab-on-prem
+    - container:
+        args:
+          - '--transformed-data-dir'
+          - '{{inputs.parameters.preprocess-transformed}}'
+          - '--schema'
+          - '{{inputs.parameters.validation-schema}}'
+          - '--learning-rate'
+          - '{{inputs.parameters.learning-rate}}'
+          - '--hidden-layer-size'
+          - '{{inputs.parameters.hidden-layer-size}}'
+          - '--steps'
+          - '{{inputs.parameters.steps}}'
+          - '--target'
+          - tips
+          - '--preprocessing-module'
+          - '/mnt/{{inputs.parameters.preprocess-module}}'
+          - '--job-dir'
+          - '/mnt/{{workflow.name}}/train'
+        image: >-
+          gcr.io/ml-pipeline/ml-pipeline-kubeflow-tf-trainer:5df2cdc1ed145320204e8bc73b59cdbd7b3da28f
+        volumeMounts:
+          - mountPath: /mnt
+            name: create-volume
+      inputs:
+        parameters:
+          - name: create-volume-name
+          - name: hidden-layer-size
+          - name: learning-rate
+          - name: preprocess-module
+          - name: preprocess-transformed
+          - name: steps
+          - name: validation-schema
+      name: training
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+        parameters:
+          - name: training-train
+            valueFrom:
+              path: /output.txt
+    - container:
+        args:
+          - '--csv-data-for-inference'
+          - '/mnt/{{inputs.parameters.train}}'
+          - '--csv-data-to-validate'
+          - '/mnt/{{inputs.parameters.evaluation}}'
+          - '--column-names'
+          - '/mnt/{{inputs.parameters.column-names}}'
+          - '--key-columns'
+          - '{{inputs.parameters.key-columns}}'
+          - '--project'
+          - '{{inputs.parameters.project}}'
+          - '--mode'
+          - '{{inputs.parameters.mode}}'
+          - '--output'
+          - '/mnt/{{workflow.name}}/validation'
+        image: >-
+          gcr.io/ml-pipeline/ml-pipeline-dataflow-tfdv:6ad2601ec7d04e842c212c50d5c78e548e12ddea
+        volumeMounts:
+          - mountPath: /mnt
+            name: create-volume
+      inputs:
+        parameters:
+          - name: column-names
+          - name: create-volume-name
+          - name: evaluation
+          - name: key-columns
+          - name: mode
+          - name: project
+          - name: train
+      name: validation
+      outputs:
+        artifacts:
+          - name: mlpipeline-ui-metadata
+            path: /mlpipeline-ui-metadata.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+          - name: mlpipeline-metrics
+            path: /mlpipeline-metrics.json
+            s3:
+              accessKeySecret:
+                key: accesskey
+                name: mlpipeline-minio-artifact
+              bucket: mlpipeline
+              endpoint: 'minio-service.kubeflow:9000'
+              insecure: true
+              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
+              secretKeySecret:
+                key: secretkey
+                name: mlpipeline-minio-artifact
+        parameters:
+          - name: validation-schema
+            valueFrom:
+              path: /schema.txt
+          - name: validation-validation
+            valueFrom:
+              path: /output_validation_result.txt
+  volumes:
+    - name: create-volume
+      persistentVolumeClaim:
+        claimName: '{{inputs.parameters.create-volume-name}}'
