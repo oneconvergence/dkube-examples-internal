@@ -1,0 +1,10 @@
+dependencies
+pip3 install tfx
+pip3 install https://storage.googleapis.com/ml-pipeline/release/0.1.18/kfp.tar.gz --upgrade
+
+
+links-:
+https://github.com/tensorflow/tfx/blob/master/tfx/orchestration/kubeflow/kubeflow_dag_runner_test.py
+https://kubeflow-pipelines.readthedocs.io/en/latest/_modules/kfp/onprem.html
+
+wget -O $TAXI_DIR/data/simple/data.csv https://github.com/tensorflow/tfx/blob/master/tfx/examples/chicago_taxi_pipeline/data/simple/data.csv?raw=true

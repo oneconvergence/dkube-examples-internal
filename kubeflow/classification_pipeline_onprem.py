@@ -14,6 +14,7 @@
 """Kubeflow Pipeline Example"""
 
 import os
+from kfp import onprem
 
 from tfx.components.example_gen.csv_example_gen.component import CsvExampleGen
 
@@ -36,7 +37,11 @@ from tfx.components.pusher.component import Pusher  # Step 7
 from tfx.utils.dsl_utils import csv_input
 
 from tfx.orchestration import pipeline
-from tfx.orchestration.kubeflow.runner import KubeflowRunner
+from tfx.orchestration.kubeflow.proto import kubeflow_pb2
+from tfx.orchestration.kubeflow import kubeflow_dag_runner
+from ml_metadata.proto import metadata_store_pb2
+from ml_metadata.metadata_store import metadata_store
+from typing import Text
 
 # pylint: enable=line-too-long
 
@@ -45,6 +50,7 @@ _input_bucket = '/book-classification/data/'
 _utils_bucket = '/book-classification/tfx/'
 _output_bucket = '/book-classification'
 _pipeline_root = os.path.join(_output_bucket, 'tfx')
+pipeline_name = 'complaint_model_pipeline_kubeflow'
 
 # Python module file to inject customized logic into the TFX components. The
 # Transform and Trainer both require user-defined functions to run successfully.
@@ -61,6 +67,36 @@ pipeline_module_file = os.path.join(_utils_bucket, 'utils.py')
 # trained model here.
 _serving_model_dir = os.path.join(
     _output_bucket, 'serving_model/complaint_model')
+
+
+def _get_kubeflow_metadata_config(pipeline_name: Text
+                                  ) -> kubeflow_pb2.KubeflowMetadataConfig:
+    config = kubeflow_pb2.KubeflowMetadataConfig()
+    config.mysql_db_service_host.value = '10.233.64.94'
+    config.mysql_db_service_port.value = '3306'
+    config.mysql_db_name.value = _get_mlmd_db_name(pipeline_name)
+    config.mysql_db_user.value = 'root'
+    config.mysql_db_password.value = ''
+    return config
+
+def _get_metadata_store(pipeline_name: Text
+                        ) -> metadata_store_pb2.ConnectionConfig:
+    config = metadata_store_pb2.ConnectionConfig()
+    config.mysql.host = '10.233.64.94'
+    config.mysql.port = 3306
+    config.mysql.database = _get_mlmd_db_name(pipeline_name)
+    config.mysql.user = 'root'
+    config.mysql.password = ''
+    store = metadata_store.MetadataStore(config)
+    return store
+
+
+def _get_mlmd_db_name(pipeline_name: Text):
+    # MySQL DB names must not contain '-' while k8s names must not contain '_'.
+    # So we replace the dashes here for the DB name.
+    valid_mysql_name = pipeline_name.replace('-', '_')
+    # MySQL database name cannot exceed 64 characters.
+    return 'mlmd_{}'.format(valid_mysql_name[-59:])
 
 
 def _create_pipeline():
@@ -121,14 +157,30 @@ def _create_pipeline():
                 base_directory=_serving_model_dir)))
 
     return pipeline.Pipeline(
-        pipeline_name='complaint_model_pipeline_kubeflow',
+        pipeline_name=pipeline_name,
         pipeline_root=_pipeline_root,
+        metadata_connection_config=_get_metadata_store(pipeline_name),
         components=[
             example_gen, statistics_gen, infer_schema, validate_stats,
             transform, trainer, model_analyzer, model_validator, pusher
         ],
-        log_root='/var/tmp/tfx/logs',
+        additional_pipeline_args={
+            'beam_pipeline_args': [
+                '--runner=DirectRunner',
+                '--experiments=shuffle_mode=auto',
+                '--temp_location=' + os.path.join(_output_bucket, 'tmp')
+            ],
+        },
+        log_root='/var/tmp/tfx/logs'
     )
 
 
-_ = KubeflowRunner().run(_create_pipeline())
+mount_volume_op = onprem.mount_pvc('book-classification-claim',
+                                   'book-classification',
+                                   '/book-classification')
+config = kubeflow_dag_runner.KubeflowDagRunnerConfig(
+    pipeline_operator_funcs=[mount_volume_op],
+    kubeflow_metadata_config=_get_kubeflow_metadata_config(pipeline_name)
+)
+
+kubeflow_dag_runner.KubeflowDagRunner(config=config).run(_create_pipeline())
