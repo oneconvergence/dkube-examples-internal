@@ -126,10 +126,6 @@ def _fill_in_missing(x, to_string=False, unk=""):
         axis=1)
 
 
-labels = ['No', 'Yes']
-table = tf.contrib.lookup.index_table_from_tensor(labels)
-
-
 def _convert_label(x, table):
     # default_value = 'No'
     # x = tf.squeeze(tf.sparse_to_dense(
@@ -266,9 +262,9 @@ def preprocessing_fn(inputs):
 
     # Complaint raised?
     # outputs[_transformed_name(_LABEL_KEY)] = _convert_label(inputs[_LABEL_KEY])
-    labels = ['No', 'Yes']
+    #labels = ['No', 'Yes']
     # num_labels = len(labels)
-    table = tf.contrib.lookup.index_table_from_tensor(labels)
+    #table = tf.contrib.lookup.index_table_from_tensor(labels)
 
     # outputs[_transformed_name(_LABEL_KEY)] = _convert_label(
     #     inputs[_LABEL_KEY], table)
@@ -472,7 +468,7 @@ def _input_fn(filenames, transform_output, batch_size=2):
     metadata_dir = os.path.join(transform_output,
                                 transform_fn_io.TRANSFORMED_METADATA_DIR)
     transformed_metadata = metadata_io.read_metadata(metadata_dir)
-    transformed_feature_spec = transformed_metadata.schema.as_feature_spec()
+    transformed_feature_spec = _get_raw_feature_spec(transformed_metadata.schema)
 
     transformed_features = tf.contrib.learn.io.read_batch_features(
         filenames, batch_size, transformed_feature_spec, reader=_gzip_reader_fn)

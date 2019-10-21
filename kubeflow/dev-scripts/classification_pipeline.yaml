@@ -61,26 +61,23 @@ spec:
           - |-
             {
               "mysqlDbServiceHost": {
-                "environmentVariable": "METADATA_DB_SERVICE_HOST"
+                "value": "10.233.64.94"
               },
               "mysqlDbServicePort": {
-                "environmentVariable": "METADATA_DB_SERVICE_PORT"
+                "value": "3306"
               },
               "mysqlDbName": {
-                "value": "metadb"
+                "value": "mlmd_complaint_model_pipeline_kubeflow"
               },
               "mysqlDbUser": {
                 "value": "root"
               },
               "mysqlDbPassword": {
-                "value": "test"
+                "value": ""
               }
             }
           - '--additional_pipeline_args'
-          - >-
-            {"beam_pipeline_args": ["--runner=DirectRunner",
-            "--experiments=shuffle_mode=auto",
-            "--temp_location=/book-classification/tmp"]}
+          - '{}'
           - '--component_id'
           - CsvExampleGen
           - '--component_type'
@@ -97,12 +94,11 @@ spec:
           - '--inputs'
           - >-
             {"input_base": [{"artifact": {"uri": "/book-classification/data/",
-            "properties": {"split": {"stringValue": ""}, "type_name":
-            {"stringValue": "ExternalPath"}}}, "artifact_type": {"name":
-            "ExternalPath", "properties": {"state": "STRING",
-            "producer_component": "STRING", "span": "INT", "pipeline_name":
-            "STRING", "split": "STRING", "name": "STRING", "type_name":
-            "STRING"}}}]}
+            "properties": {"type_name": {"stringValue": "ExternalPath"},
+            "split": {"stringValue": ""}}}, "artifact_type": {"name":
+            "ExternalPath", "properties": {"split": "STRING", "name": "STRING",
+            "type_name": "STRING", "state": "STRING", "producer_component":
+            "STRING", "span": "INT", "pipeline_name": "STRING"}}}]}
           - '--outputs'
           - >-
             {"examples": [{"artifact": {"properties": {"split": {"stringValue":
@@ -110,18 +106,18 @@ spec:
             "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
             "examples"}, "type_name": {"stringValue": "ExamplesPath"}}},
+            "artifact_type": {"name": "ExamplesPath", "properties": {"state":
+            "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
+            "type_name": "STRING"}}}, {"artifact": {"properties": {"split":
+            {"stringValue": "eval"}, "producer_component": {"stringValue":
+            "CsvExampleGen"}, "pipeline_name": {"stringValue":
+            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
+            "examples"}, "type_name": {"stringValue": "ExamplesPath"}}},
             "artifact_type": {"name": "ExamplesPath", "properties": {"split":
             "STRING", "name": "STRING", "type_name": "STRING", "state":
             "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING"}}}, {"artifact": {"properties":
-            {"producer_component": {"stringValue": "CsvExampleGen"},
-            "pipeline_name": {"stringValue":
-            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "examples"}, "type_name": {"stringValue": "ExamplesPath"}, "split":
-            {"stringValue": "eval"}}}, "artifact_type": {"name": "ExamplesPath",
-            "properties": {"split": "STRING", "name": "STRING", "type_name":
-            "STRING", "state": "STRING", "producer_component": "STRING", "span":
-            "INT", "pipeline_name": "STRING"}}}]}
+            "pipeline_name": "STRING"}}}]}
           - '--exec_properties'
           - >-
             {"input_config": "{\n  \"splits\": [\n    {\n      \"name\":
@@ -181,26 +177,23 @@ spec:
           - |-
             {
               "mysqlDbServiceHost": {
-                "environmentVariable": "METADATA_DB_SERVICE_HOST"
+                "value": "10.233.64.94"
               },
               "mysqlDbServicePort": {
-                "environmentVariable": "METADATA_DB_SERVICE_PORT"
+                "value": "3306"
               },
               "mysqlDbName": {
-                "value": "metadb"
+                "value": "mlmd_complaint_model_pipeline_kubeflow"
               },
               "mysqlDbUser": {
                 "value": "root"
               },
               "mysqlDbPassword": {
-                "value": "test"
+                "value": ""
               }
             }
           - '--additional_pipeline_args'
-          - >-
-            {"beam_pipeline_args": ["--runner=DirectRunner",
-            "--experiments=shuffle_mode=auto",
-            "--temp_location=/book-classification/tmp"]}
+          - '{}'
           - '--component_id'
           - Evaluator
           - '--component_type'
@@ -221,36 +214,37 @@ spec:
             "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
             "examples"}, "type_name": {"stringValue": "ExamplesPath"}}},
+            "artifact_type": {"name": "ExamplesPath", "properties": {"state":
+            "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
+            "type_name": "STRING"}}}, {"artifact": {"properties": {"split":
+            {"stringValue": "eval"}, "producer_component": {"stringValue":
+            "CsvExampleGen"}, "pipeline_name": {"stringValue":
+            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
+            "examples"}, "type_name": {"stringValue": "ExamplesPath"}}},
             "artifact_type": {"name": "ExamplesPath", "properties": {"split":
             "STRING", "name": "STRING", "type_name": "STRING", "state":
             "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING"}}}, {"artifact": {"properties":
-            {"producer_component": {"stringValue": "CsvExampleGen"},
+            "pipeline_name": "STRING"}}}], "model_exports": [{"artifact":
+            {"properties": {"producer_component": {"stringValue": "Trainer"},
             "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "examples"}, "type_name": {"stringValue": "ExamplesPath"}, "split":
-            {"stringValue": "eval"}}}, "artifact_type": {"name": "ExamplesPath",
+            "output"}, "type_name": {"stringValue": "ModelExportPath"}, "split":
+            {"stringValue": ""}}}, "artifact_type": {"name": "ModelExportPath",
             "properties": {"split": "STRING", "name": "STRING", "type_name":
             "STRING", "state": "STRING", "producer_component": "STRING", "span":
-            "INT", "pipeline_name": "STRING"}}}], "model_exports": [{"artifact":
-            {"properties": {"name": {"stringValue": "output"}, "type_name":
-            {"stringValue": "ModelExportPath"}, "split": {"stringValue": ""},
-            "producer_component": {"stringValue": "Trainer"}, "pipeline_name":
-            {"stringValue": "complaint_model_pipeline_kubeflow"}}},
-            "artifact_type": {"name": "ModelExportPath", "properties": {"state":
+            "INT", "pipeline_name": "STRING"}}}]}
+          - '--outputs'
+          - >-
+            {"output": [{"artifact": {"properties": {"split": {"stringValue":
+            ""}, "producer_component": {"stringValue": "Evaluator"},
+            "pipeline_name": {"stringValue":
+            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
+            "output"}, "type_name": {"stringValue": "ModelEvalPath"}}},
+            "artifact_type": {"name": "ModelEvalPath", "properties": {"state":
             "STRING", "producer_component": "STRING", "span": "INT",
             "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
             "type_name": "STRING"}}}]}
-          - '--outputs'
-          - >-
-            {"output": [{"artifact": {"properties": {"name": {"stringValue":
-            "output"}, "type_name": {"stringValue": "ModelEvalPath"}, "split":
-            {"stringValue": ""}, "producer_component": {"stringValue":
-            "Evaluator"}, "pipeline_name": {"stringValue":
-            "complaint_model_pipeline_kubeflow"}}}, "artifact_type": {"name":
-            "ModelEvalPath", "properties": {"split": "STRING", "name": "STRING",
-            "type_name": "STRING", "state": "STRING", "producer_component":
-            "STRING", "span": "INT", "pipeline_name": "STRING"}}}]}
           - '--exec_properties'
           - >-
             {"feature_slicing_spec": "{\n  \"specs\": [\n    {\n     
@@ -307,26 +301,23 @@ spec:
           - |-
             {
               "mysqlDbServiceHost": {
-                "environmentVariable": "METADATA_DB_SERVICE_HOST"
+                "value": "10.233.64.94"
               },
               "mysqlDbServicePort": {
-                "environmentVariable": "METADATA_DB_SERVICE_PORT"
+                "value": "3306"
               },
               "mysqlDbName": {
-                "value": "metadb"
+                "value": "mlmd_complaint_model_pipeline_kubeflow"
               },
               "mysqlDbUser": {
                 "value": "root"
               },
               "mysqlDbPassword": {
-                "value": "test"
+                "value": ""
               }
             }
           - '--additional_pipeline_args'
-          - >-
-            {"beam_pipeline_args": ["--runner=DirectRunner",
-            "--experiments=shuffle_mode=auto",
-            "--temp_location=/book-classification/tmp"]}
+          - '{}'
           - '--component_id'
           - ExampleValidator
           - '--component_type'
@@ -348,26 +339,25 @@ spec:
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
             "output"}, "type_name": {"stringValue": "ExampleStatisticsPath"}}},
             "artifact_type": {"name": "ExampleStatisticsPath", "properties":
-            {"state": "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
-            "type_name": "STRING"}}}, {"artifact": {"properties":
-            {"producer_component": {"stringValue": "StatisticsGen"},
-            "pipeline_name": {"stringValue":
+            {"split": "STRING", "name": "STRING", "type_name": "STRING",
+            "state": "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING"}}}, {"artifact": {"properties":
+            {"type_name": {"stringValue": "ExampleStatisticsPath"}, "split":
+            {"stringValue": "eval"}, "producer_component": {"stringValue":
+            "StatisticsGen"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "output"}, "type_name": {"stringValue": "ExampleStatisticsPath"},
-            "split": {"stringValue": "eval"}}}, "artifact_type": {"name":
-            "ExampleStatisticsPath", "properties": {"name": "STRING",
-            "type_name": "STRING", "state": "STRING", "producer_component":
-            "STRING", "span": "INT", "pipeline_name": "STRING", "split":
-            "STRING"}}}], "schema": [{"artifact": {"properties":
-            {"producer_component": {"stringValue": "SchemaGen"},
-            "pipeline_name": {"stringValue":
+            "output"}}}, "artifact_type": {"name": "ExampleStatisticsPath",
+            "properties": {"name": "STRING", "type_name": "STRING", "state":
+            "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING", "split": "STRING"}}}], "schema":
+            [{"artifact": {"properties": {"type_name": {"stringValue":
+            "SchemaPath"}, "split": {"stringValue": ""}, "producer_component":
+            {"stringValue": "SchemaGen"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "output"}, "type_name": {"stringValue": "SchemaPath"}, "split":
-            {"stringValue": ""}}}, "artifact_type": {"name": "SchemaPath",
-            "properties": {"type_name": "STRING", "state": "STRING",
-            "producer_component": "STRING", "span": "INT", "pipeline_name":
-            "STRING", "split": "STRING", "name": "STRING"}}}]}
+            "output"}}}, "artifact_type": {"name": "SchemaPath", "properties":
+            {"split": "STRING", "name": "STRING", "type_name": "STRING",
+            "state": "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING"}}}]}
           - '--outputs'
           - >-
             {"output": [{"artifact": {"properties": {"name": {"stringValue":
@@ -375,9 +365,9 @@ spec:
             "split": {"stringValue": ""}, "producer_component": {"stringValue":
             "ExampleValidator"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}}}, "artifact_type": {"name":
-            "ExampleValidationPath", "properties": {"split": "STRING", "name":
-            "STRING", "type_name": "STRING", "state": "STRING",
+            "ExampleValidationPath", "properties": {"state": "STRING",
             "producer_component": "STRING", "span": "INT", "pipeline_name":
+            "STRING", "split": "STRING", "name": "STRING", "type_name":
             "STRING"}}}]}
           - '--exec_properties'
           - '{}'
@@ -432,26 +422,23 @@ spec:
           - |-
             {
               "mysqlDbServiceHost": {
-                "environmentVariable": "METADATA_DB_SERVICE_HOST"
+                "value": "10.233.64.94"
               },
               "mysqlDbServicePort": {
-                "environmentVariable": "METADATA_DB_SERVICE_PORT"
+                "value": "3306"
               },
               "mysqlDbName": {
-                "value": "metadb"
+                "value": "mlmd_complaint_model_pipeline_kubeflow"
               },
               "mysqlDbUser": {
                 "value": "root"
               },
               "mysqlDbPassword": {
-                "value": "test"
+                "value": ""
               }
             }
           - '--additional_pipeline_args'
-          - >-
-            {"beam_pipeline_args": ["--runner=DirectRunner",
-            "--experiments=shuffle_mode=auto",
-            "--temp_location=/book-classification/tmp"]}
+          - '{}'
           - '--component_id'
           - ModelValidator
           - '--component_type'
@@ -472,37 +459,36 @@ spec:
             "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
             "examples"}, "type_name": {"stringValue": "ExamplesPath"}}},
+            "artifact_type": {"name": "ExamplesPath", "properties": {"state":
+            "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
+            "type_name": "STRING"}}}, {"artifact": {"properties": {"split":
+            {"stringValue": "eval"}, "producer_component": {"stringValue":
+            "CsvExampleGen"}, "pipeline_name": {"stringValue":
+            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
+            "examples"}, "type_name": {"stringValue": "ExamplesPath"}}},
             "artifact_type": {"name": "ExamplesPath", "properties": {"split":
             "STRING", "name": "STRING", "type_name": "STRING", "state":
             "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING"}}}, {"artifact": {"properties":
-            {"producer_component": {"stringValue": "CsvExampleGen"},
-            "pipeline_name": {"stringValue":
-            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "examples"}, "type_name": {"stringValue": "ExamplesPath"}, "split":
-            {"stringValue": "eval"}}}, "artifact_type": {"name": "ExamplesPath",
-            "properties": {"split": "STRING", "name": "STRING", "type_name":
-            "STRING", "state": "STRING", "producer_component": "STRING", "span":
-            "INT", "pipeline_name": "STRING"}}}], "model": [{"artifact":
-            {"properties": {"name": {"stringValue": "output"}, "type_name":
-            {"stringValue": "ModelExportPath"}, "split": {"stringValue": ""},
-            "producer_component": {"stringValue": "Trainer"}, "pipeline_name":
-            {"stringValue": "complaint_model_pipeline_kubeflow"}}},
-            "artifact_type": {"name": "ModelExportPath", "properties": {"state":
-            "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
-            "type_name": "STRING"}}}]}
+            "pipeline_name": "STRING"}}}], "model": [{"artifact": {"properties":
+            {"producer_component": {"stringValue": "Trainer"}, "pipeline_name":
+            {"stringValue": "complaint_model_pipeline_kubeflow"}, "name":
+            {"stringValue": "output"}, "type_name": {"stringValue":
+            "ModelExportPath"}, "split": {"stringValue": ""}}}, "artifact_type":
+            {"name": "ModelExportPath", "properties": {"split": "STRING",
+            "name": "STRING", "type_name": "STRING", "state": "STRING",
+            "producer_component": "STRING", "span": "INT", "pipeline_name":
+            "STRING"}}}]}
           - '--outputs'
           - >-
-            {"blessing": [{"artifact": {"properties": {"split": {"stringValue":
-            ""}, "producer_component": {"stringValue": "ModelValidator"},
-            "pipeline_name": {"stringValue":
-            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "blessing"}, "type_name": {"stringValue": "ModelBlessingPath"}}},
-            "artifact_type": {"name": "ModelBlessingPath", "properties":
-            {"state": "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
-            "type_name": "STRING"}}}]}
+            {"blessing": [{"artifact": {"properties": {"name": {"stringValue":
+            "blessing"}, "type_name": {"stringValue": "ModelBlessingPath"},
+            "split": {"stringValue": ""}, "producer_component": {"stringValue":
+            "ModelValidator"}, "pipeline_name": {"stringValue":
+            "complaint_model_pipeline_kubeflow"}}}, "artifact_type": {"name":
+            "ModelBlessingPath", "properties": {"name": "STRING", "type_name":
+            "STRING", "state": "STRING", "producer_component": "STRING", "span":
+            "INT", "pipeline_name": "STRING", "split": "STRING"}}}]}
           - '--exec_properties'
           - '{}'
         command:
@@ -556,26 +542,23 @@ spec:
           - |-
             {
               "mysqlDbServiceHost": {
-                "environmentVariable": "METADATA_DB_SERVICE_HOST"
+                "value": "10.233.64.94"
               },
               "mysqlDbServicePort": {
-                "environmentVariable": "METADATA_DB_SERVICE_PORT"
+                "value": "3306"
               },
               "mysqlDbName": {
-                "value": "metadb"
+                "value": "mlmd_complaint_model_pipeline_kubeflow"
               },
               "mysqlDbUser": {
                 "value": "root"
               },
               "mysqlDbPassword": {
-                "value": "test"
+                "value": ""
               }
             }
           - '--additional_pipeline_args'
-          - >-
-            {"beam_pipeline_args": ["--runner=DirectRunner",
-            "--experiments=shuffle_mode=auto",
-            "--temp_location=/book-classification/tmp"]}
+          - '{}'
           - '--component_id'
           - Pusher
           - '--component_type'
@@ -591,34 +574,33 @@ spec:
             "__tfx_object_type__": "class"}}
           - '--inputs'
           - >-
-            {"model_export": [{"artifact": {"properties": {"name":
-            {"stringValue": "output"}, "type_name": {"stringValue":
-            "ModelExportPath"}, "split": {"stringValue": ""},
-            "producer_component": {"stringValue": "Trainer"}, "pipeline_name":
-            {"stringValue": "complaint_model_pipeline_kubeflow"}}},
-            "artifact_type": {"name": "ModelExportPath", "properties": {"state":
-            "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
-            "type_name": "STRING"}}}], "model_blessing": [{"artifact":
-            {"properties": {"split": {"stringValue": ""}, "producer_component":
-            {"stringValue": "ModelValidator"}, "pipeline_name": {"stringValue":
+            {"model_export": [{"artifact": {"properties": {"producer_component":
+            {"stringValue": "Trainer"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "blessing"}, "type_name": {"stringValue": "ModelBlessingPath"}}},
-            "artifact_type": {"name": "ModelBlessingPath", "properties":
-            {"state": "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
-            "type_name": "STRING"}}}]}
+            "output"}, "type_name": {"stringValue": "ModelExportPath"}, "split":
+            {"stringValue": ""}}}, "artifact_type": {"name": "ModelExportPath",
+            "properties": {"split": "STRING", "name": "STRING", "type_name":
+            "STRING", "state": "STRING", "producer_component": "STRING", "span":
+            "INT", "pipeline_name": "STRING"}}}], "model_blessing":
+            [{"artifact": {"properties": {"name": {"stringValue": "blessing"},
+            "type_name": {"stringValue": "ModelBlessingPath"}, "split":
+            {"stringValue": ""}, "producer_component": {"stringValue":
+            "ModelValidator"}, "pipeline_name": {"stringValue":
+            "complaint_model_pipeline_kubeflow"}}}, "artifact_type": {"name":
+            "ModelBlessingPath", "properties": {"name": "STRING", "type_name":
+            "STRING", "state": "STRING", "producer_component": "STRING", "span":
+            "INT", "pipeline_name": "STRING", "split": "STRING"}}}]}
           - '--outputs'
           - >-
-            {"model_push": [{"artifact": {"properties": {"split":
-            {"stringValue": ""}, "producer_component": {"stringValue":
+            {"model_push": [{"artifact": {"properties": {"name": {"stringValue":
+            "model_push"}, "type_name": {"stringValue": "ModelPushPath"},
+            "split": {"stringValue": ""}, "producer_component": {"stringValue":
             "Pusher"}, "pipeline_name": {"stringValue":
-            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "model_push"}, "type_name": {"stringValue": "ModelPushPath"}}},
-            "artifact_type": {"name": "ModelPushPath", "properties":
-            {"producer_component": "STRING", "span": "INT", "pipeline_name":
+            "complaint_model_pipeline_kubeflow"}}}, "artifact_type": {"name":
+            "ModelPushPath", "properties": {"state": "STRING",
+            "producer_component": "STRING", "span": "INT", "pipeline_name":
             "STRING", "split": "STRING", "name": "STRING", "type_name":
-            "STRING", "state": "STRING"}}}]}
+            "STRING"}}}]}
           - '--exec_properties'
           - >-
             {"push_destination": "{\n  \"filesystem\": {\n    \"baseDirectory\":
@@ -675,26 +657,23 @@ spec:
           - |-
             {
               "mysqlDbServiceHost": {
-                "environmentVariable": "METADATA_DB_SERVICE_HOST"
+                "value": "10.233.64.94"
               },
               "mysqlDbServicePort": {
-                "environmentVariable": "METADATA_DB_SERVICE_PORT"
+                "value": "3306"
               },
               "mysqlDbName": {
-                "value": "metadb"
+                "value": "mlmd_complaint_model_pipeline_kubeflow"
               },
               "mysqlDbUser": {
                 "value": "root"
               },
               "mysqlDbPassword": {
-                "value": "test"
+                "value": ""
               }
             }
           - '--additional_pipeline_args'
-          - >-
-            {"beam_pipeline_args": ["--runner=DirectRunner",
-            "--experiments=shuffle_mode=auto",
-            "--temp_location=/book-classification/tmp"]}
+          - '{}'
           - '--component_id'
           - SchemaGen
           - '--component_type'
@@ -716,28 +695,27 @@ spec:
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
             "output"}, "type_name": {"stringValue": "ExampleStatisticsPath"}}},
             "artifact_type": {"name": "ExampleStatisticsPath", "properties":
-            {"state": "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
-            "type_name": "STRING"}}}, {"artifact": {"properties":
-            {"producer_component": {"stringValue": "StatisticsGen"},
-            "pipeline_name": {"stringValue":
+            {"split": "STRING", "name": "STRING", "type_name": "STRING",
+            "state": "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING"}}}, {"artifact": {"properties":
+            {"type_name": {"stringValue": "ExampleStatisticsPath"}, "split":
+            {"stringValue": "eval"}, "producer_component": {"stringValue":
+            "StatisticsGen"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "output"}, "type_name": {"stringValue": "ExampleStatisticsPath"},
-            "split": {"stringValue": "eval"}}}, "artifact_type": {"name":
-            "ExampleStatisticsPath", "properties": {"name": "STRING",
-            "type_name": "STRING", "state": "STRING", "producer_component":
-            "STRING", "span": "INT", "pipeline_name": "STRING", "split":
-            "STRING"}}}]}
+            "output"}}}, "artifact_type": {"name": "ExampleStatisticsPath",
+            "properties": {"name": "STRING", "type_name": "STRING", "state":
+            "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING", "split": "STRING"}}}]}
           - '--outputs'
           - >-
-            {"output": [{"artifact": {"properties": {"producer_component":
-            {"stringValue": "SchemaGen"}, "pipeline_name": {"stringValue":
-            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "output"}, "type_name": {"stringValue": "SchemaPath"}, "split":
-            {"stringValue": ""}}}, "artifact_type": {"name": "SchemaPath",
-            "properties": {"type_name": "STRING", "state": "STRING",
-            "producer_component": "STRING", "span": "INT", "pipeline_name":
-            "STRING", "split": "STRING", "name": "STRING"}}}]}
+            {"output": [{"artifact": {"properties": {"type_name":
+            {"stringValue": "SchemaPath"}, "split": {"stringValue": ""},
+            "producer_component": {"stringValue": "SchemaGen"}, "pipeline_name":
+            {"stringValue": "complaint_model_pipeline_kubeflow"}, "name":
+            {"stringValue": "output"}}}, "artifact_type": {"name": "SchemaPath",
+            "properties": {"split": "STRING", "name": "STRING", "type_name":
+            "STRING", "state": "STRING", "producer_component": "STRING", "span":
+            "INT", "pipeline_name": "STRING"}}}]}
           - '--exec_properties'
           - '{"infer_feature_shape": false}'
         command:
@@ -791,26 +769,23 @@ spec:
           - |-
             {
               "mysqlDbServiceHost": {
-                "environmentVariable": "METADATA_DB_SERVICE_HOST"
+                "value": "10.233.64.94"
               },
               "mysqlDbServicePort": {
-                "environmentVariable": "METADATA_DB_SERVICE_PORT"
+                "value": "3306"
               },
               "mysqlDbName": {
-                "value": "metadb"
+                "value": "mlmd_complaint_model_pipeline_kubeflow"
               },
               "mysqlDbUser": {
                 "value": "root"
               },
               "mysqlDbPassword": {
-                "value": "test"
+                "value": ""
               }
             }
           - '--additional_pipeline_args'
-          - >-
-            {"beam_pipeline_args": ["--runner=DirectRunner",
-            "--experiments=shuffle_mode=auto",
-            "--temp_location=/book-classification/tmp"]}
+          - '{}'
           - '--component_id'
           - StatisticsGen
           - '--component_type'
@@ -831,18 +806,18 @@ spec:
             "CsvExampleGen"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
             "examples"}, "type_name": {"stringValue": "ExamplesPath"}}},
+            "artifact_type": {"name": "ExamplesPath", "properties": {"state":
+            "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
+            "type_name": "STRING"}}}, {"artifact": {"properties": {"split":
+            {"stringValue": "eval"}, "producer_component": {"stringValue":
+            "CsvExampleGen"}, "pipeline_name": {"stringValue":
+            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
+            "examples"}, "type_name": {"stringValue": "ExamplesPath"}}},
             "artifact_type": {"name": "ExamplesPath", "properties": {"split":
             "STRING", "name": "STRING", "type_name": "STRING", "state":
             "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING"}}}, {"artifact": {"properties":
-            {"producer_component": {"stringValue": "CsvExampleGen"},
-            "pipeline_name": {"stringValue":
-            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "examples"}, "type_name": {"stringValue": "ExamplesPath"}, "split":
-            {"stringValue": "eval"}}}, "artifact_type": {"name": "ExamplesPath",
-            "properties": {"split": "STRING", "name": "STRING", "type_name":
-            "STRING", "state": "STRING", "producer_component": "STRING", "span":
-            "INT", "pipeline_name": "STRING"}}}]}
+            "pipeline_name": "STRING"}}}]}
           - '--outputs'
           - >-
             {"output": [{"artifact": {"properties": {"split": {"stringValue":
@@ -851,18 +826,17 @@ spec:
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
             "output"}, "type_name": {"stringValue": "ExampleStatisticsPath"}}},
             "artifact_type": {"name": "ExampleStatisticsPath", "properties":
-            {"state": "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
-            "type_name": "STRING"}}}, {"artifact": {"properties":
-            {"producer_component": {"stringValue": "StatisticsGen"},
-            "pipeline_name": {"stringValue":
+            {"split": "STRING", "name": "STRING", "type_name": "STRING",
+            "state": "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING"}}}, {"artifact": {"properties":
+            {"type_name": {"stringValue": "ExampleStatisticsPath"}, "split":
+            {"stringValue": "eval"}, "producer_component": {"stringValue":
+            "StatisticsGen"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "output"}, "type_name": {"stringValue": "ExampleStatisticsPath"},
-            "split": {"stringValue": "eval"}}}, "artifact_type": {"name":
-            "ExampleStatisticsPath", "properties": {"name": "STRING",
-            "type_name": "STRING", "state": "STRING", "producer_component":
-            "STRING", "span": "INT", "pipeline_name": "STRING", "split":
-            "STRING"}}}]}
+            "output"}}}, "artifact_type": {"name": "ExampleStatisticsPath",
+            "properties": {"name": "STRING", "type_name": "STRING", "state":
+            "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING", "split": "STRING"}}}]}
           - '--exec_properties'
           - '{}'
         command:
@@ -916,26 +890,23 @@ spec:
           - |-
             {
               "mysqlDbServiceHost": {
-                "environmentVariable": "METADATA_DB_SERVICE_HOST"
+                "value": "10.233.64.94"
               },
               "mysqlDbServicePort": {
-                "environmentVariable": "METADATA_DB_SERVICE_PORT"
+                "value": "3306"
               },
               "mysqlDbName": {
-                "value": "metadb"
+                "value": "mlmd_complaint_model_pipeline_kubeflow"
               },
               "mysqlDbUser": {
                 "value": "root"
               },
               "mysqlDbPassword": {
-                "value": "test"
+                "value": ""
               }
             }
           - '--additional_pipeline_args'
-          - >-
-            {"beam_pipeline_args": ["--runner=DirectRunner",
-            "--experiments=shuffle_mode=auto",
-            "--temp_location=/book-classification/tmp"]}
+          - '{}'
           - '--component_id'
           - Trainer
           - '--component_type'
@@ -951,50 +922,49 @@ spec:
             "__tfx_object_type__": "class"}}
           - '--inputs'
           - >-
-            {"examples": [{"artifact": {"properties": {"split": {"stringValue":
-            "train"}, "producer_component": {"stringValue": "Transform"},
-            "pipeline_name": {"stringValue":
-            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "transformed_examples"}, "type_name": {"stringValue":
-            "ExamplesPath"}}}, "artifact_type": {"name": "ExamplesPath",
-            "properties": {"split": "STRING", "name": "STRING", "type_name":
-            "STRING", "state": "STRING", "producer_component": "STRING", "span":
-            "INT", "pipeline_name": "STRING"}}}, {"artifact": {"properties":
-            {"name": {"stringValue": "transformed_examples"}, "type_name":
-            {"stringValue": "ExamplesPath"}, "split": {"stringValue": "eval"},
+            {"examples": [{"artifact": {"properties": {"type_name":
+            {"stringValue": "ExamplesPath"}, "split": {"stringValue": "train"},
             "producer_component": {"stringValue": "Transform"}, "pipeline_name":
-            {"stringValue": "complaint_model_pipeline_kubeflow"}}},
-            "artifact_type": {"name": "ExamplesPath", "properties": {"state":
+            {"stringValue": "complaint_model_pipeline_kubeflow"}, "name":
+            {"stringValue": "transformed_examples"}}}, "artifact_type": {"name":
+            "ExamplesPath", "properties": {"type_name": "STRING", "state":
             "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
-            "type_name": "STRING"}}}], "transform_output": [{"artifact":
-            {"properties": {"type_name": {"stringValue": "TransformPath"},
-            "split": {"stringValue": ""}, "producer_component": {"stringValue":
+            "pipeline_name": "STRING", "split": "STRING", "name": "STRING"}}},
+            {"artifact": {"properties": {"type_name": {"stringValue":
+            "ExamplesPath"}, "split": {"stringValue": "eval"},
+            "producer_component": {"stringValue": "Transform"}, "pipeline_name":
+            {"stringValue": "complaint_model_pipeline_kubeflow"}, "name":
+            {"stringValue": "transformed_examples"}}}, "artifact_type": {"name":
+            "ExamplesPath", "properties": {"state": "STRING",
+            "producer_component": "STRING", "span": "INT", "pipeline_name":
+            "STRING", "split": "STRING", "name": "STRING", "type_name":
+            "STRING"}}}], "transform_output": [{"artifact": {"properties":
+            {"type_name": {"stringValue": "TransformPath"}, "split":
+            {"stringValue": ""}, "producer_component": {"stringValue":
             "Transform"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
             "transform_output"}}}, "artifact_type": {"name": "TransformPath",
-            "properties": {"split": "STRING", "name": "STRING", "type_name":
-            "STRING", "state": "STRING", "producer_component": "STRING", "span":
-            "INT", "pipeline_name": "STRING"}}}], "schema": [{"artifact":
-            {"properties": {"producer_component": {"stringValue": "SchemaGen"},
-            "pipeline_name": {"stringValue":
+            "properties": {"state": "STRING", "producer_component": "STRING",
+            "span": "INT", "pipeline_name": "STRING", "split": "STRING", "name":
+            "STRING", "type_name": "STRING"}}}], "schema": [{"artifact":
+            {"properties": {"type_name": {"stringValue": "SchemaPath"}, "split":
+            {"stringValue": ""}, "producer_component": {"stringValue":
+            "SchemaGen"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "output"}, "type_name": {"stringValue": "SchemaPath"}, "split":
-            {"stringValue": ""}}}, "artifact_type": {"name": "SchemaPath",
-            "properties": {"type_name": "STRING", "state": "STRING",
-            "producer_component": "STRING", "span": "INT", "pipeline_name":
-            "STRING", "split": "STRING", "name": "STRING"}}}]}
+            "output"}}}, "artifact_type": {"name": "SchemaPath", "properties":
+            {"split": "STRING", "name": "STRING", "type_name": "STRING",
+            "state": "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING"}}}]}
           - '--outputs'
           - >-
-            {"output": [{"artifact": {"properties": {"name": {"stringValue":
+            {"output": [{"artifact": {"properties": {"producer_component":
+            {"stringValue": "Trainer"}, "pipeline_name": {"stringValue":
+            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
             "output"}, "type_name": {"stringValue": "ModelExportPath"}, "split":
-            {"stringValue": ""}, "producer_component": {"stringValue":
-            "Trainer"}, "pipeline_name": {"stringValue":
-            "complaint_model_pipeline_kubeflow"}}}, "artifact_type": {"name":
-            "ModelExportPath", "properties": {"state": "STRING",
-            "producer_component": "STRING", "span": "INT", "pipeline_name":
-            "STRING", "split": "STRING", "name": "STRING", "type_name":
-            "STRING"}}}]}
+            {"stringValue": ""}}}, "artifact_type": {"name": "ModelExportPath",
+            "properties": {"split": "STRING", "name": "STRING", "type_name":
+            "STRING", "state": "STRING", "producer_component": "STRING", "span":
+            "INT", "pipeline_name": "STRING"}}}]}
           - '--exec_properties'
           - >-
             {"train_args": "{\n  \"numSteps\": 10000\n}", "eval_args": "{\n 
@@ -1052,26 +1022,23 @@ spec:
           - |-
             {
               "mysqlDbServiceHost": {
-                "environmentVariable": "METADATA_DB_SERVICE_HOST"
+                "value": "10.233.64.94"
               },
               "mysqlDbServicePort": {
-                "environmentVariable": "METADATA_DB_SERVICE_PORT"
+                "value": "3306"
               },
               "mysqlDbName": {
-                "value": "metadb"
+                "value": "mlmd_complaint_model_pipeline_kubeflow"
               },
               "mysqlDbUser": {
                 "value": "root"
               },
               "mysqlDbPassword": {
-                "value": "test"
+                "value": ""
               }
             }
           - '--additional_pipeline_args'
-          - >-
-            {"beam_pipeline_args": ["--runner=DirectRunner",
-            "--experiments=shuffle_mode=auto",
-            "--temp_location=/book-classification/tmp"]}
+          - '{}'
           - '--component_id'
           - Transform
           - '--component_type'
@@ -1092,26 +1059,26 @@ spec:
             "CsvExampleGen"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
             "examples"}, "type_name": {"stringValue": "ExamplesPath"}}},
+            "artifact_type": {"name": "ExamplesPath", "properties": {"state":
+            "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
+            "type_name": "STRING"}}}, {"artifact": {"properties": {"split":
+            {"stringValue": "eval"}, "producer_component": {"stringValue":
+            "CsvExampleGen"}, "pipeline_name": {"stringValue":
+            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
+            "examples"}, "type_name": {"stringValue": "ExamplesPath"}}},
             "artifact_type": {"name": "ExamplesPath", "properties": {"split":
             "STRING", "name": "STRING", "type_name": "STRING", "state":
             "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING"}}}, {"artifact": {"properties":
-            {"producer_component": {"stringValue": "CsvExampleGen"},
-            "pipeline_name": {"stringValue":
+            "pipeline_name": "STRING"}}}], "schema": [{"artifact":
+            {"properties": {"type_name": {"stringValue": "SchemaPath"}, "split":
+            {"stringValue": ""}, "producer_component": {"stringValue":
+            "SchemaGen"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "examples"}, "type_name": {"stringValue": "ExamplesPath"}, "split":
-            {"stringValue": "eval"}}}, "artifact_type": {"name": "ExamplesPath",
-            "properties": {"split": "STRING", "name": "STRING", "type_name":
-            "STRING", "state": "STRING", "producer_component": "STRING", "span":
-            "INT", "pipeline_name": "STRING"}}}], "schema": [{"artifact":
-            {"properties": {"producer_component": {"stringValue": "SchemaGen"},
-            "pipeline_name": {"stringValue":
-            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "output"}, "type_name": {"stringValue": "SchemaPath"}, "split":
-            {"stringValue": ""}}}, "artifact_type": {"name": "SchemaPath",
-            "properties": {"type_name": "STRING", "state": "STRING",
-            "producer_component": "STRING", "span": "INT", "pipeline_name":
-            "STRING", "split": "STRING", "name": "STRING"}}}]}
+            "output"}}}, "artifact_type": {"name": "SchemaPath", "properties":
+            {"split": "STRING", "name": "STRING", "type_name": "STRING",
+            "state": "STRING", "producer_component": "STRING", "span": "INT",
+            "pipeline_name": "STRING"}}}]}
           - '--outputs'
           - >-
             {"transform_output": [{"artifact": {"properties": {"type_name":
@@ -1119,26 +1086,26 @@ spec:
             "producer_component": {"stringValue": "Transform"}, "pipeline_name":
             {"stringValue": "complaint_model_pipeline_kubeflow"}, "name":
             {"stringValue": "transform_output"}}}, "artifact_type": {"name":
-            "TransformPath", "properties": {"split": "STRING", "name": "STRING",
-            "type_name": "STRING", "state": "STRING", "producer_component":
-            "STRING", "span": "INT", "pipeline_name": "STRING"}}}],
-            "transformed_examples": [{"artifact": {"properties": {"split":
+            "TransformPath", "properties": {"state": "STRING",
+            "producer_component": "STRING", "span": "INT", "pipeline_name":
+            "STRING", "split": "STRING", "name": "STRING", "type_name":
+            "STRING"}}}], "transformed_examples": [{"artifact": {"properties":
+            {"type_name": {"stringValue": "ExamplesPath"}, "split":
             {"stringValue": "train"}, "producer_component": {"stringValue":
             "Transform"}, "pipeline_name": {"stringValue":
             "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
-            "transformed_examples"}, "type_name": {"stringValue":
-            "ExamplesPath"}}}, "artifact_type": {"name": "ExamplesPath",
-            "properties": {"split": "STRING", "name": "STRING", "type_name":
-            "STRING", "state": "STRING", "producer_component": "STRING", "span":
-            "INT", "pipeline_name": "STRING"}}}, {"artifact": {"properties":
-            {"name": {"stringValue": "transformed_examples"}, "type_name":
-            {"stringValue": "ExamplesPath"}, "split": {"stringValue": "eval"},
-            "producer_component": {"stringValue": "Transform"}, "pipeline_name":
-            {"stringValue": "complaint_model_pipeline_kubeflow"}}},
-            "artifact_type": {"name": "ExamplesPath", "properties": {"state":
-            "STRING", "producer_component": "STRING", "span": "INT",
-            "pipeline_name": "STRING", "split": "STRING", "name": "STRING",
-            "type_name": "STRING"}}}]}
+            "transformed_examples"}}}, "artifact_type": {"name": "ExamplesPath",
+            "properties": {"type_name": "STRING", "state": "STRING",
+            "producer_component": "STRING", "span": "INT", "pipeline_name":
+            "STRING", "split": "STRING", "name": "STRING"}}}, {"artifact":
+            {"properties": {"type_name": {"stringValue": "ExamplesPath"},
+            "split": {"stringValue": "eval"}, "producer_component":
+            {"stringValue": "Transform"}, "pipeline_name": {"stringValue":
+            "complaint_model_pipeline_kubeflow"}, "name": {"stringValue":
+            "transformed_examples"}}}, "artifact_type": {"name": "ExamplesPath",
+            "properties": {"state": "STRING", "producer_component": "STRING",
+            "span": "INT", "pipeline_name": "STRING", "split": "STRING", "name":
+            "STRING", "type_name": "STRING"}}}]}
           - '--exec_properties'
           - >-
             {"module_file": "/book-classification/tfx/utils.py",
@@ -1151,7 +1118,7 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: 'metadata.labels[''workflows.argoproj.io/workflow'']'
-        image: 'tensorflow/tfx:0.14.0'
+        image: 'tensorflow/tfx:0.13.0'
         volumeMounts:
           - mountPath: /book-classification
             name: book-classification
