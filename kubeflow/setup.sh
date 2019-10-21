@@ -26,7 +26,7 @@ run_clean_up()
 
 create_volume()
 {
-	echo 'apiVersion: v1
+	echo "apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: book-classification
@@ -38,9 +38,9 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: $PVC_HOST_MOUNT_PATH' >> /tmp/pv.yaml
+    path: $PVC_HOST_MOUNT_PATH" > /tmp/pv.yaml
 
-	echo 'apiVersion: v1
+	echo "apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: book-classification-claim
@@ -49,7 +49,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 1Gi' >> /tmp/pvc.yaml
+      storage: 1Gi" > /tmp/pvc.yaml
 
 	out=`kubectl apply -f /tmp/pv.yaml`
 	out=`kubectl apply -f /tmp/pvc.yaml -n kubeflow`
