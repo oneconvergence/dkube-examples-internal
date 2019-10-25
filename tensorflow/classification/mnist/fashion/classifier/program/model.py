@@ -36,8 +36,6 @@ EPOCHS = int(os.getenv('EPOCHS', 10))
 TF_MODEL_DIR = MODEL_DIR
 steps_epoch = 0
 summary_interval = 100
-class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
-               'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
 print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
 
@@ -124,7 +122,7 @@ def model_fn(features, labels, mode, params):
   if mode == tf.estimator.ModeKeys.PREDICT:
     logits = model(image, training=False)
     predictions = {
-        'classes': class_names[tf.argmax(logits, axis=1)],
+        'classes': tf.argmax(logits, axis=1),
         'probabilities': tf.nn.softmax(logits),
     }
     return tf.estimator.EstimatorSpec(
@@ -138,7 +136,7 @@ def model_fn(features, labels, mode, params):
     logits = model(image, training=True)
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
     accuracy = tf.metrics.accuracy(
-        labels=class_names[tf.argmax(labels, axis=1)], predictions=tf.argmax(logits, axis=1))
+        labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
     # Name the accuracy tensor 'train_accuracy' to demonstrate the
     # LoggingTensorHook.
     tf.identity(accuracy[1], name='train_accuracy')
@@ -154,7 +152,7 @@ def model_fn(features, labels, mode, params):
     logits = model(image, training=False)
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
     accuracy = tf.metrics.accuracy(
-        labels=class_names[tf.argmax(labels, axis=1)], predictions=tf.argmax(logits, axis=1))
+        labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
     logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
         "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"eval"}, every_n_iter=summary_interval)
     return tf.estimator.EstimatorSpec(
@@ -163,7 +161,7 @@ def model_fn(features, labels, mode, params):
         	eval_metric_ops={
             	'accuracy':
                 	tf.metrics.accuracy(
-                    	labels=class_names[tf.argmax(labels, axis=1)],
+                    	labels=tf.argmax(labels, axis=1),
                     	predictions=tf.argmax(logits, axis=1)),
         	},
                 evaluation_hooks = [logging_hook])
