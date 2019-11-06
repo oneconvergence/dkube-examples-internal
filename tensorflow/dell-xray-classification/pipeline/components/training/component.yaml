@@ -11,7 +11,7 @@ description: |
     * Tags to group related training jobs.
 metadata:
   annotations: {platform: 'Dkube'}
-  labels: {platform: 'Dkube', wfid: '{{workflow.uid}}', runid: '{{pod.name}}', stage: 'training'}
+  labels: {platform: 'Dkube', logger: 'dkubepl', wfid: '{{workflow.uid}}', runid: '{{pod.name}}', stage: 'training'}
 inputs:
   - {name: auth_token,      type: String,   optional: false,
      description: 'Required. Dkube authentication token.'}
@@ -52,7 +52,7 @@ outputs:
   - {name: artifact,        description: 'Identifier in Dkube storage where artifacts of training are stored.'}
 implementation:
   container:
-    image: ocdr/dkubepl:1.4.0
+    image: ocdr/dkubepl:1.4.1
     command: ['dkubepl']
     args: [
       training,

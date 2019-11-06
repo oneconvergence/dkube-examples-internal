@@ -8,7 +8,7 @@ description: |
     * Attempts to decode and present some abstract information about the model.
 metadata:
   annotations: {platform: 'Dkube'}
-  labels: {platform: 'Dkube', wfid: '{{workflow.uid}}', runid: '{{pod.name}}', stage: 'serving'}
+  labels: {platform: 'Dkube', logger: 'dkubepl', wfid: '{{workflow.uid}}', runid: '{{pod.name}}', stage: 'serving'}
 inputs:
   - {name: auth_token,      type: String,   optional: false,
      description: 'Required. Dkube authentication token.'}
@@ -23,7 +23,7 @@ outputs:
   - {name: servingurl,       description: 'URL at which the serving web server is accessible.'}
 implementation:
   container:
-    image: ocdr/dkubepl:1.4.0
+    image: ocdr/dkubepl:1.4.1
     command: ['dkubepl']
     args: [
       serving,
