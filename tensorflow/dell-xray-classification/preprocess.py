@@ -125,11 +125,6 @@ def main():
     parser = argparse.ArgumentParser()
     INPUT_DIR = os.getenv('DKUBE_INPUT_DATASETS', None)
     OUTPUT_DIR = os.getenv('DKUBE_JOB_OUTPUT_SHAREDDIR', '.')
-    # parser.add_argument('--input-dir',
-    #                     default='{}/{}/'.format(
-    #                         os.getenv("DATUMS_PATH"),
-    #                         os.getenv("DATASET_NAME")),
-    #                     help="video directory path")
     parser.add_argument('--input-dir',
                         default='{}/'.format(INPUT_DIR),
                         help="video directory path")

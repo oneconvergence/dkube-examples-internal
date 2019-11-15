@@ -3,7 +3,11 @@ from kfp import components
 import json
 import time
 import os
-
+#Changes here
+dkube_create_resource_op = components.load_component_from_file(
+  "components/create_resource/component.yaml")
+dkube_download_dataset_op = components.load_component_from_file(
+  "components/download_dataset/component.yaml")
 dkube_preprocess_op = components.load_component_from_file(
     "components/preprocess/component.yaml")
 dkube_training_op = components.load_component_from_file(
@@ -28,7 +32,9 @@ SERVING_EXAMPLE = "chestnet"
               description=('Dell ChexNet pipeline'
                            'with dkube components'))
 def d3pipeline(
+    access_url,
     auth_token,
+    user,
     preprocess_container=json.dumps(
         {'image': 'docker.io/ocdr/dkube-datascience-tf-cpu:v1.14'}),
     preprocess_script="python preprocess.py",
@@ -45,12 +51,23 @@ def d3pipeline(
                                "epochs": EPOCHS,
                                "batchsize": BATCHSIZE}])):
 
+    # create dkube resource stage
+    create_resource = dkube_create_resource_op(access_url,
+                                               auth_token,
+                                               user)
+
+    # download dataset
+    download_dataset = dkube_download_dataset_op(access_url,
+                                               auth_token,
+                                               user,
+                                     preprocess_program,
+                                     preprocess_datasets).after(create_resource)    
     # preprocessing stage
     preprocess = dkube_preprocess_op(auth_token, preprocess_target_name,
                                      preprocess_container,
                                      program=preprocess_program,
                                      datasets=preprocess_datasets,
-                                     run_script=preprocess_script)
+                                     run_script=preprocess_script).after(dkube_download_dataset_op)
 
     # training stage
     preprocess_dataset_name = json.dumps([str(preprocess_target_name)])

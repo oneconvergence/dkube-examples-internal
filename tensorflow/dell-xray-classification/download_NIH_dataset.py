@@ -4,8 +4,12 @@
 import argparse
 import os
 import sys
-
+import ssl
+import tensorflow as tf
 from urllib.request import urlretrieve
+
+# Disable SSL verification for urlretrieve
+ssl._create_default_https_context = ssl._create_unverified_context
 
 # URLs for the zip files
 NIH_DATA_LINKS = [
@@ -24,45 +28,44 @@ NIH_DATA_LINKS = [
 ]
 
 
-def download(username, dataset_name, dkube_store_path):
+def download():
     # create directory
-    DATASET_DIR = "{}/dkube/users/{}/dataset/{}"
-    dataset_dir = (DATASET_DIR.format(
-        dkube_store_path, username, dataset_name))
-    if not os.path.exists(dataset_dir):
-        os.makedirs(dataset_dir)
-
+    DATASET_DIR = "{}/".format(os.getenv('DKUBE_INPUT_DATASETS', None))
+    # DATASET_DIR = (DATASET_DIR.format(
+        # dkube_store_path, username, dataset_name))
+    # if not os.path.exists(DATASET_DIR):
+        # os.makedirs(DATASET_DIR)
     for idx, link in enumerate(NIH_DATA_LINKS):
-        fn = os.path.join(dataset_dir, 'images_%03d.tar.gz' % (idx + 1))
-        print('downloading', fn, '...')
-        urlretrieve(link, fn)  # download the zip file
+        # fn = os.path.join(DATASET_DIR, 'images_%03d.tar.gz' % (idx + 1))
+        # print('downloading', fn, '...')
+        # urlretrieve(link, fn)  # download the zip file
+        fn = DATASET_DIR+'images_%03d.tar.gz'%(idx + 1)
+        with tf.gfile.GFile(fn) as file:
+            print('downloading', file, '...')
+            urlretrieve(link, file)
     print("Download completed successfully and it is available at {}".format(
-        dataset_dir))
+        DATASET_DIR))
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--user', help="Dkube UserName")
-    parser.add_argument('--dataset_name',
-                        help='Name of the dataset to be created.')
-    parser.add_argument('--dkube_store_path', help='path to dkube store')
+    parser.add_argument('--user', type=str, help="Dkube UserName")
+    parser.add_argument('--auth_token',type=str, help='auth_token')
+    parser.add_argument('--access_url', type=str, help='access_url')
     args = parser.parse_args()
-    username = args.user
-    dataset_name = args.dataset_name
-    dkube_store_path = args.dkube_store_path
+    user = args.user
+    auth_token = args.auth_token
+    access_url = args.access_url
+    if not user:
+        print("User is not specified, Please provide user with --user argument")
+    if not token:
+        print("Auth token is not specified, Please provide token with --auth_token argument")
+    if not access_url:
+        print("Access URL is not specified, Please provide access url with --access_url argument")
 
-    if not username:
-        print("usage: %s [-h] [--user USER] [--dataset-name DATASET_NAME]" % (
-            sys.argv[0]))
-        return
-
-    if not dataset_name:
-        print("usage: %s [-h] [--user USER] [--dataset-name DATASET_NAME]" % (
-            sys.argv[0]))
-        return
-    if not dkube_store_path:
-        dkube_store_path = "/var/dkube/dkube-store"
-    download(username, dataset_name, dkube_store_path)
+    # if not dkube_store_path:
+        # dkube_store_path = "/var/dkube/dkube-store"
+    download()
 
 
 if __name__ == '__main__':
