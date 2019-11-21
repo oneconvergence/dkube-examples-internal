@@ -53,7 +53,7 @@ def download():
     # 'https://nihcc.box.com/shared/static/ioqwiy20ihqwyr8pf4c24eazhh281pbu.gz'
     ]
     # create directory
-    DATASET_DIR = "{}/".format(os.getenv('DKUBE_JOB_OUTPUT_SHAREDDIR', None))
+    DATASET_DIR = "{}/".format(os.getenv('DKUBE_INPUT_DATASETS', None))
     print("DATASET_DIR: {}".format(DATASET_DIR))
     # DATASET_DIR = (DATASET_DIR.format(
         # dkube_store_path, username, dataset_name))
@@ -65,7 +65,8 @@ def download():
         # urlretrieve(link, fn)  # download the zip file
         fn = DATASET_DIR+'images_%03d.tar.gz'%(idx + 1)
         print("fn : {}".format(fn))
-        urlretrieve(link, fn)
+        tf.keras.utils.get_file(f_name=fn, origin=link)
+        # urlretrieve(link, fn)
         # with tf.gfile.GFile(fn) as file:
         #     print('downloading', file, '...')
         #     urlretrieve(link, file)

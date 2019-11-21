@@ -214,9 +214,9 @@ def download_job(url,user,token,ws_name,ds_name):
                                         "workspace": {"program": "{}:{}".format(user, ws_name),
                                                       "script": 'sudo -E python3 download_NIH_dataset.py --user=\"{}\" --auth_token=\"{}\" --access_url=\"{}\"'.format(user, token, access_url),
                                                       "gitcommit": {}},
-                                        # "datasets": ["{}:{}".format(user, ds_name)],
+                                        "datasets": ["{}:{}".format(user, ds_name)],
                                         "kind": "preprocessing",
-                                        "target": "chexnet"
+                                        "target": "chexnet-preprocessed"
                                     }}}
             data = json.dumps(data)
             resp = session.post(
