@@ -7,12 +7,16 @@ import time
 from string import Template
 from requests.packages import urllib3
 
-WS_SOURCE_LINK = "https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification"
-DATASET_URL = "https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification/dataset"
-WS_NAME = "chexnet-ws"
-DS_NAME = "chexnet"
 
-def create_ws(url, user, token):
+
+
+
+
+def create_ws(url, user, token, ws_name, ws_link):
+    # WS_SOURCE_LINK = "https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification"
+    WS_SOURCE_LINK = ws_link
+    # WS_NAME = "chexnet-ws"
+    WS_NAME = ws_name
     create_url = Template('$url/dkube/v2/users/$user/datums')
     header = {"content-type": "application/keyauth.api.v1+json",
               'Authorization': 'Bearer {}'.format(token)}
@@ -38,7 +42,11 @@ def create_ws(url, user, token):
     except Exception as e:
         return None
 
-def create_ds(url, user, token):
+def create_ds(url, user, token, ds_name, ds_link):
+    # DATASET_URL = "https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification/dataset"
+    DATASET_URL = ds_link
+    # DS_NAME = "chexnet"
+    DS_NAME = ds_name
     create_url = Template('$url/dkube/v2/users/$user/datums')
     header = {"content-type": "application/keyauth.api.v1+json",
               'Authorization': 'Bearer {}'.format(token)}
@@ -101,11 +109,18 @@ def poll_for_resource_creation(url, user, token, class_name, name):
         print("Error while polling for {} to be in ready state".format(class_name))
         return None
 
-def main():
+def create_job():
+    from string import Template
+    from requests.packages import urllib3
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--user', type=str)
     parser.add_argument('--access_url', type=str)
     parser.add_argument('--auth_token', type=str)
+    parser.add_argument('--ws_name', type=str)
+    parser.add_argument('--ws_link', type=str)
+    parser.add_argumen('--ds_name',type=str)
+    parser.add_argument('--ds_link', type=str)
     ar = parser.parse_args()
     if ar.user:
         user = ar.user
@@ -113,8 +128,11 @@ def main():
         url = ar.access_url
     if ar.auth_token:
         token = ar.auth_token
-
-    create_ws(url, user, token)
-    poll_for_resource_creation(url, user, token, "program", WS_NAME)
-    create_ds(url, user, token)
-    poll_for_resource_creation(url, user, token, "dataset", DS_NAME)
+    ws_name = ar.ws_name
+    ws_link = ar.ws_link
+    ds_name = ar.ds_name
+    ds_link = ar.ds_link
+    create_ws(url, user, token, ws_name, ws_link)
+    poll_for_resource_creation(url, user, token, "program", ws_name)
+    create_ds(url, user, token, ds_name, ds_link)
+    poll_for_resource_creation(url, user, token, "dataset", ds_name)
