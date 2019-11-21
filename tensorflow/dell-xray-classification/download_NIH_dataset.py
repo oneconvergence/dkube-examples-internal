@@ -168,7 +168,7 @@ def download():
             urlretrieve(link, file)
     print("Download completed successfully and it is available at {}".format(
         DATASET_DIR))
-
+download()
 '''
 def main():
     parser = argparse.ArgumentParser()
