@@ -216,7 +216,7 @@ def download_job(url,user,token,ws_name,ds_name):
                                                       "gitcommit": {}},
                                         "datasets": ["{}:{}".format(user, ds_name)],
                                         "kind": "preprocessing",
-                                        "target": "chexnet-preprocessed"
+                                        "target": "chexnet"
                                     }}}
             data = json.dumps(data)
             resp = session.post(
