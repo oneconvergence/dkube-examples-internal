@@ -65,7 +65,7 @@ def download():
         # urlretrieve(link, fn)  # download the zip file
         fn = DATASET_DIR+'images_%03d.tar.gz'%(idx + 1)
         print("fn : {}".format(fn))
-        tf.keras.utils.get_file(f_name=fn, origin=link)
+        tf.keras.utils.get_file(fname=fn, origin=link)
         # urlretrieve(link, fn)
         # with tf.gfile.GFile(fn) as file:
         #     print('downloading', file, '...')
