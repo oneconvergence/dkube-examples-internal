@@ -146,7 +146,7 @@ def d3pipeline(
     # create_dataset = dkube_create_dataset_op(access_url, user, auth_token).after(create_workspace)
 
     # create resource
-    create_resource_op = components.func_to_container_op(create_resource_job, base_image='docker.io/python:3.7.5')
+    create_resource_op = components.func_to_container_op(create_resource_job, base_image='docker.io/ocdr/dkube-datascience-tf-cpu:v1.14')
     create_res = create_resource_op(user=user,
                                          url=access_url,
                                          token=auth_token,
@@ -156,7 +156,7 @@ def d3pipeline(
                                          ds_link=DATASET_URL)
 
     # download dataset
-    download_dataset_op = components.func_to_container_op(download_job, base_image='docker.io/python:3.7.5') #.after(dkube_create_dataset_op)  #.after(create_resource)
+    download_dataset_op = components.func_to_container_op(download_job, base_image='docker.io/ocdr/dkube-datascience-tf-cpu:v1.14') #.after(dkube_create_dataset_op)  #.after(create_resource)
     download_dataset = download_dataset_op(url=access_url,
                                            user=user,
                                            token=auth_token,

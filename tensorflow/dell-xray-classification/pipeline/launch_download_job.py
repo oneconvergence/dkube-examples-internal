@@ -210,7 +210,7 @@ def download_job(url,user,token,ws_name,ds_name):
                     "parameters": {"class": "datajob",
                                    "datajob": {
                                         "executor": {"choice": "custom",
-                                                     "custom": {"image": {"path": "docker.io/tensorflow/tensorflow:1.12.0-py3"}}},
+                                                     "custom": {"image": {"path": "docker.io/ocdr/dkube-datascience-tf-cpu:v1.14"}}},
                                         "workspace": {"program": "{}:{}".format(user, ws_name),
                                                       "script": 'sudo -E python3 download_NIH_dataset.py --user=\"{}\" --auth_token=\"{}\" --access_url=\"{}\"'.format(user, token, access_url),
                                                       "gitcommit": {}},
