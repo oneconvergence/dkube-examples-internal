@@ -265,7 +265,7 @@ def create_resource_job(url, user, token, ws_name, ws_link, ds_name, ds_link):
     poll_for_resource_creation(url, user, token, "program", ws_name)
     # create_ds(url, user, token, ds_name, ds_link)
     # print("[create_resource_job] after ds")
-    poll_for_resource_creation(url, user, token, "dataset", ds_name)
+    # poll_for_resource_creation(url, user, token, "dataset", ds_name)
     with open('output.txt','w') as out_file:
         out_file.write("create resource job end")
     print("[create_resource_job] finish")
