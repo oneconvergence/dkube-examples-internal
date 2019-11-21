@@ -70,7 +70,8 @@ def download():
         # with tf.gfile.GFile(fn) as file:
         #     print('downloading', file, '...')
         #     urlretrieve(link, file)
-
+    if tf.io.gfile.exists(DATASET_DIR+'EMPTYFILE.zip'):
+        tf.io.gfile.remove(DATASET_DIR+'EMPTYFILE.zip')
     print("Download completed successfully and it is available at {}".format(
         DATASET_DIR))
 
