@@ -201,6 +201,18 @@ def download_job(url,user,token,ws_name,ds_name):
                   'Authorization': 'Bearer {}'.format(token)}
         if access_url[-1] == '/':
             access_url = access_url[:-1]
+
+        # $url/dkube/v2/users/$user/datums/class/dataset/datum/chexnet-download-ds
+        check_url = Template('$url/dkube/v2/users/$user/datums/class/dataset/datum/chexnet-preprocessed')
+        check_url = check_url.substitute({'url': access_url,
+                                         'user': user})
+        create_header = header.copy()
+        resp = requests.get(check__url, headers=header, verify=False)
+        resp = resp.json()
+        if resp['response']['code']==200:
+            print("chexnet-download-ds dataset already exist, skipping dataset download")
+            return
+
         try:
             url = create_url.substitute({'url': access_url,
                                          'user': user})
