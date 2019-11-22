@@ -207,7 +207,8 @@ def download_job(url,user,token,ws_name,ds_name):
         check_url = check_url.substitute({'url': access_url,
                                          'user': user})
         create_header = header.copy()
-        resp = requests.get(check_url, headers=header, verify=False)
+        print("Before request for dataset check")
+        resp = requests.get(check_url, headers=create_header, verify=False)
         resp = resp.json()
         if resp['response']['code']==200:
             print("chexnet-download-ds dataset already exist, skipping dataset download")
