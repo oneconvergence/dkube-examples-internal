@@ -210,9 +210,8 @@ def download_job(url,user,token,ws_name,ds_name):
         print("Before request for dataset check")
         print("check_url : {}".format(check_url))
         resp = requests.get(check_url, headers=create_header, verify=False)
-        resp = resp.json()
-        print("response: {}".format(resp))
-        if resp['response']['code']==200:
+        print("response: {}".format(resp.json()))
+        if resp.status_code==200:
             print("chexnet-download-ds dataset already exist, skipping dataset download")
             poll_flag = False
             print("poll_flag: {}".format(poll_flag))
