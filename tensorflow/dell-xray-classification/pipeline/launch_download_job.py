@@ -143,10 +143,9 @@ def download_job(url,user,token,ws_name,ds_name):
     import json
     from string import Template
     from requests.packages import urllib3
-    poll_flag = True
     JOB_NAME = "chexnet-data-download-job-{}".format(
     datetime.datetime.now().strftime("%Y-%m-%d-%H-%M"))
-
+    print("After import")
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     def poll_for_job_completion(url, user, token, name):
         poll_count = 500
@@ -202,25 +201,28 @@ def download_job(url,user,token,ws_name,ds_name):
                   'Authorization': 'Bearer {}'.format(token)}
         if access_url[-1] == '/':
             access_url = access_url[:-1]
-
+        poll_flag =True
         # $url/dkube/v2/users/$user/datums/class/dataset/datum/chexnet-download-ds
         check_url = Template('$url/dkube/v2/users/$user/datums/class/dataset/datum/chexnet-preprocessed')
         check_url = check_url.substitute({'url': access_url,
                                          'user': user})
         create_header = header.copy()
         print("Before request for dataset check")
+        print("check_url : {}".format(check_url))
         resp = requests.get(check_url, headers=create_header, verify=False)
         resp = resp.json()
+        print("response: {}".format(resp))
         if resp['response']['code']==200:
             print("chexnet-download-ds dataset already exist, skipping dataset download")
             poll_flag = False
-            return 
+            print("poll_flag: {}".format(poll_flag))
+            return  poll_flag
 
         try:
             url = create_url.substitute({'url': access_url,
                                          'user': user})
             create_header = header.copy()
-            session = requests.Session()
+            session = requests.Session()    
             data = {"name": job_name,
                     "parameters": {"class": "datajob",
                                    "datajob": {
@@ -238,13 +240,19 @@ def download_job(url,user,token,ws_name,ds_name):
                 url, data=data, headers=create_header, verify=False)
             if resp.status_code != 200:
                 print('Unable to start job %s' % job_name)
-                return None
+                return False
+            return True
         except Exception as e:
             print("Error: ", e)
-            return None
-    start_job(url, user, token, ws_name, ds_name, JOB_NAME)
+            return False
+
+    poll_flag=start_job(url, user, token, ws_name, ds_name, JOB_NAME)
+    print("poll_flag before if ")
     if poll_flag == True:
         poll_for_job_completion(url,user,token,JOB_NAME)
+    else:
+        print("poll_flag is False")
+        return None
 
 
 
