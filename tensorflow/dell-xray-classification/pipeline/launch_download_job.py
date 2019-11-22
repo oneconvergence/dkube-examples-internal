@@ -143,6 +143,7 @@ def download_job(url,user,token,ws_name,ds_name):
     import json
     from string import Template
     from requests.packages import urllib3
+    poll_flag = True
     JOB_NAME = "chexnet-data-download-job-{}".format(
     datetime.datetime.now().strftime("%Y-%m-%d-%H-%M"))
 
@@ -212,7 +213,8 @@ def download_job(url,user,token,ws_name,ds_name):
         resp = resp.json()
         if resp['response']['code']==200:
             print("chexnet-download-ds dataset already exist, skipping dataset download")
-            return
+            poll_flag = False
+            return 
 
         try:
             url = create_url.substitute({'url': access_url,
@@ -241,7 +243,8 @@ def download_job(url,user,token,ws_name,ds_name):
             print("Error: ", e)
             return None
     start_job(url, user, token, ws_name, ds_name, JOB_NAME)
-    poll_for_job_completion(url,user,token,JOB_NAME)
+    if poll_flag == True:
+        poll_for_job_completion(url,user,token,JOB_NAME)
 
 
 
