@@ -621,11 +621,11 @@ spec:
         \                               'user': user})\n        create_header = header.copy()\n\
         \        print(\"Before request for dataset check\")\n        print(\"check_url\
         \ : {}\".format(check_url))\n        resp = requests.get(check_url, headers=create_header,\
-        \ verify=False)\n        resp = resp.json()\n        print(\"response: {}\"\
-        .format(resp))\n        if resp['response']['code']==200:\n            print(\"\
-        chexnet-download-ds dataset already exist, skipping dataset download\")\n\
-        \            poll_flag = False\n            print(\"poll_flag: {}\".format(poll_flag))\n\
-        \            return  poll_flag\n\n        try:\n            url = create_url.substitute({'url':\
+        \ verify=False)\n        print(\"response: {}\".format(resp.json()))\n   \
+        \     if resp.status_code==200:\n            print(\"chexnet-download-ds dataset\
+        \ already exist, skipping dataset download\")\n            poll_flag = False\n\
+        \            print(\"poll_flag: {}\".format(poll_flag))\n            return\
+        \  poll_flag\n\n        try:\n            url = create_url.substitute({'url':\
         \ access_url,\n                                         'user': user})\n \
         \           create_header = header.copy()\n            session = requests.Session()\
         \    \n            data = {\"name\": job_name,\n                    \"parameters\"\
