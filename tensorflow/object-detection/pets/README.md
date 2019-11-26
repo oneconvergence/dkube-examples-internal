@@ -1,5 +1,5 @@
 # Pet Detector
-This example is derived from [tensorflow object detection example](https://github.com/tensorflow/models/tree/master/research/object_detection) and modified to run on Dkube Platform.
+This example is derived from [tensorflow object detection example](https://github.com/tensorflow/models/tree/1.4.1-branch/research/object_detection) and modified to run on Dkube Platform.
 
  - This program detects pet breeds from images. It uses transfer learning to train the model. The pre trained model used for transfer learning is "faster_rcnn_resnet101_coco_11_06_2017".
  - Modified program is configurable and takes Hyperparameters like steps, batchsize etc from Dkube UI and update the pipeline config file. 
@@ -18,8 +18,8 @@ Tensorflow object detection API expects the input dataset to be in TFRecord form
  2. Click *+Workspace* button.
  3. Select *Github* option.
  4. Enter a unique name say *pets-detector-preprocessing*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/preprocessing
- ](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/preprocessing)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/tensorflow/object-detection/pets/program/preprocessing
+ ](https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/tensorflow/object-detection/pets/program/preprocessing)* in the URL text box.
  6. Click *Add Workspace* button.
  7. Workspace will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -50,7 +50,7 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 	- **Container** section - 
 	    - Docker Image URL : docker.io/ocdr/dkube-datascience-preprocess:1.1
 	    - Private : If image is private, select private and provide dockerhub username and password
-	    - Start-up script : `python extract.py; python create_pet_tf_record.py --data_dir=/tmp/dataset/ --output_dir=$OUT_DIR --label_map_path=pet_label_map.pbtxt`
+	    - Start-up script : `python extract.py; python create_pet_tf_record.py --data_dir=/tmp/dataset/ --output_dir=$DKUBE_JOB_OUTPUT_SHAREDDIR --label_map_path=pet_label_map.pbtxt`
 	-  **Parameters** section - Leave it to default.
 	- **Workspace** section - Please select the workspace *pet-detector-preprocessing* created in *Step1*.
 	- **Dataset** section - Please select the dataset *pets* created in *Step2*.
@@ -64,8 +64,8 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
  2. Click *+Workspace* button.
  3. Select *Github* option.
  4. Enter a unique name say *pet-detector*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training
- ](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training )* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/tensorflow/object-detection/pets/program/training
+ ](https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/tensorflow/object-detection/pets/program/training )* in the URL text box.
  6. Click *Add Workspace* button.
  7. Workspace will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -86,10 +86,10 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 	- Enter a unique name say *pet-detector*
 	- **Container** section
 	  - Tensorflow Version - Leave with default options selected.
-	  - Startup script - `bash process.sh; python model_main.py --model_dir=$OUT_DIR`
+	  - Startup script - `bash process.sh; python model_main.py --model_dir=$DKUBE_JOB_OUTPUT_S3`
 	- **GPUs** section - Provide the required number of GPUs. This field is optional, if not provided network will train on CPU.
 	-  **Parameters** section
-		- Select the pipeline.config file which is stored locally(Download from https://github.com/oneconvergence/dkube-examples/blob/master/tensorflow/object-detection/pets/program/training/pipeline.config)
+		- Select the pipeline.config file which is stored locally(Download from https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/tensorflow/object-detection/pets/program/training/pipeline.config)
 		- Set the number of steps
 	- **Workspace** section - Please select the workspace *pet-detector* created in *Step1(How to train)*.
 	- **Model** section - Please select the workspace *faster-rcnn* created in *Step2(How to train)*.

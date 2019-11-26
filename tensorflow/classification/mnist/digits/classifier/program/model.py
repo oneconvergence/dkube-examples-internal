@@ -26,13 +26,13 @@ import dataset
 import json
 
 FLAGS = None
-DATUMS_PATH = os.getenv('DATUMS_PATH', None)
-DATASET_NAME = os.getenv('DATASET_NAME', None)
-TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS',1000))
-MODEL_DIR = os.getenv('OUT_DIR', None)
-DATA_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
-BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 10))
-EPOCHS = int(os.getenv('TF_EPOCHS', 1))
+TF_TRAIN_STEPS = int(os.getenv('STEPS',1000))
+MODEL_DIR = os.getenv('DKUBE_JOB_OUTPUT_S3', None)
+DATA_DIR = os.getenv('DKUBE_INPUT_DATASETS', None)
+if DATA_DIR is not None:
+    DATA_DIR = DATA_DIR.split(",")[0]
+BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
+EPOCHS = int(os.getenv('EPOCHS', 1))
 TF_MODEL_DIR = MODEL_DIR
 steps_epoch = 0
 summary_interval = 100
@@ -165,7 +165,7 @@ def model_fn(features, labels, mode, params):
 
 def main(unused_argv):
   try:
-      fp = open(os.getenv('HP_TUNING_INFO_FILE', 'None'),'r')
+      fp = open(os.getenv('DKUBE_JOB_HP_TUNING_INFO_FILE', 'None'),'r')
       hyperparams = json.loads(fp.read())
   except:
       hyperparams = { "learning_rate":1e-4, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
@@ -180,7 +180,7 @@ def main(unused_argv):
   if data_format is None:
     data_format = ('channels_first'
                    if tf.test.is_built_with_cuda() else 'channels_last')
-  if DATUMS_PATH == None or DATASET_NAME == None:
+  if DATA_DIR is None:
         print("No input dataset specified. Exiting...")
         return 1
   training_config = tf.estimator.RunConfig(model_dir=TF_MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)

@@ -3,7 +3,7 @@ import os
 import tarfile
 import shutil
 
-OUTPUT_DIR = os.getenv('OUT_DIR', None)
+OUTPUT_DIR = os.getenv('DKUBE_JOB_OUTPUT_SHAREDDIR', None)
 
 def download():
     opener = urllib.request.URLopener()

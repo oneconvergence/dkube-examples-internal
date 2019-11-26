@@ -1,10 +1,9 @@
 import os
 import tarfile
 
-DATUMS_PATH = os.getenv("DATUMS_PATH", None)
-DATASET_NAME = os.getenv("DATASET_NAME", None)
-
-DATA_DIR = os.path.join(DATUMS_PATH, DATASET_NAME)
+DATA_DIR = os.getenv('DKUBE_INPUT_DATASETS', None)
+if DATA_DIR is not None:
+    DATA_DIR = DATA_DIR.split(",")[0]
 target_dir = '/tmp/dataset/'
 
 def extract():
