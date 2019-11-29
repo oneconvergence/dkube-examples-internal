@@ -30,13 +30,14 @@ from tensorflow.python.saved_model import tag_constants
 import time
 from sklearn.metrics import roc_auc_score
 
-DATUMS_PATH = os.getenv('DATUMS_PATH', None)
-DATASET_NAME = os.getenv('DATASET_NAME', None)
-MODEL_DIR = os.getenv('OUT_DIR', None)
-BATCH_SIZE = int(os.getenv('TF_BATCH_SIZE', 32))
-EPOCHS = int(os.getenv('TF_EPOCHS', 1))
-TF_TRAIN_STEPS = int(os.getenv('TF_TRAIN_STEPS', 1000))
-DATASET_DIR = "{}/{}".format(DATUMS_PATH, DATASET_NAME)
+# DATUMS_PATH = os.getenv('DATUMS_PATH', None)
+# DATASET_NAME = os.getenv('DATASET_NAME', None)
+# MODEL_DIR = os.getenv('OUT_DIR', None)
+MODEL_DIR = os.getenv('DKUBE_JOB_OUTPUT_S3', None)
+BATCH_SIZE = int(os.getenv('BATCHSIZE', 32))
+EPOCHS = int(os.getenv('EPOCHS', 1))
+TF_TRAIN_STEPS = int(os.getenv('STEPS', 1000))
+DATASET_DIR = "{}/".format(os.getenv('DKUBE_INPUT_DATASETS', None))
 EXTRACT_PATH = "/tmp/dataset"
 USE_COLUMNS = [0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 CLASS_NAMES = ["Atelectasis", "Cardiomegaly", "Effusion", "Infiltration",
@@ -110,16 +111,16 @@ def dkubeLoggerHook(epoch, logs):
         'accuracy': float(logs.get('accuracy', 0)),
         'loss': logs.get('loss', 0),
         'epoch': epoch,
-        'jobid': os.getenv('JOBID'),
-        'username': os.getenv('USERNAME')
+        'jobid': os.getenv('DKUBE_JOB_ID'),
+        'username': os.getenv('DKUBE_USER_LOGIN_NAME')
     }
     eval_metrics = {
         'mode': "eval",
         'accuracy': float(logs.get('val_accuracy', 0)),
         'loss': logs.get('val_loss', 0),
         'epoch': epoch,
-        'jobid': os.getenv('JOBID'),
-        'username': os.getenv('USERNAME')
+        'jobid': os.getenv('DKUBE_JOB_ID'),
+        'username': os.getenv('DKUBE_USER_LOGIN_NAME')
     }
     try:
         url = "http://dkube-ext.dkube:9401/export-training-info"

@@ -123,14 +123,15 @@ def timeit(func):
 @timeit
 def main():
     parser = argparse.ArgumentParser()
+    INPUT_DIR = os.getenv('DKUBE_INPUT_DATASETS', None)
+    OUTPUT_DIR = os.getenv('DKUBE_JOB_OUTPUT_SHAREDDIR', '.')
     parser.add_argument('--input-dir',
-                        default='{}/{}/'.format(
-                            os.getenv("DATUMS_PATH"),
-                            os.getenv("DATASET_NAME")),
+                        default='{}/'.format(INPUT_DIR),
                         help="video directory path")
+
     parser.add_argument(
         '--output-dir',
-        default='{}/'.format(os.getenv("OUT_DIR", ".")),
+        default='{}/'.format(OUTPUT_DIR),
         help='Where to save the Output dataset zip file.')
     args = parser.parse_args()
     input_dir = args.input_dir

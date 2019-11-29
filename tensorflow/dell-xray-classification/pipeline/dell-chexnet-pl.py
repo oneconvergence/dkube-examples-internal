@@ -3,6 +3,15 @@ from kfp import components
 import json
 import time
 import os
+import sys
+sys.path.insert(0,'./create_resource.py')
+from create_resource import create_resource_job
+# from download_NIH_dataset import download
+from launch_download_job import download_job
+
+#input for create_resource
+WS_SOURCE_LINK = "https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification"
+DATASET_URL = "https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification/dataset"
 
 dkube_preprocess_op = components.load_component_from_file(
     "components/preprocess/component.yaml")
@@ -28,7 +37,9 @@ SERVING_EXAMPLE = "chestnet"
               description=('Dell ChexNet pipeline'
                            'with dkube components'))
 def d3pipeline(
+    access_url,
     auth_token,
+    user,
     preprocess_container=json.dumps(
         {'image': 'docker.io/ocdr/dkube-datascience-tf-cpu:v1.14'}),
     preprocess_script="python preprocess.py",
@@ -45,12 +56,29 @@ def d3pipeline(
                                "epochs": EPOCHS,
                                "batchsize": BATCHSIZE}])):
 
+    # create resource stage
+    create_resource_op = components.func_to_container_op(create_resource_job, base_image='docker.io/ocdr/dkube-datascience-tf-cpu:v1.14')
+    create_res = create_resource_op(user=user,
+                                         url=access_url,
+                                         token=auth_token,
+                                         ws_name=WORKSPACE,
+                                         ws_link=WS_SOURCE_LINK,
+                                         ds_name=PREPROCESS_DATASET,
+                                         ds_link=DATASET_URL)
+
+    # download dataset stage
+    download_dataset_op = components.func_to_container_op(download_job, base_image='docker.io/ocdr/dkube-datascience-tf-cpu:v1.14') 
+    download_dataset = download_dataset_op(url=access_url,
+                                           user=user,
+                                           token=auth_token,
+                                           ws_name=WORKSPACE,
+                                           ds_name=PREPROCESS_DATASET).after(create_res)
     # preprocessing stage
     preprocess = dkube_preprocess_op(auth_token, preprocess_target_name,
                                      preprocess_container,
                                      program=preprocess_program,
                                      datasets=preprocess_datasets,
-                                     run_script=preprocess_script)
+                                     run_script=preprocess_script).after(download_dataset)
 
     # training stage
     preprocess_dataset_name = json.dumps([str(preprocess_target_name)])

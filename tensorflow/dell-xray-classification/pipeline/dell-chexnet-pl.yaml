@@ -5,395 +5,690 @@ metadata:
 spec:
   arguments:
     parameters:
-      - name: auth-token
-      - name: preprocess-container
-        value: '{"image": "docker.io/ocdr/dkube-datascience-tf-cpu:v1.14"}'
-      - name: preprocess-script
-        value: python preprocess.py
-      - name: preprocess-program
-        value: chexnet-ws
-      - name: preprocess-target-name
-        value: chexnet-preprocessed
-      - name: preprocess-datasets
-        value: '["chexnet"]'
-      - name: training-container
-        value: '{"image": "docker.io/ocdr/dkube-datascience-tf-gpu:v1.14"}'
-      - name: training-program
-        value: chexnet-ws
-      - name: training-script
-        value: python model.py --ngpus=1
-      - name: training-gpus
-        value: '1'
-      - name: training-envs
-        value: '[{"steps": 20000, "epochs": 1, "batchsize": 32}]'
+    - name: access-url
+    - name: auth-token
+    - name: user
+    - name: preprocess-container
+      value: '{"image": "docker.io/ocdr/dkube-datascience-tf-cpu:v1.14"}'
+    - name: preprocess-script
+      value: python preprocess.py
+    - name: preprocess-program
+      value: chexnet-ws
+    - name: preprocess-target-name
+      value: chexnet-preprocessed
+    - name: preprocess-datasets
+      value: '["chexnet"]'
+    - name: training-container
+      value: '{"image": "docker.io/ocdr/dkube-datascience-tf-gpu:v1.14"}'
+    - name: training-program
+      value: chexnet-ws
+    - name: training-script
+      value: python model.py --ngpus=1
+    - name: training-gpus
+      value: '1'
+    - name: training-envs
+      value: '[{"steps": 20000, "epochs": 1, "batchsize": 32}]'
   entrypoint: dkube-chexnet-pl
   serviceAccountName: pipeline-runner
   templates:
-    - dag:
-        tasks:
-          - arguments:
-              parameters:
-                - name: auth-token
-                  value: '{{inputs.parameters.auth-token}}'
-                - name: preprocess-container
-                  value: '{{inputs.parameters.preprocess-container}}'
-                - name: preprocess-datasets
-                  value: '{{inputs.parameters.preprocess-datasets}}'
-                - name: preprocess-program
-                  value: '{{inputs.parameters.preprocess-program}}'
-                - name: preprocess-script
-                  value: '{{inputs.parameters.preprocess-script}}'
-                - name: preprocess-target-name
-                  value: '{{inputs.parameters.preprocess-target-name}}'
-            name: dkube-preprocess
-            template: dkube-preprocess
-          - arguments:
-              parameters:
-                - name: auth-token
-                  value: '{{inputs.parameters.auth-token}}'
-                - name: dkube-training-artifact
-                  value: >-
-                    {{tasks.dkube-training.outputs.parameters.dkube-training-artifact}}
-            dependencies:
-              - dkube-training
-            name: dkube-serving
-            template: dkube-serving
-          - arguments:
-              parameters:
-                - name: auth-token
-                  value: '{{inputs.parameters.auth-token}}'
-                - name: preprocess-target-name
-                  value: '{{inputs.parameters.preprocess-target-name}}'
-                - name: training-container
-                  value: '{{inputs.parameters.training-container}}'
-                - name: training-envs
-                  value: '{{inputs.parameters.training-envs}}'
-                - name: training-gpus
-                  value: '{{inputs.parameters.training-gpus}}'
-                - name: training-program
-                  value: '{{inputs.parameters.training-program}}'
-                - name: training-script
-                  value: '{{inputs.parameters.training-script}}'
-            dependencies:
-              - dkube-preprocess
-            name: dkube-training
-            template: dkube-training
-          - arguments:
-              parameters:
-                - name: auth-token
-                  value: '{{inputs.parameters.auth-token}}'
-                - name: dkube-serving-servingurl
-                  value: >-
-                    {{tasks.dkube-serving.outputs.parameters.dkube-serving-servingurl}}
-            dependencies:
-              - dkube-serving
-            name: dkube-viewer
-            template: dkube-viewer
-      inputs:
-        parameters:
+  - container:
+      args:
+      - '{{inputs.parameters.access-url}}'
+      - '{{inputs.parameters.user}}'
+      - '{{inputs.parameters.auth-token}}'
+      - chexnet-ws
+      - https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification
+      - chexnet
+      - https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification/dataset
+      command:
+      - python3
+      - -c
+      - "def create_resource_job(url, user, token, ws_name, ws_link, ds_name, ds_link):\n\
+        \    print(\"[create_resource_job] init\")\n    import os\n    def install(package):\n\
+        \        command = \"pip install \"+package\n        os.system(command)\n\
+        \    install('requests')\n    def create_ws(url, user, token, ws_name, ws_link):\n\
+        \        print(\"[create_ws] init\")\n        from string import Template\n\
+        \        import requests\n        import json\n        from requests.packages.urllib3.exceptions\
+        \ import InsecureRequestWarning\n        print(\"[create_ws] module imported\"\
+        )\n        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)\n\
+        \        create_url = Template('$url/dkube/v2/users/$user/datums')\n     \
+        \   header = {\"content-type\": \"application/keyauth.api.v1+json\",\n   \
+        \               'Authorization': 'Bearer {}'.format(token)}\n        if url[-1]\
+        \ == '/':\n            url = url[:-1]\n        try:\n            print(\"\
+        [create_ws] try block\")\n            url = create_url.substitute({'url':\
+        \ url,\n                                         'user': user})\n        \
+        \    create_header = header.copy()\n            session = requests.Session()\n\
+        \            data = {\"class\": \"program\",\n                    \"gitaccess\"\
+        : {\n                        \"private\": False},\n                    \"\
+        name\": ws_name,\n                    \"remote\": False,\n               \
+        \     \"source\": \"git\",\n                    \"tags\": [],\n          \
+        \          \"url\": ws_link}\n            data = json.dumps(data)\n      \
+        \      print(\"[create_ws] before request\")\n            resp = session.post(\n\
+        \                url, data=data, headers=create_header, verify=False)\n  \
+        \          print(\"[create_ws] after request: {}\".format(resp))\n       \
+        \     if resp.status_code != 200:\n                print('Unable to create\
+        \ workspace %s, It may be already exist' % ws_name)\n                return\
+        \ None\n            print(\"workspace {} added\".format(ws_name))\n      \
+        \  except Exception as e:\n            return None\n    \n    \n    \n   \
+        \ def create_ds(url, user, token, ds_name, ds_link):\n        print(\"[create_ds]\
+        \ init\")\n        from string import Template\n        import requests\n\
+        \        import json\n        from requests.packages.urllib3.exceptions import\
+        \ InsecureRequestWarning\n        print(\"[create_ds] module imported\")\n\
+        \        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)\n\
+        \        create_url = Template('$url/dkube/v2/users/$user/datums')\n     \
+        \   header = {\"content-type\": \"application/keyauth.api.v1+json\",\n   \
+        \               'Authorization': 'Bearer {}'.format(token)}\n        if url[-1]\
+        \ == '/':\n            url = url[:-1]\n        try:\n            print(\"\
+        [create_ds] try block\")\n            url = create_url.substitute({'url':\
+        \ url,\n                                         'user': user})\n        \
+        \    create_header = header.copy()\n            session = requests.Session()\n\
+        \            data = {\"class\": \"dataset\",\n                    \"gitaccess\"\
+        : {\n                        \"private\": False},\n                    \"\
+        name\": ds_name,\n                    \"remote\": False,\n               \
+        \     \"source\": \"git\",\n                    \"tags\": [],\n          \
+        \          \"url\": ds_link}\n            data = json.dumps(data)\n      \
+        \      print(\"[create_ds] before request\")\n            resp = session.post(\n\
+        \                url, data=data, headers=create_header, verify=False)\n  \
+        \          print(\"[create_ds] after request: {}\".format(resp))\n       \
+        \     if resp.status_code != 200:\n                print('Unable to create\
+        \ dataset %s, It may be already exist' % ds_name)\n                return\
+        \ None\n            print(\"dataset {} added\".format(ds_name))\n        except\
+        \ Exception as e:\n            return None\n    \n    \n    def poll_for_resource_creation(url,\
+        \ user, token, class_name, name):\n        print(\"[poll_resource] init\"\
+        )\n        import time\n        from string import Template\n        import\
+        \ requests\n        import json\n        from requests.packages.urllib3.exceptions\
+        \ import InsecureRequestWarning\n        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)\n\
+        \        print(\"[poll_resource] module imported\")\n        poll_count =\
+        \ 500\n        sleep_time = 5  # sec\n        created = False\n        get_url\
+        \ = Template('$url/dkube/v2/users/$user/datums/class/$class/?shared=false')\n\
+        \        header = {\"content-type\": \"application/keyauth.api.v1+json\",\n\
+        \                  'Authorization': 'Bearer {}'.format(token)}\n        try:\n\
+        \            print(\"[poll_resource] try block\")\n            url = get_url.substitute({'url':\
+        \ url,\n                                      'user': user,\n            \
+        \                          'class': class_name})\n            get_header =\
+        \ header.copy()\n            session = requests.Session()\n            for\
+        \ i in range(poll_count):\n                resp = session.get(\n         \
+        \           url, headers=get_header, verify=False)\n                if resp.status_code\
+        \ != 200:\n                    print('Unable to get info for %s' % name)\n\
+        \                    return None\n                data = resp.json()\n   \
+        \             print(\"polling for {} to be in ready state\".format(class_name))\n\
+        \                for dataset in data['data'][0]['datums']:\n             \
+        \       if dataset['name'] == name:\n                        if dataset['generated']['status']['state']\
+        \ == 'ready':\n                            created = True\n              \
+        \          break\n                if created:\n                    break\n\
+        \                time.sleep(sleep_time)\n            if created:\n       \
+        \         print(\"{} is in ready state\".format(class_name))\n           \
+        \ else:\n                print(\"Timeout: {} is not in ready state\".format(class_name))\n\
+        \        except Exception as e:\n            print(\"Error while polling for\
+        \ {} to be in ready state\".format(class_name))\n            return None\n\
+        \    create_ws(url, user, token, ws_name, ws_link)\n    print(\"[create_resource_job]\
+        \ after ws\")\n    poll_for_resource_creation(url, user, token, \"program\"\
+        , ws_name)\n    create_ds(url, user, token, ds_name, ds_link)\n    print(\"\
+        [create_resource_job] after ds\")\n    poll_for_resource_creation(url, user,\
+        \ token, \"dataset\", ds_name)\n    with open('output.txt','w') as out_file:\n\
+        \        out_file.write(\"create resource job end\")\n    print(\"[create_resource_job]\
+        \ finish\")\n\nimport sys\n_args = {\n    'url': str(sys.argv[1]),\n    'user':\
+        \ str(sys.argv[2]),\n    'token': str(sys.argv[3]),\n    'ws_name': str(sys.argv[4]),\n\
+        \    'ws_link': str(sys.argv[5]),\n    'ds_name': str(sys.argv[6]),\n    'ds_link':\
+        \ str(sys.argv[7]),\n}\n_output_files = [\n\n]\n\n_outputs = create_resource_job(**_args)\n\
+        \nif not hasattr(_outputs, '__getitem__') or isinstance(_outputs, str):\n\
+        \    _outputs = [_outputs]\n\nfrom pathlib import Path\nfor idx, filename\
+        \ in enumerate(_output_files):\n    _output_path = Path(filename)\n    _output_path.parent.mkdir(parents=True,\
+        \ exist_ok=True)\n    _output_path.write_text(str(_outputs[idx]))\n"
+      image: docker.io/ocdr/dkube-datascience-tf-cpu:v1.14
+    inputs:
+      parameters:
+      - name: access-url
+      - name: auth-token
+      - name: user
+    name: create-resource-job
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        path: /mlpipeline-ui-metadata.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      - name: mlpipeline-metrics
+        path: /mlpipeline-metrics.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+  - dag:
+      tasks:
+      - arguments:
+          parameters:
+          - name: access-url
+            value: '{{inputs.parameters.access-url}}'
           - name: auth-token
+            value: '{{inputs.parameters.auth-token}}'
+          - name: user
+            value: '{{inputs.parameters.user}}'
+        name: create-resource-job
+        template: create-resource-job
+      - arguments:
+          parameters:
+          - name: auth-token
+            value: '{{inputs.parameters.auth-token}}'
           - name: preprocess-container
+            value: '{{inputs.parameters.preprocess-container}}'
           - name: preprocess-datasets
+            value: '{{inputs.parameters.preprocess-datasets}}'
           - name: preprocess-program
+            value: '{{inputs.parameters.preprocess-program}}'
           - name: preprocess-script
+            value: '{{inputs.parameters.preprocess-script}}'
           - name: preprocess-target-name
-          - name: training-container
-          - name: training-envs
-          - name: training-gpus
-          - name: training-program
-          - name: training-script
-      name: dkube-chexnet-pl
-    - container:
-        args:
-          - preprocess
-          - '--accessurl'
-          - ''
-          - '--token'
-          - '{{inputs.parameters.auth-token}}'
-          - '--target'
-          - '{{inputs.parameters.preprocess-target-name}}'
-          - '--container'
-          - '{{inputs.parameters.preprocess-container}}'
-          - '--script'
-          - '{{inputs.parameters.preprocess-script}}'
-          - '--program'
-          - '{{inputs.parameters.preprocess-program}}'
-          - '--datasets'
-          - '{{inputs.parameters.preprocess-datasets}}'
-          - '--config'
-          - ''
-          - '--envs'
-          - '[]'
-          - '--runid'
-          - '{{pod.name}}'
-        command:
-          - dkubepl
-        image: 'ocdr/dkubepl:1.4.0'
-      inputs:
-        parameters:
+            value: '{{inputs.parameters.preprocess-target-name}}'
+        dependencies:
+        - download-job
+        name: dkube-preprocess
+        template: dkube-preprocess
+      - arguments:
+          parameters:
           - name: auth-token
-          - name: preprocess-container
-          - name: preprocess-datasets
-          - name: preprocess-program
-          - name: preprocess-script
-          - name: preprocess-target-name
-      metadata:
-        annotations:
-          platform: Dkube
-        labels:
-          platform: Dkube
-          runid: '{{pod.name}}'
-          stage: preprocess
-          wfid: '{{workflow.uid}}'
-      name: dkube-preprocess
-      outputs:
-        artifacts:
-          - name: mlpipeline-ui-metadata
-            path: /mlpipeline-ui-metadata.json
-            s3:
-              accessKeySecret:
-                key: accesskey
-                name: mlpipeline-minio-artifact
-              bucket: mlpipeline
-              endpoint: 'minio-service.kubeflow:9000'
-              insecure: true
-              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
-              secretKeySecret:
-                key: secretkey
-                name: mlpipeline-minio-artifact
-          - name: mlpipeline-metrics
-            path: /mlpipeline-metrics.json
-            s3:
-              accessKeySecret:
-                key: accesskey
-                name: mlpipeline-minio-artifact
-              bucket: mlpipeline
-              endpoint: 'minio-service.kubeflow:9000'
-              insecure: true
-              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
-              secretKeySecret:
-                key: secretkey
-                name: mlpipeline-minio-artifact
-        parameters:
-          - name: dkube-preprocess-artifact
-            valueFrom:
-              path: /tmp/artifact
-          - name: dkube-preprocess-rundetails
-            valueFrom:
-              path: /tmp/rundetails
-    - container:
-        args:
-          - serving
-          - '--accessurl'
-          - ''
-          - '--token'
-          - '{{inputs.parameters.auth-token}}'
-          - '--model'
-          - '{{inputs.parameters.dkube-training-artifact}}'
-          - '--device'
-          - cpu
-          - '--runid'
-          - '{{pod.name}}'
-        command:
-          - dkubepl
-        image: 'ocdr/dkubepl:1.4.0'
-      inputs:
-        parameters:
-          - name: auth-token
+            value: '{{inputs.parameters.auth-token}}'
           - name: dkube-training-artifact
-      metadata:
-        annotations:
-          platform: Dkube
-        labels:
-          platform: Dkube
-          runid: '{{pod.name}}'
-          stage: serving
-          wfid: '{{workflow.uid}}'
-      name: dkube-serving
-      outputs:
-        artifacts:
-          - name: mlpipeline-ui-metadata
-            path: /mlpipeline-ui-metadata.json
-            s3:
-              accessKeySecret:
-                key: accesskey
-                name: mlpipeline-minio-artifact
-              bucket: mlpipeline
-              endpoint: 'minio-service.kubeflow:9000'
-              insecure: true
-              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
-              secretKeySecret:
-                key: secretkey
-                name: mlpipeline-minio-artifact
-          - name: mlpipeline-metrics
-            path: /mlpipeline-metrics.json
-            s3:
-              accessKeySecret:
-                key: accesskey
-                name: mlpipeline-minio-artifact
-              bucket: mlpipeline
-              endpoint: 'minio-service.kubeflow:9000'
-              insecure: true
-              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
-              secretKeySecret:
-                key: secretkey
-                name: mlpipeline-minio-artifact
-        parameters:
-          - name: dkube-serving-rundetails
-            valueFrom:
-              path: /tmp/rundetails
-          - name: dkube-serving-servingurl
-            valueFrom:
-              path: /tmp/servingurl
-    - container:
-        args:
-          - training
-          - '--accessurl'
-          - ''
-          - '--token'
-          - '{{inputs.parameters.auth-token}}'
-          - '--container'
-          - '{{inputs.parameters.training-container}}'
-          - '--script'
-          - '{{inputs.parameters.training-script}}'
-          - '--program'
-          - '{{inputs.parameters.training-program}}'
-          - '--datasets'
-          - '["{{inputs.parameters.preprocess-target-name}}"]'
-          - '--models'
-          - '[]'
-          - '--ngpus'
-          - '{{inputs.parameters.training-gpus}}'
-          - '--nworkers'
-          - '0'
-          - '--auto'
-          - 'false'
-          - '--config'
-          - ''
-          - '--tuning'
-          - ''
-          - '--envs'
-          - '{{inputs.parameters.training-envs}}'
-          - '--gdrdma'
-          - 'false'
-          - '--runid'
-          - '{{pod.name}}'
-        command:
-          - dkubepl
-        image: 'ocdr/dkubepl:1.4.0'
-      inputs:
-        parameters:
+            value: '{{tasks.dkube-training.outputs.parameters.dkube-training-artifact}}'
+        dependencies:
+        - dkube-training
+        name: dkube-serving
+        template: dkube-serving
+      - arguments:
+          parameters:
           - name: auth-token
+            value: '{{inputs.parameters.auth-token}}'
           - name: preprocess-target-name
+            value: '{{inputs.parameters.preprocess-target-name}}'
           - name: training-container
+            value: '{{inputs.parameters.training-container}}'
           - name: training-envs
+            value: '{{inputs.parameters.training-envs}}'
           - name: training-gpus
+            value: '{{inputs.parameters.training-gpus}}'
           - name: training-program
+            value: '{{inputs.parameters.training-program}}'
           - name: training-script
-      metadata:
-        annotations:
-          platform: Dkube
-        labels:
-          platform: Dkube
-          runid: '{{pod.name}}'
-          stage: training
-          wfid: '{{workflow.uid}}'
-      name: dkube-training
-      outputs:
-        artifacts:
-          - name: mlpipeline-ui-metadata
-            path: /mlpipeline-ui-metadata.json
-            s3:
-              accessKeySecret:
-                key: accesskey
-                name: mlpipeline-minio-artifact
-              bucket: mlpipeline
-              endpoint: 'minio-service.kubeflow:9000'
-              insecure: true
-              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
-              secretKeySecret:
-                key: secretkey
-                name: mlpipeline-minio-artifact
-          - name: mlpipeline-metrics
-            path: /mlpipeline-metrics.json
-            s3:
-              accessKeySecret:
-                key: accesskey
-                name: mlpipeline-minio-artifact
-              bucket: mlpipeline
-              endpoint: 'minio-service.kubeflow:9000'
-              insecure: true
-              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
-              secretKeySecret:
-                key: secretkey
-                name: mlpipeline-minio-artifact
-        parameters:
-          - name: dkube-training-artifact
-            valueFrom:
-              path: /tmp/artifact
-          - name: dkube-training-rundetails
-            valueFrom:
-              path: /tmp/rundetails
-    - container:
-        args:
-          - viewer
-          - '--accessurl'
-          - ''
-          - '--viewtype'
-          - inference
-          - '--token'
-          - '{{inputs.parameters.auth-token}}'
-          - '--servingurl'
-          - '{{inputs.parameters.dkube-serving-servingurl}}'
-          - '--servingexample'
-          - chestnet
-          - '--runid'
-          - '{{pod.name}}'
-        command:
-          - dkubepl
-        image: 'ocdr/dkubepl:chestnet'
-      inputs:
-        parameters:
+            value: '{{inputs.parameters.training-script}}'
+        dependencies:
+        - dkube-preprocess
+        name: dkube-training
+        template: dkube-training
+      - arguments:
+          parameters:
           - name: auth-token
+            value: '{{inputs.parameters.auth-token}}'
           - name: dkube-serving-servingurl
-      metadata:
-        annotations:
-          platform: Dkube
-        labels:
-          platform: Dkube
-          runid: '{{pod.name}}'
-          stage: viewer
-          wfid: '{{workflow.uid}}'
-      name: dkube-viewer
-      outputs:
-        artifacts:
-          - name: mlpipeline-ui-metadata
-            path: /mlpipeline-ui-metadata.json
-            s3:
-              accessKeySecret:
-                key: accesskey
-                name: mlpipeline-minio-artifact
-              bucket: mlpipeline
-              endpoint: 'minio-service.kubeflow:9000'
-              insecure: true
-              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz'
-              secretKeySecret:
-                key: secretkey
-                name: mlpipeline-minio-artifact
-          - name: mlpipeline-metrics
-            path: /mlpipeline-metrics.json
-            s3:
-              accessKeySecret:
-                key: accesskey
-                name: mlpipeline-minio-artifact
-              bucket: mlpipeline
-              endpoint: 'minio-service.kubeflow:9000'
-              insecure: true
-              key: 'runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz'
-              secretKeySecret:
-                key: secretkey
-                name: mlpipeline-minio-artifact
-        parameters:
-          - name: dkube-viewer-rundetails
-            valueFrom:
-              path: /tmp/rundetails
+            value: '{{tasks.dkube-serving.outputs.parameters.dkube-serving-servingurl}}'
+        dependencies:
+        - dkube-serving
+        name: dkube-viewer
+        template: dkube-viewer
+      - arguments:
+          parameters:
+          - name: access-url
+            value: '{{inputs.parameters.access-url}}'
+          - name: auth-token
+            value: '{{inputs.parameters.auth-token}}'
+          - name: user
+            value: '{{inputs.parameters.user}}'
+        dependencies:
+        - create-resource-job
+        name: download-job
+        template: download-job
+    inputs:
+      parameters:
+      - name: access-url
+      - name: auth-token
+      - name: preprocess-container
+      - name: preprocess-datasets
+      - name: preprocess-program
+      - name: preprocess-script
+      - name: preprocess-target-name
+      - name: training-container
+      - name: training-envs
+      - name: training-gpus
+      - name: training-program
+      - name: training-script
+      - name: user
+    name: dkube-chexnet-pl
+  - container:
+      args:
+      - preprocess
+      - --accessurl
+      - ''
+      - --token
+      - '{{inputs.parameters.auth-token}}'
+      - --target
+      - '{{inputs.parameters.preprocess-target-name}}'
+      - --container
+      - '{{inputs.parameters.preprocess-container}}'
+      - --script
+      - '{{inputs.parameters.preprocess-script}}'
+      - --program
+      - '{{inputs.parameters.preprocess-program}}'
+      - --datasets
+      - '{{inputs.parameters.preprocess-datasets}}'
+      - --config
+      - ''
+      - --envs
+      - '[]'
+      - --runid
+      - '{{pod.name}}'
+      command:
+      - dkubepl
+      image: ocdr/dkubepl:1.4.1
+    inputs:
+      parameters:
+      - name: auth-token
+      - name: preprocess-container
+      - name: preprocess-datasets
+      - name: preprocess-program
+      - name: preprocess-script
+      - name: preprocess-target-name
+    metadata:
+      annotations:
+        platform: Dkube
+      labels:
+        logger: dkubepl
+        platform: Dkube
+        runid: '{{pod.name}}'
+        stage: preprocess
+        wfid: '{{workflow.uid}}'
+    name: dkube-preprocess
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        path: /mlpipeline-ui-metadata.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      - name: mlpipeline-metrics
+        path: /mlpipeline-metrics.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      parameters:
+      - name: dkube-preprocess-artifact
+        valueFrom:
+          path: /tmp/artifact
+      - name: dkube-preprocess-rundetails
+        valueFrom:
+          path: /tmp/rundetails
+  - container:
+      args:
+      - serving
+      - --accessurl
+      - ''
+      - --token
+      - '{{inputs.parameters.auth-token}}'
+      - --model
+      - '{{inputs.parameters.dkube-training-artifact}}'
+      - --device
+      - cpu
+      - --runid
+      - '{{pod.name}}'
+      command:
+      - dkubepl
+      image: ocdr/dkubepl:1.4.1
+    inputs:
+      parameters:
+      - name: auth-token
+      - name: dkube-training-artifact
+    metadata:
+      annotations:
+        platform: Dkube
+      labels:
+        logger: dkubepl
+        platform: Dkube
+        runid: '{{pod.name}}'
+        stage: serving
+        wfid: '{{workflow.uid}}'
+    name: dkube-serving
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        path: /mlpipeline-ui-metadata.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      - name: mlpipeline-metrics
+        path: /mlpipeline-metrics.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      parameters:
+      - name: dkube-serving-rundetails
+        valueFrom:
+          path: /tmp/rundetails
+      - name: dkube-serving-servingurl
+        valueFrom:
+          path: /tmp/servingurl
+  - container:
+      args:
+      - training
+      - --accessurl
+      - ''
+      - --token
+      - '{{inputs.parameters.auth-token}}'
+      - --container
+      - '{{inputs.parameters.training-container}}'
+      - --script
+      - '{{inputs.parameters.training-script}}'
+      - --program
+      - '{{inputs.parameters.training-program}}'
+      - --datasets
+      - '["{{inputs.parameters.preprocess-target-name}}"]'
+      - --models
+      - '[]'
+      - --ngpus
+      - '{{inputs.parameters.training-gpus}}'
+      - --nworkers
+      - '0'
+      - --auto
+      - 'false'
+      - --config
+      - ''
+      - --tuning
+      - ''
+      - --envs
+      - '{{inputs.parameters.training-envs}}'
+      - --gdrdma
+      - 'false'
+      - --runid
+      - '{{pod.name}}'
+      command:
+      - dkubepl
+      image: ocdr/dkubepl:1.4.1
+    inputs:
+      parameters:
+      - name: auth-token
+      - name: preprocess-target-name
+      - name: training-container
+      - name: training-envs
+      - name: training-gpus
+      - name: training-program
+      - name: training-script
+    metadata:
+      annotations:
+        platform: Dkube
+      labels:
+        logger: dkubepl
+        platform: Dkube
+        runid: '{{pod.name}}'
+        stage: training
+        wfid: '{{workflow.uid}}'
+    name: dkube-training
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        path: /mlpipeline-ui-metadata.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      - name: mlpipeline-metrics
+        path: /mlpipeline-metrics.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      parameters:
+      - name: dkube-training-artifact
+        valueFrom:
+          path: /tmp/artifact
+      - name: dkube-training-rundetails
+        valueFrom:
+          path: /tmp/rundetails
+  - container:
+      args:
+      - viewer
+      - --accessurl
+      - ''
+      - --viewtype
+      - inference
+      - --token
+      - '{{inputs.parameters.auth-token}}'
+      - --servingurl
+      - '{{inputs.parameters.dkube-serving-servingurl}}'
+      - --servingexample
+      - chestnet
+      - --runid
+      - '{{pod.name}}'
+      command:
+      - dkubepl
+      image: ocdr/dkubepl:chestnet
+    inputs:
+      parameters:
+      - name: auth-token
+      - name: dkube-serving-servingurl
+    metadata:
+      annotations:
+        platform: Dkube
+      labels:
+        logger: dkubepl
+        platform: Dkube
+        runid: '{{pod.name}}'
+        stage: viewer
+        wfid: '{{workflow.uid}}'
+    name: dkube-viewer
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        path: /mlpipeline-ui-metadata.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      - name: mlpipeline-metrics
+        path: /mlpipeline-metrics.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      parameters:
+      - name: dkube-viewer-rundetails
+        valueFrom:
+          path: /tmp/rundetails
+  - container:
+      args:
+      - '{{inputs.parameters.access-url}}'
+      - '{{inputs.parameters.user}}'
+      - '{{inputs.parameters.auth-token}}'
+      - chexnet-ws
+      - chexnet
+      command:
+      - python3
+      - -c
+      - "def download_job(url,user,token,ws_name,ds_name):\n    import os\n    def\
+        \ install(package):\n        command = \"pip install \"+package\n        os.system(command)\n\
+        \    install('requests')\n    import re\n    import requests\n    import time\n\
+        \    # import zipfile\n    # import tarfile\n    import datetime\n    import\
+        \ json\n    from string import Template\n    from requests.packages import\
+        \ urllib3\n    JOB_NAME = \"chexnet-data-download-job-{}\".format(\n    datetime.datetime.now().strftime(\"\
+        %Y-%m-%d-%H-%M\"))\n    print(\"After import\")\n    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)\n\
+        \    def poll_for_job_completion(url, user, token, name):\n        poll_count\
+        \ = 500\n        sleep_time = 5  # sec\n        completed = False\n      \
+        \  error = False\n        get_url = Template('$url/dkube/v2/users/$user/jobs/class/datajob/?shared=false')\n\
+        \        header = {\"content-type\": \"application/keyauth.api.v1+json\",\n\
+        \                  'Authorization': 'Bearer {}'.format(token)}\n        try:\n\
+        \            poll_url = get_url.substitute({'url': url,\n                \
+        \                           'user': user})\n            get_header = header.copy()\n\
+        \            session = requests.Session()\n            for i in range(poll_count):\n\
+        \                resp = session.get(\n                    poll_url, headers=get_header,\
+        \ verify=False)\n                if resp.status_code != 200:\n           \
+        \         print('Unable to get info for %s' % name)\n                    return\
+        \ None\n                data = resp.json()\n                print(\"polling\
+        \ for completion of datajob {}\".format(name))\n                for dataset\
+        \ in data['data'][0]['jobs']:\n                    if dataset['name'] == name:\n\
+        \                        if dataset['parameters']['generated']['status']['state']\
+        \ == 'COMPLETE':\n                            completed = True\n         \
+        \                   break\n                        if dataset['parameters']['generated']['status']['state']\
+        \ == 'ERROR':\n                            error = True\n                \
+        \            break\n                if completed or error:\n             \
+        \       break\n                time.sleep(sleep_time)\n            if error:\n\
+        \                print(\"Custom datajob {} for dataset sync is in error state\"\
+        .format(\n                    name))\n                return False\n     \
+        \       if completed:\n                print(\"Custom datajob {} for dataset\
+        \ sync is completed\".format(\n                    name))\n              \
+        \  return True\n            else:\n                print(\"Unable to complete\
+        \ custom job for datset sync\")\n                return False\n        except\
+        \ Exception as e:\n            print(\"Error while running custom job for\
+        \ dataset sync\")\n            return False\n\n    def start_job(access_url,\
+        \ user, token, ws_name, ds_name, job_name):\n        create_url = Template('$url/dkube/v2/users/$user/jobs')\n\
+        \        header = {\"content-type\": \"application/keyauth.api.v1+json\",\n\
+        \                  'Authorization': 'Bearer {}'.format(token)}\n        if\
+        \ access_url[-1] == '/':\n            access_url = access_url[:-1]\n     \
+        \   poll_flag =True\n        # $url/dkube/v2/users/$user/datums/class/dataset/datum/chexnet-download-ds\n\
+        \        check_url = Template('$url/dkube/v2/users/$user/datums/class/dataset/datum/chexnet-preprocessed')\n\
+        \        check_url = check_url.substitute({'url': access_url,\n          \
+        \                               'user': user})\n        create_header = header.copy()\n\
+        \        print(\"Before request for dataset check\")\n        print(\"check_url\
+        \ : {}\".format(check_url))\n        resp = requests.get(check_url, headers=create_header,\
+        \ verify=False)\n        print(\"response: {}\".format(resp.json()))\n   \
+        \     if resp.status_code==200:\n            print(\"chexnet-download-ds dataset\
+        \ already exist, skipping dataset download\")\n            poll_flag = False\n\
+        \            print(\"poll_flag: {}\".format(poll_flag))\n            return\
+        \  poll_flag\n\n        try:\n            url = create_url.substitute({'url':\
+        \ access_url,\n                                         'user': user})\n \
+        \           create_header = header.copy()\n            session = requests.Session()\
+        \    \n            data = {\"name\": job_name,\n                    \"parameters\"\
+        : {\"class\": \"datajob\",\n                                   \"datajob\"\
+        : {\n                                        \"executor\": {\"choice\": \"\
+        custom\",\n                                                     \"custom\"\
+        : {\"image\": {\"path\": \"docker.io/ocdr/dkube-datascience-tf-cpu:v1.14\"\
+        }}},\n                                        \"workspace\": {\"program\"\
+        : \"{}:{}\".format(user, ws_name),\n                                     \
+        \                 \"script\": 'sudo -E python3 download_NIH_dataset.py --user=\\\
+        \"{}\\\" --auth_token=\\\"{}\\\" --access_url=\\\"{}\\\"'.format(user, token,\
+        \ access_url),\n                                                      \"gitcommit\"\
+        : {}},\n                                        \"datasets\": [\"{}:{}\".format(user,\
+        \ ds_name)],\n                                        \"kind\": \"preprocessing\"\
+        ,\n                                        \"target\": \"chexnet-download-ds\"\
+        \n                                    }}}\n            data = json.dumps(data)\n\
+        \            resp = session.post(\n                url, data=data, headers=create_header,\
+        \ verify=False)\n            if resp.status_code != 200:\n               \
+        \ print('Unable to start job %s' % job_name)\n                return False\n\
+        \            return True\n        except Exception as e:\n            print(\"\
+        Error: \", e)\n            return False\n\n    poll_flag=start_job(url, user,\
+        \ token, ws_name, ds_name, JOB_NAME)\n    print(\"poll_flag before if \")\n\
+        \    if poll_flag == True:\n        poll_for_job_completion(url,user,token,JOB_NAME)\n\
+        \    else:\n        print(\"poll_flag is False\")\n        return None\n\n\
+        import sys\n_args = {\n    'url': str(sys.argv[1]),\n    'user': str(sys.argv[2]),\n\
+        \    'token': str(sys.argv[3]),\n    'ws_name': str(sys.argv[4]),\n    'ds_name':\
+        \ str(sys.argv[5]),\n}\n_output_files = [\n\n]\n\n_outputs = download_job(**_args)\n\
+        \nif not hasattr(_outputs, '__getitem__') or isinstance(_outputs, str):\n\
+        \    _outputs = [_outputs]\n\nfrom pathlib import Path\nfor idx, filename\
+        \ in enumerate(_output_files):\n    _output_path = Path(filename)\n    _output_path.parent.mkdir(parents=True,\
+        \ exist_ok=True)\n    _output_path.write_text(str(_outputs[idx]))\n"
+      image: docker.io/ocdr/dkube-datascience-tf-cpu:v1.14
+    inputs:
+      parameters:
+      - name: access-url
+      - name: auth-token
+      - name: user
+    name: download-job
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        path: /mlpipeline-ui-metadata.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      - name: mlpipeline-metrics
+        path: /mlpipeline-metrics.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact

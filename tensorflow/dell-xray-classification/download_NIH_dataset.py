@@ -1,15 +1,28 @@
-#!/usr/bin/python3
+# #!/usr/bin/python3
 
 # Download the NIH Chest X-ray Dataset zip files
-import argparse
+# import argparse
 import os
 import sys
-
+import ssl
+import tensorflow as tf
 from urllib.request import urlretrieve
 
-# URLs for the zip files
-NIH_DATA_LINKS = [
-    'https://nihcc.box.com/shared/static/vfk49d74nhbxq3nqjg0900w5nvkorp5c.gz',
+# Disable SSL verification for urlretrieve
+ssl._create_default_https_context = ssl._create_unverified_context
+
+def download():
+    import os
+    import tensorflow as tf
+    from urllib.request import urlretrieve
+    import ssl
+
+    # Disable SSL verification for urlretrieve
+    ssl._create_default_https_context = ssl._create_unverified_context
+    
+    # URLs for the zip files
+    NIH_DATA_LINKS = [
+    'https://nihcc.box.com/shared/static/vfk49d74nhbxq3nqjg0900w5nvkorp5c.gz'
     'https://nihcc.box.com/shared/static/i28rlmbvmfjbl8p2n3ril0pptcmcu9d1.gz',
     'https://nihcc.box.com/shared/static/f1t00wrtdk94satdfb9olcolqx20z2jp.gz',
     'https://nihcc.box.com/shared/static/0aowwzs5lhjrceb3qp67ahp0rd1l1etg.gz',
@@ -21,49 +34,17 @@ NIH_DATA_LINKS = [
     'https://nihcc.box.com/shared/static/l6nilvfa9cg3s28tqv1qc1olm3gnz54p.gz',
     'https://nihcc.box.com/shared/static/hhq8fkdgvcari67vfhs7ppg2w6ni4jze.gz',
     'https://nihcc.box.com/shared/static/ioqwiy20ihqwyr8pf4c24eazhh281pbu.gz'
-]
-
-
-def download(username, dataset_name, dkube_store_path):
+    ]
     # create directory
-    DATASET_DIR = "{}/dkube/users/{}/dataset/{}"
-    dataset_dir = (DATASET_DIR.format(
-        dkube_store_path, username, dataset_name))
-    if not os.path.exists(dataset_dir):
-        os.makedirs(dataset_dir)
-
+    DATASET_DIR = "{}/".format(os.getenv('DKUBE_INPUT_DATASETS', None))
+    print("DATASET_DIR: {}".format(DATASET_DIR))
+    
     for idx, link in enumerate(NIH_DATA_LINKS):
-        fn = os.path.join(dataset_dir, 'images_%03d.tar.gz' % (idx + 1))
-        print('downloading', fn, '...')
-        urlretrieve(link, fn)  # download the zip file
+        fn = DATASET_DIR+'images_%03d.tar.gz'%(idx + 1)
+        print("fn : {}".format(fn))
+        tf.keras.utils.get_file(fname=fn, origin=link)
+    if tf.io.gfile.exists(DATASET_DIR+'EMPTYFILE.zip'):
+        tf.io.gfile.remove(DATASET_DIR+'EMPTYFILE.zip')
     print("Download completed successfully and it is available at {}".format(
-        dataset_dir))
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--user', help="Dkube UserName")
-    parser.add_argument('--dataset_name',
-                        help='Name of the dataset to be created.')
-    parser.add_argument('--dkube_store_path', help='path to dkube store')
-    args = parser.parse_args()
-    username = args.user
-    dataset_name = args.dataset_name
-    dkube_store_path = args.dkube_store_path
-
-    if not username:
-        print("usage: %s [-h] [--user USER] [--dataset-name DATASET_NAME]" % (
-            sys.argv[0]))
-        return
-
-    if not dataset_name:
-        print("usage: %s [-h] [--user USER] [--dataset-name DATASET_NAME]" % (
-            sys.argv[0]))
-        return
-    if not dkube_store_path:
-        dkube_store_path = "/var/dkube/dkube-store"
-    download(username, dataset_name, dkube_store_path)
-
-
-if __name__ == '__main__':
-    main()
+        DATASET_DIR))
+download()

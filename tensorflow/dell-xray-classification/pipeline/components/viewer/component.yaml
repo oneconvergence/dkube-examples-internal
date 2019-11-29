@@ -6,7 +6,7 @@ description: |
     * In future will add TFMA, Tensorboard etc..
 metadata:
   annotations: {platform: 'Dkube'}
-  labels: {platform: 'Dkube', wfid: '{{workflow.uid}}', runid: '{{pod.name}}', stage: 'viewer'}
+  labels: {platform: 'Dkube', logger: 'dkubepl', wfid: '{{workflow.uid}}', runid: '{{pod.name}}', stage: 'viewer'}
 inputs:
   - {name: auth_token,      type: String,   optional: false,
      description: 'Required. Dkube authentication token.'}
