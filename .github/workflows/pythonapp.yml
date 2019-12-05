@@ -1,4 +1,4 @@
-name: dkube-training-job
+name: Dkube-training-job
 on:
  push:
    branches:
