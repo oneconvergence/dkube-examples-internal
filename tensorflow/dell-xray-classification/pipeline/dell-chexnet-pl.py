@@ -10,8 +10,8 @@ from create_resource import create_resource_job
 from launch_download_job import download_job
 
 #input for create_resource
-WS_SOURCE_LINK = "https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification"
-DATASET_URL = "https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification/dataset"
+WS_SOURCE_LINK = "https://github.com/oneconvergence/dkube-examples/tree/dell-model/tensorflow/dell-xray-classification"
+DATASET_URL = "https://github.com/oneconvergence/dkube-examples/tree/dell-model/tensorflow/dell-xray-classification/dataset"
 
 dkube_preprocess_op = components.load_component_from_file(
     "components/preprocess/component.yaml")
