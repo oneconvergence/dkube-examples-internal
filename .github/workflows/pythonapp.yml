@@ -1,0 +1,19 @@
+name: dkube-training-job
+on:
+ push:
+   branches:
+     - master
+jobs:
+ create_commit:
+   runs-on: ubuntu-latest
+   steps:
+       - uses: actions/checkout@master
+       - name: launch training JOB  
+         run: |
+           sudo apt install python3-pip
+           pip3 install setuptools
+           pip3 install wheel          
+           sudo pip3 install git+https://github.com/oneconvergence/dkube.git@dev
+           python3 -c "from dkube.sdk.dkube import *; \
+           env = Environment(scheme='https', host=sys.argv[2], user='ocdkube',token=sys.argv[1], port=32222); \
+           launch_training_job('test', autogenerate=True, environ=env.external, workspace='mnist', script='python model.py',datasets=['mnist'])" "${{secrets.dkube_access_token}}" "${{secrets.dkube_access_ip}}"
