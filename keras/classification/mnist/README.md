@@ -25,7 +25,7 @@ This example is derived from the [keras example](https://github.com/keras-team/k
  2. Click on *+Workspace* button.
  3. Select the *Github* option.
  4. Enter a unique name, say *keras-mnist*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/keras/classification/mnist/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/keras/classification/mnist/classifier/program)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/keras/classification/mnist/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/master/keras/classification/mnist/classifier/program)* in the URL text box.
  6. Click on *Add Workspace* button.
  7. Workspace will be created and imported in Dkube. The progress of import can be seen in Dkube UI.
  8. Wait till status turns to *ready*.

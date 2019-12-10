@@ -23,7 +23,7 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
  2. Click *+Workspace* button.
  3. Select *Github* option.
  4. Enter a unique name say *resnet-catsdogs*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/tensorflow/classification/resnet/catsdogs/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/tensorflow/classification/resnet/catsdogs/classifier/program)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/classification/resnet/catsdogs/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/classification/resnet/catsdogs/classifier/program)* in the URL text box.
  6. Click *Add Workspace* button.
  7. Workspace will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -33,7 +33,7 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
  2. Click *+Dataset* button.
  3. Select *Github* option.
  4. Enter a unique name say *resnet-catsdogs*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/tensorflow/classification/resnet/catsdogs/classifier/data](https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/tensorflow/classification/resnet/catsdogs/classifier/data)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/classification/resnet/catsdogs/classifier/data](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/classification/resnet/catsdogs/classifier/data)* in the URL text box.
  6. Click *Add Dataset* button.
  7. Dataset will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -132,7 +132,7 @@ parameterconfigs:
 2. Sample pipeline for this example is available under `pipeline/` mentioned in section [directories](#%20Directories)
 ## How to use catsdogs.ipynb
 1. Create a new *Workspace* in Dkube as explained in [section](##%20Step1:%20Create%20a%20workspace) with unqiue name say, *catsdogs-pl-nb*
-2. Change the github url to [https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/tensorflow/classification/resnet/catsdogs/pipeline/catsdogs.ipynb](https://github.com/oneconvergence/dkube-examples/tree/1.4.1-branch/tensorflow/classification/resnet/catsdogs/pipeline/catsdogs.ipynb)
+2. Change the github url to [https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/classification/resnet/catsdogs/pipeline/catsdogs.ipynb](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/classification/resnet/catsdogs/pipeline/catsdogs.ipynb)
 3. Create a new *Notebook* in Dkube and select the workspace as *catsdogs-pl-nb*.
 4. The Dkube notebook does not need any Dataset.
 5. Launch the notebook and wait for the status to show *running*.
