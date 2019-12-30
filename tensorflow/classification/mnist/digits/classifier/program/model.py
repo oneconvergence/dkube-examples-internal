@@ -16,7 +16,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from dkube import dkubeLoggerHook as logger_hook
+#from dkube import dkubeLoggerHook as logger_hook
 import argparse
 import os
 import sys
@@ -27,10 +27,8 @@ import json
 
 FLAGS = None
 TF_TRAIN_STEPS = int(os.getenv('STEPS',1000))
-MODEL_DIR = os.getenv('DKUBE_JOB_OUTPUT_S3', None)
-DATA_DIR = os.getenv('DKUBE_INPUT_DATASETS', None)
-if DATA_DIR is not None:
-    DATA_DIR = DATA_DIR.split(",")[0]
+MODEL_DIR = "/opt/dkube/output"
+DATA_DIR = "/opt/dkube/input"
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
 EPOCHS = int(os.getenv('EPOCHS', 1))
 TF_MODEL_DIR = MODEL_DIR
@@ -138,20 +136,21 @@ def model_fn(features, labels, mode, params):
     # LoggingTensorHook.
     tf.identity(accuracy[1], name='train_accuracy')
     tf.summary.scalar('train_accuracy', accuracy[1])
-    logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
-            "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
+    #logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
+           "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
     return tf.estimator.EstimatorSpec(
             mode=tf.estimator.ModeKeys.TRAIN,
             loss=loss,
-            train_op=optimizer.minimize(loss, tf.train.get_or_create_global_step()),
-            training_hooks = [logging_hook])
+            train_op=optimizer.minimize(loss, tf.train.get_or_create_global_step()))
+            #train_op=optimizer.minimize(loss, tf.train.get_or_create_global_step()),
+            #training_hooks = [logging_hook])
   if mode == tf.estimator.ModeKeys.EVAL:
     logits = model(image, training=False)
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
     accuracy = tf.metrics.accuracy(
         labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
-    logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
-        "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"eval"}, every_n_iter=summary_interval)
+    #logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
+    3   "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"eval"}, every_n_iter=summary_interval)
     return tf.estimator.EstimatorSpec(
         	mode=tf.estimator.ModeKeys.EVAL,
         	loss=loss,
@@ -160,8 +159,9 @@ def model_fn(features, labels, mode, params):
                 	tf.metrics.accuracy(
                     	labels=tf.argmax(labels, axis=1),
                     	predictions=tf.argmax(logits, axis=1)),
-        	},
-                evaluation_hooks = [logging_hook])
+        	})
+        	#},
+            #evaluation_hooks = [logging_hook])
 
 def main(unused_argv):
   try:
