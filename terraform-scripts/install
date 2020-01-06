@@ -1,0 +1,11 @@
+#!/usr/bin/expect -f
+ 
+set timeout -1
+
+spawn sudo ./dkubeadm dkube install
+ 
+expect "proceed to install" 
+
+send -- "yes\r"
+
+expect eof
