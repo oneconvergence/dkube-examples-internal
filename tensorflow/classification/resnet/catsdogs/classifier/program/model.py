@@ -30,6 +30,8 @@ steps_epoch  = 0
 #    os.makedirs(MODEL_DIR)
 
 def count_epochs(iterator):
+    if os.getenv('TF_CONFIG', None) == None:
+        return
     cluster_spec = json.loads(os.getenv('TF_CONFIG',None))
     role = cluster_spec['task']
     host = cluster_spec['cluster'][role['type']][role['index']]
@@ -193,7 +195,7 @@ def train(_):
         fn = lambda image: _img_string_to_tensor(image, input_img_size)
         features['inputs'] = tf.map_fn(fn, features['inputs'], dtype=tf.float32)
         return tf.estimator.export.ServingInputReceiver(features, received_tensors)
-    if os.getenv('TF_CONFIG') != '':
+    if os.getenv('TF_CONFIG', '') != '':
         config = json.loads(os.getenv('TF_CONFIG'))
         if config['task']['type'] == 'master':
             classifier.export_savedmodel(MODEL_DIR, serving_input_receiver_fn)
