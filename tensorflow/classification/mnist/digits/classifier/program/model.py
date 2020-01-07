@@ -165,6 +165,7 @@ def main(unused_argv):
   try:
       fp = open(os.getenv('DKUBE_JOB_HP_TUNING_INFO_FILE', 'None'),'r')
       hyperparams = json.loads(fp.read())
+      hyperparams['num_epochs'] = EPOCHS
   except:
       hyperparams = { "learning_rate":1e-4, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
       pass
