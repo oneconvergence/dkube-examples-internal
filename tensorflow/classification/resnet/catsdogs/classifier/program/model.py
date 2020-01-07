@@ -7,6 +7,7 @@ import zipfile
 import tarfile
 import argparse
 from tensorflow.python.ops import metrics as metrics_lib
+from dkube import dkubeLoggerHook as logger_hook
 from tensorflow.python.platform import tf_logging as logging
 
 tf.logging.info('TF Version {}'.format(tf.__version__))
@@ -109,6 +110,15 @@ def model_fn(features, labels, mode, params):
     )
     if mode == tf.estimator.ModeKeys.TRAIN:
         tf.summary.scalar('accuracy', metrics_lib.accuracy(labels, spec.predictions['classes'])[1])
+        logging_hook = logger_hook({"loss": spec.loss,"accuracy":
+            metrics_lib.accuracy(labels, spec.predictions['classes'])[1], 
+            "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
+        spec = spec._replace(training_hooks = [logging_hook])
+    if mode == tf.estimator.ModeKeys.EVAL:
+        logging_hook = logger_hook({"loss": spec.loss, "accuracy":
+            spec.eval_metric_ops['accuracy'][1], "step" : 
+            tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode": "eval"}, every_n_iter=summary_interval)
+        spec = spec._replace(evaluation_hooks = [logging_hook])
     return spec
 
 def train(_):
