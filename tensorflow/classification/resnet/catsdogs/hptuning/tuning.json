@@ -1,40 +1,31 @@
 {
-  "RequestCount": 1,
-  "OptimizationType": "minimize",
-  "OptimizationGoal": 0.01,
-  "ObjectiveValueName": "loss",
-  "MetricsNames": [
-   "loss"
-  ],
-  "ParameterConfigs": [
-   {
-    "name": "--learning_rate",
-    "parametertype": "double",
-    "feasible": {
-     "max": "0.05",
-     "min": "0.01"
+  "parallelTrialCount": 3,
+  "maxTrialCount": 6,
+  "maxFailedTrialCount": 3,
+  "objective": {
+    "type": "maximize",
+    "goal": 0.99,
+    "objectiveMetricName": "accuracy"
+  },
+  "algorithm": {
+    "algorithmName": "random"
+  },
+  "parameters": [
+    {
+      "name": "--learning_rate",
+      "parameterType": "double",
+      "feasibleSpace": {
+        "min": "0.01",
+        "max": "0.05"
+      }
+    },
+    {
+      "name": "--batch_size",
+      "parameterType": "int",
+      "feasibleSpace": {
+        "min": "100",
+        "max": "200"
+      }
     }
-   },
-   {
-    "name": "--batch_size",
-    "parametertype": "int",
-    "feasible": {
-     "max": "200",
-     "min": "100"
-    }
-   },
-   {
-    "name": "--num_epochs",
-    "parametertype": "int",
-    "feasible": {
-     "max": "10",
-     "min": "1"
-    }
-   }
-  ],
-  "SuggestionSpec": {
-   "requestNumber": 3,
-   "suggestionAlgorithm": "random"
-  }
+  ]
 }
-

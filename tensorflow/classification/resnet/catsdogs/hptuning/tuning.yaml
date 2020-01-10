@@ -1,25 +1,21 @@
-optimizationtype: minimize
-objectivevaluename: loss
-optimizationgoal: 0.01
-requestcount: 1
-metricsnames:
- - loss
-parameterconfigs:
- - name: --learning_rate
-   parametertype: double
-   feasible:
-     min: "0.01"
-     max: "0.05"
- - name: --batch_size
-   parametertype: int
-   feasible:
-     min: "100"
-     max: "200"
- - name: --num_epochs
-   parametertype: int
-   feasible:
-     min: "1"
-     max: "10"
-suggestionSpec:
-   suggestionAlgorithm: "random"
-   requestNumber: 3
+parallelTrialCount: 3
+maxTrialCount: 6
+maxFailedTrialCount: 3
+objective:
+  type: maximize
+  goal: 0.99
+  objectiveMetricName: accuracy
+algorithm:
+  algorithmName: random
+parameters:
+  - name: --learning_rate
+    parameterType: double
+    feasibleSpace:
+      min: "0.01"
+      max: "0.05"
+  - name: --batch_size
+    parameterType: int
+    feasibleSpace:
+      min: "100"
+      max: "200"
+
