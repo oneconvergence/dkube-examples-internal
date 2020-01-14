@@ -37,9 +37,9 @@ spec:
       - '{{inputs.parameters.user}}'
       - '{{inputs.parameters.auth-token}}'
       - chexnet-ws
-      - https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification
+      - https://github.com/oneconvergence/dkube-examples/tree/dell-model/tensorflow/dell-xray-classification
       - chexnet
-      - https://github.com/oneconvergence/dkube-examples/tree/dell-model-1.4.1-pipeline/tensorflow/dell-xray-classification/dataset
+      - https://github.com/oneconvergence/dkube-examples/tree/dell-model/tensorflow/dell-xray-classification/dataset
       command:
       - python3
       - -c
