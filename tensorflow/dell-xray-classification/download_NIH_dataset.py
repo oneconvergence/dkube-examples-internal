@@ -1,4 +1,4 @@
-# #!/usr/bin/python3
+#!/usr/bin/python3
 
 # Download the NIH Chest X-ray Dataset zip files
 # import argparse

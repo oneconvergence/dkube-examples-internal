@@ -141,7 +141,7 @@ def download_job(url,user,token,ws_name,ds_name):
                                                       "gitcommit": {}},
                                         "datasets": ["{}:{}".format(user, ds_name)],
                                         "kind": "preprocessing",
-                                        "target": "chexnet-download-ds"
+                                        "target": "chexnet-download-ds" ##mountpath
                                     }}}
             data = json.dumps(data)
             resp = session.post(

@@ -37,14 +37,21 @@ def create_resource_job(url, user, token, ws_name, ws_link, ds_name, ds_link):
                                          'user': user})
             create_header = header.copy()
             session = requests.Session()
-            data = {"class": "program",
-                    "gitaccess": {
-                        "private": False},
-                    "name": ws_name,
-                    "remote": False,
-                    "source": "git",
-                    "tags": [],
-                    "url": ws_link}
+            # data = {"class": "program",
+            #         "gitaccess": {
+            #             "private": False},
+            #         "name": ws_name,
+            #         "remote": False,
+            #         "source": "git",
+            #         "tags": [],
+            #         "url": ws_link}
+            data  = {"class":"program",
+            "gitaccess":{"branch":"dell-model-1.5",
+            "credentials":{},
+            "url":ws_link},
+            "name":ws_name,
+            "source":"git",
+            "tags":[]}
             data = json.dumps(data)
             print("[create_ws] before request")
             resp = session.post(
@@ -78,14 +85,20 @@ def create_resource_job(url, user, token, ws_name, ws_link, ds_name, ds_link):
                                          'user': user})
             create_header = header.copy()
             session = requests.Session()
-            data = {"class": "dataset",
-                    "gitaccess": {
-                        "private": False},
-                    "name": ds_name,
-                    "remote": False,
-                    "source": "git",
-                    "tags": [],
-                    "url": ds_link}
+            # data = {"class": "dataset",
+            #         "gitaccess": {
+            #             "private": False},
+            #         "name": ds_name,
+            #         "remote": False,
+            #         "source": "git",
+            #         "tags": [],
+            #         "url": ds_link}
+            data = {"class":"dataset",
+            "gitaccess":{"branch":"dell-model-1.5",
+            "credentials":{},
+            "url":ds_link},
+            "name":ds_name,
+            "source":"git"}
             data = json.dumps(data)
             print("[create_ds] before request")
             resp = session.post(
