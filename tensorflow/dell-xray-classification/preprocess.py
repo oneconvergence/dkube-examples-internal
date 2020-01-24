@@ -29,7 +29,7 @@ import pandas as pd
 
 #from sklearn.model_selection import train_test_split
 
-DATA_FOLDER = './data'
+DATA_FOLDER = '/tmp/data'
 # INDICES_FILE = './Data_Entry_2017.csv'
 # MIN_CASES = 1000
 # # zip file of preprocessed data
