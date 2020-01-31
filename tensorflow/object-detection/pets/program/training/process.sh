@@ -47,4 +47,3 @@ done
 
 #Set the model path in pipeline.config file to the extracted path
 sed -i "s|MODEL_PATH|"${EXTRACT_PATH}"|g" $CONFIG_FILE
-sed -i '/num_steps/c\  num_steps : '"${STEPS}"'' $CONFIG_FILE
