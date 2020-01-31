@@ -31,7 +31,7 @@ from object_detection.protos import pipeline_pb2
 from google.protobuf import text_format
 
 flags.DEFINE_string(
-    'model_dir', None, 'Path to output model directory '
+    'model_dir', '/opt/dkube/output', 'Path to output model directory '
     'where event and checkpoint files will be written.')
 flags.DEFINE_string('pipeline_config_path', '/tmp/config_file/pipeline.config', 'Path to pipeline config '
                     'file.')

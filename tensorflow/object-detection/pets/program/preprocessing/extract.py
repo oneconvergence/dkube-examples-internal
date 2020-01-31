@@ -1,9 +1,7 @@
 import os
 import tarfile
 
-DATA_DIR = os.getenv('DKUBE_INPUT_DATASETS', None)
-if DATA_DIR is not None:
-    DATA_DIR = DATA_DIR.split(",")[0]
+DATA_DIR = "/opt/dkube/input"
 target_dir = '/tmp/dataset/'
 
 def extract():

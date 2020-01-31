@@ -17,11 +17,9 @@ fi
 
 echo "Config file path : $CONFIG_FILE"
 
-IFS=',' read -ra DATASETS <<< "$DKUBE_INPUT_DATASETS"
-DATA_DIR="${DATASETS[0]}"
+DATA_DIR="/opt/dkube/input/dataset"
 
-IFS=',' read -ra MODELS <<< "$DKUBE_INPUT_MODELS"
-MODEL_DIR="${MODELS[0]}"
+MODEL_DIR="/opt/dkube/input/model"
 
 #Set datset path in pipeline config file
 sed -i "s|DATA_PATH|"${DATA_DIR}"|g" $CONFIG_FILE
