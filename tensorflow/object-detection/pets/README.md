@@ -36,6 +36,7 @@ This step will download the images.tar.gz and annotations.tar.gz for Oxford IIT 
 	    - Start-up script : `python download.py`
 	-  **Parameters** section - Leave it to default.
 	- **Workspace** section - Please select the workspace *pet-detector-preprocessing* created in *Step1*.
+	- **Output Dataset** section - Create a dvs dataset and select it. Mount path - /opt/dkube/output.
 4. Click *Submit* button.
 5. A new entry with name *download-pets-dataset* will be created in *Data Preprocessing* table.
 6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
@@ -53,7 +54,8 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 	    - Start-up script : `python extract.py; python create_pet_tf_record.py --label_map_path=pet_label_map.pbtxt`
 	-  **Parameters** section - Leave it to default.
 	- **Workspace** section - Please select the workspace *pet-detector-preprocessing* created in *Step1*.
-	- **Dataset** section - Please select the dataset *pets* created in *Step2*.
+	- **Dataset** section - Please select the dataset *pets* created in *Step2*. Mount path - /opt/dkube/input
+	- **Output Dataset** section - Create a dvs dataset and select it. Mount path - /opt/dkube/output.
 4. Click *Submit* button.
 5. A new entry with name *preprocess-pets-dataset* will be created in *Data Preprocessing* table.
 6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
@@ -92,8 +94,9 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 		- Select the pipeline.config file which is stored locally(Download from https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training/pipeline.config)
 		- Set the number of steps
 	- **Workspace** section - Please select the workspace *pet-detector* created in *Step1(How to train)*.
-	- **Model** section - Please select the workspace *faster-rcnn* created in *Step2(How to train)*.
-	- **Dataset** section - Please select the dataset *tf-records* created in *Step3(How to Preprocess Data)*.
+	- **Model** section - Please select the workspace *faster-rcnn* created in *Step2(How to train)*. Mount path - /opt/dkube/input/model
+	- **Dataset** section - Please select the dataset *tf-records* created in *Step3(How to Preprocess Data)*. Mount path - /opt/dkube/input/dataset
+	- **Output Model** section - Create a dvs model and select it. Mount path - /opt/dkube/output
 4. Click *Submit* button.
 5. A new entry with name *pet-detector* will be created in *Jobs* table.
 6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
