@@ -16,13 +16,14 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-from dkube import dkubeLoggerHook as logger_hook
+from tensorflow.python.training import basic_session_run_hooks
 import argparse
 import os
 import sys
 import json
 import tensorflow as tf
 import dataset
+import logging
 import json
 
 FLAGS = None
@@ -38,6 +39,22 @@ steps_epoch = 0
 summary_interval = 100
 print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
+
+
+def dkube_eval_logger(tensor_values):
+      stats = []
+      for tag in ['accuracy', 'loss', 'step']:
+        stats.append("%s = %s" % (tag, tensor_values[tag]))
+      stats.append("mode = eval")
+      #tf.logging.info('TensorFlow')
+      tf.logging.info("[dkube][metric] %s", ", ".join(stats))
+
+def dkube_train_logger(tensor_values):
+      stats = []
+      for tag in ['accuracy', 'loss', 'step']:
+        stats.append("%s = %s" % (tag, tensor_values[tag]))
+      stats.append("mode = train")
+      tf.logging.info("[dkube][metric] %s", ", ".join(stats))
 
 def count_epochs(iterator):
     cluster_spec = json.loads(os.getenv('TF_CONFIG',None))
@@ -134,12 +151,17 @@ def model_fn(features, labels, mode, params):
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
     accuracy = tf.metrics.accuracy(
         labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
+    logging_hook = basic_session_run_hooks.LoggingTensorHook(
+              {
+                  'loss': loss,
+                  'step': tf.train.get_or_create_global_step(),
+                  'accuracy': accuracy[1]
+              },
+              every_n_iter=summary_interval, formatter=dkube_train_logger)
     # Name the accuracy tensor 'train_accuracy' to demonstrate the
     # LoggingTensorHook.
     tf.identity(accuracy[1], name='train_accuracy')
     tf.summary.scalar('train_accuracy', accuracy[1])
-    logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
-            "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
     return tf.estimator.EstimatorSpec(
             mode=tf.estimator.ModeKeys.TRAIN,
             loss=loss,
@@ -150,18 +172,24 @@ def model_fn(features, labels, mode, params):
     loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
     accuracy = tf.metrics.accuracy(
         labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
-    logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
-        "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"eval"}, every_n_iter=summary_interval)
+    logging_hook = basic_session_run_hooks.LoggingTensorHook(
+              {
+                  'loss': loss,
+                  'step': tf.train.get_or_create_global_step(),
+                  'accuracy': accuracy[1]
+              },
+              every_n_iter=summary_interval, formatter=dkube_eval_logger)
+
     return tf.estimator.EstimatorSpec(
-        	mode=tf.estimator.ModeKeys.EVAL,
-        	loss=loss,
-        	eval_metric_ops={
-            	'accuracy':
-                	tf.metrics.accuracy(
-                    	labels=tf.argmax(labels, axis=1),
-                    	predictions=tf.argmax(logits, axis=1)),
-        	},
-                evaluation_hooks = [logging_hook])
+          mode=tf.estimator.ModeKeys.EVAL,
+          loss=loss,
+          eval_metric_ops={
+              'accuracy':
+                  tf.metrics.accuracy(
+                      labels=tf.argmax(labels, axis=1),
+                      predictions=tf.argmax(logits, axis=1)),
+          },
+               evaluation_hooks = [logging_hook])
 
 def main(unused_argv):
   try:
@@ -264,3 +292,4 @@ def run():
 
 if __name__ == '__main__':
     run()
+
