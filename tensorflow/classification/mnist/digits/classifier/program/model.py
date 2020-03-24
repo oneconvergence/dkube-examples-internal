@@ -26,11 +26,11 @@ import dataset
 import json
 
 FLAGS = None
-TF_TRAIN_STEPS = int(os.getenv('STEPS',1000))
+TF_TRAIN_STEPS = int(100000)
 MODEL_DIR = "/opt/dkube/output"
 DATA_DIR = "/opt/dkube/input"
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
-EPOCHS = int(os.getenv('EPOCHS', 1))
+EPOCHS = int(100000)
 TF_MODEL_DIR = MODEL_DIR
 steps_epoch = 0
 summary_interval = 100
