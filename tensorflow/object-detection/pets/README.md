@@ -38,7 +38,7 @@ This step will download the images.tar.gz and annotations.tar.gz for Oxford IIT 
 	    - Start-up script : `python download.py`
 	-  **Parameters** section - Leave it to default.
 	- **Workspace** section - Please select the workspace *pet-detector-preprocessing* created in *Step1*.
-	- **Output Dataset** section - Create a dvs dataset and select it. Mount path - /opt/dkube/output.
+	- **Output Dataset** section -Select the above dvs dataset. Mount path - /opt/dkube/output.
 6. Click *Submit* button.
 7. A new entry with name *download-pets-dataset* will be created in *Data Preprocessing* table.
 8. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
@@ -60,7 +60,7 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 	-  **Parameters** section - Leave it to default.
 	- **Workspace** section - Please select the workspace *pet-detector-preprocessing* created in *Step1*.
 	- **Dataset** section - Please select *ver 2* of the dataset *pets* created in *Step2*. Mount path - /opt/dkube/input
-	- **Output Dataset** section - Create a dvs dataset and select it. Mount path - /opt/dkube/output.
+	- **Output Dataset** section - Select the above dvs dataset. Mount path - /opt/dkube/output.
 5. Click *Submit* button.
 6. A new entry with name *preprocess-pets-dataset* will be created in *Data Preprocessing* table.
 7. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
@@ -102,7 +102,7 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 	- **Workspace** section - Please select the workspace *pet-detector* created in *Step1(How to train)*.
 	- **Model** section - Please select the workspace *faster-rcnn* created in *Step2(How to train)*. Mount path - /opt/dkube/input/model
 	- **Dataset** section - Please select *ver 2* of the dataset *tf-records* created in *Step3(How to Preprocess Data)*. Mount path - /opt/dkube/input/dataset
-	- **Output Model** section - Create a dvs model and select it. Mount path - /opt/dkube/output
+	- **Output Model** section -Select the above dvs model. Mount path - /opt/dkube/output
 4. Click *Submit* button.
 5. A new entry with name *pet-detector* will be created in *Jobs* table.
 6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
@@ -151,3 +151,4 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
   7. Upload the labe map file in the file upload section. The pet_label_map.pbtxt file in **inference** cab be used.
   8. Set the Number of classes to 37
   7. Click *Predict* button and the image is displayed with detection boxes returned by the model.
+
