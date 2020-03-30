@@ -1,5 +1,5 @@
 # Pet Detector
-This example is derived from [tensorflow object detection example](https://github.com/tensorflow/models/tree/master/research/object_detection) and modified to run on Dkube Platform.
+This example is derived from [tensorflow object detection example](https://github.com/tensorflow/models/tree/2.0.3/research/object_detection) and modified to run on Dkube Platform.
 
  - This program detects pet breeds from images. It uses transfer learning to train the model. The pre trained model used for transfer learning is "faster_rcnn_resnet101_coco_11_06_2017".
  - Modified program is configurable and takes Hyperparameters like steps, batchsize etc from Dkube UI and update the pipeline config file. 
@@ -97,7 +97,7 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 	  - Startup script - `bash process.sh; python model_main.py`
 	- **GPUs** section - Provide the required number of GPUs. This field is optional, if not provided network will train on CPU.
 	-  **Parameters** section
-		- Select the pipeline.config file which is stored locally(Download from https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training/pipeline.config)
+		- Select the pipeline.config file which is stored locally(Download from https://github.com/oneconvergence/dkube-examples/tree/2.0/tensorflow/object-detection/pets/program/training/pipeline.config)
 		- Set the number of steps
 	- **Program** section - Please select the program *pet-detector* created in *Step1(How to train)*.
 	- **Model** section - Please select the program *faster-rcnn* created in *Step2(How to train)*. Mount path - /opt/dkube/input/model
