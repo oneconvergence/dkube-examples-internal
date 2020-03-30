@@ -13,23 +13,23 @@ This example is derived from [tensorflow object detection example](https://githu
 
 # How to Preprocess Data
 Tensorflow object detection API expects the input dataset to be in TFRecord format. But the pet dataset available is in .jpg and .xml format. We need some preprocessing to convert this into TFRecord format.
-## Step1: Create a workspace
- 1. Click *Workspaces* side menu option.
- 2. Click *+Workspace* button.
- 3. Select *Github* option.
- 4. Enter a unique name say *pets-detector-preprocessing*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/preprocessing
+## Step1: Create a Project
+ 1. Click on the *+Project* button under *Repos*.
+ 2. Enter a unique name say *pets-detector-preprocessing*
+ 3. Select *Git* option from *Project Source*.
+ 4. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/preprocessing
  ](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/preprocessing)* in the URL text box.
- 6. Click *Add Workspace* button.
- 7. Workspace will be created and imported in Dkube. Progress of import can be seen.
+ 5. Click *Add Project* button.
+ 6. Add Github branch inside *Branch* 
+ 7. Program will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
 ## Step2: Download the Dataset
 This step will download the images.tar.gz and annotations.tar.gz for Oxford IIT Pets dataset and create a dataset named "pets" in dkube.
 1. Click on *+Dataset* under *Repos*
 2. Enter target dataset name say *pets* and select *DVS* as Dataset Source and click *Add Dataset*.
 3. Click *Runs* side menu option.
- 4. Click *+Run* button and select *Preprocessing*.
- 5. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
+4. Click *+Run* button and select *Preprocessing*.
+5. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
 	- Enter a unique name say *download-pets-dataset*
 	- Enter target dataset name for data being downloaded.
 	- **Container** section - 
@@ -37,7 +37,7 @@ This step will download the images.tar.gz and annotations.tar.gz for Oxford IIT 
 	    - Private : If image is private, select private and provide dockerhub username and password
 	    - Start-up script : `python download.py`
 	-  **Parameters** section - Leave it to default.
-	- **Workspace** section - Please select the workspace *pet-detector-preprocessing* created in *Step1*.
+	- **Program** section - Please select the program *pet-detector-preprocessing* created in *Step1*.
 	- **Output Dataset** section -Select the above dvs dataset. Mount path - /opt/dkube/output.
 6. Click *Submit* button.
 7. A new entry with name *download-pets-dataset* will be created in *Data Preprocessing* table.
@@ -58,23 +58,23 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 	    - Private : If image is private, select private and provide dockerhub username and password
 	    - Start-up script : `python extract.py; python create_pet_tf_record.py --label_map_path=pet_label_map.pbtxt`
 	-  **Parameters** section - Leave it to default.
-	- **Workspace** section - Please select the workspace *pet-detector-preprocessing* created in *Step1*.
+	- **Program** section - Please select the program *pet-detector-preprocessing* created in *Step1*.
 	- **Dataset** section - Please select *ver 2* of the dataset *pets* created in *Step2*. Mount path - /opt/dkube/input
 	- **Output Dataset** section - Select the above dvs dataset. Mount path - /opt/dkube/output.
 5. Click *Submit* button.
 6. A new entry with name *preprocess-pets-dataset* will be created in *Data Preprocessing* table.
 7. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
 # How to Train
-## Step1: Create a workspace
+## Step1: Create a Program
 
- 1. Click *Workspaces* side menu option.
- 2. Click *+Workspace* button.
- 3. Select *Github* option.
+ 1. Click *Repos* side menu option.
+ 2. Click *+Program* button.
+ 3. Select *Git* option.
  4. Enter a unique name say *pet-detector*
  5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training
  ](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training )* in the URL text box.
- 6. Click *Add Workspace* button.
- 7. Workspace will be created and imported in Dkube. Progress of import can be seen.
+ 6. Click *Add Program* button.
+ 7. Program will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
 
 ## Step2: Add model for transfer learning
@@ -99,8 +99,8 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 	-  **Parameters** section
 		- Select the pipeline.config file which is stored locally(Download from https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training/pipeline.config)
 		- Set the number of steps
-	- **Workspace** section - Please select the workspace *pet-detector* created in *Step1(How to train)*.
-	- **Model** section - Please select the workspace *faster-rcnn* created in *Step2(How to train)*. Mount path - /opt/dkube/input/model
+	- **Program** section - Please select the program *pet-detector* created in *Step1(How to train)*.
+	- **Model** section - Please select the program *faster-rcnn* created in *Step2(How to train)*. Mount path - /opt/dkube/input/model
 	- **Dataset** section - Please select *ver 2* of the dataset *tf-records* created in *Step3(How to Preprocess Data)*. Mount path - /opt/dkube/input/dataset
 	- **Output Model** section -Select the above dvs model. Mount path - /opt/dkube/output
 4. Click *Submit* button.
@@ -151,4 +151,6 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
   7. Upload the labe map file in the file upload section. The pet_label_map.pbtxt file in **inference** cab be used.
   8. Set the Number of classes to 37
   7. Click *Predict* button and the image is displayed with detection boxes returned by the model.
+
+
 
