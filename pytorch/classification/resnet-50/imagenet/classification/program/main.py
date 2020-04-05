@@ -26,6 +26,7 @@ EPOCHS = int(os.getenv('EPOCHS', 1))
 MODEL_DIR = "/opt/dkube/output"
 DATA_DIR = "/opt/dkube/input"
 
+MODEL_NAME = "dkube.pth"
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
@@ -358,7 +359,7 @@ def validate(val_loader, model, criterion, args):
     return top1.avg
 
 
-def save_checkpoint(state, is_best, filename=(MODEL_DIR + '/checkpoint.pth.tar')):
+def save_checkpoint(state, is_best, filename=(MODEL_DIR + '/' + MODEL_NAME)):
     torch.save(state, filename)
     if is_best:
         shutil.copyfile(filename, 'model_best.pth.tar')
