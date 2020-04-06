@@ -1,0 +1,12 @@
+apiVersion: "serving.kubeflow.org/v1alpha2"
+kind: "InferenceService"
+metadata:
+  name: "pytorch-resnet50"
+spec:
+  default:
+    predictor:
+      minReplicas: 1
+      serviceAccountName: sa
+      pytorch:
+        storageUri: "s3://dkube/users/ocdkube/model/model/1585918659879/data/"
+        modelClassName: "Net"

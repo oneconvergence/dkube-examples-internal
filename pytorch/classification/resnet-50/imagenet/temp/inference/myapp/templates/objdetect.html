@@ -1,0 +1,178 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>welcome</title>
+		<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+		<style type="text/css">
+	       	.middle{
+			  margin: 0;
+			  position: absolute;
+			  top: 60%;
+			  left: 50%;
+			  margin-right: -50%;
+			  transform: translate(-50%, -50%)
+			}
+			
+
+		</style>
+	</head>
+<body>
+	<div class="container-fluid">
+				<p id="b64"></p><br/>
+			<div class="row" style="border-bottom-style: outset;">
+				<div class="col-lg-5 col-md-5 col-sm-5" style="color: black; border-right-style: dotted;">
+					<form  id="new_user_form"  enctype="multipart/form-data">
+						<div class="form-group row">
+    						<label for="imginput" class="col-sm-4 col-form-label">Image Upload:</label>
+    							<div class="col-sm-8">
+    								<input type="file" class="form-control-file" id="imginput" required="required" multiple="false" accept="image\*" onchange="upload()" />
+    							</div>
+  						</div>
+  						<div class="form-group row">
+    						<label for="fileinput" class="col-sm-4 col-form-label">File Upload:</label>
+    							<div class="col-sm-8">
+    								<input type="file" class="form-control-file" id="fileinput" required="required" multiple="false"/>
+    							</div>
+  						</div>
+  						<div class="form-group row">
+    						<label for="numclasses" class="col-sm-4 col-form-label">Num Of Classes</label>
+    						<div class="col-sm-8">
+      							<input type="text" class="form-control" id="numclasses" placeholder="example: 32">
+    						</div>
+    					</div><br/>
+						{%csrf_token%}
+						<div class="form-group row">
+    						<div class="col-sm-10">
+      							<button class="btn btn-primary middle">Detect</button><br/>
+						    </div>
+  						</div>
+					</form>
+				</div>
+				<div class="col-lg-7 col-md-7 col-sm-7 text-center">
+					<canvas id="can" class="img-responsive"></canvas>
+				</div>
+			</div>
+		</form>
+		<div class="row">
+			<div class="col-lg-3 col-md-2 col-sm-0">
+			</div>
+			<div class="col-lg-5 col-md-6 col-sm-12">
+				<span id="demo"  style="font-size:60px; margin-left: 200px; "></span>
+				<div id=canvasHold></div>		
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-0">
+			</div>
+		</div>
+ 	</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://www.dukelearntoprogram.com/course1/common/js/image/SimpleImage.js"></script>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.min.js"></script>
+	<script>
+
+
+	$(document).on('click', '[data-toggle="lightbox"]', function(event) {
+                event.preventDefault();
+                $(this).ekkoLightbox();
+    });
+
+	var load=document.getElementById("demo");
+	var canvasHold=document.getElementById("canvasHold");
+	document.getElementById('b64').style.display = "none";
+	document.getElementById("imginput").addEventListener("change", readFile);
+	function readFile() {
+	  	if (this.files && this.files[0]) {
+	   	 	var FR= new FileReader();
+	    	FR.addEventListener("load", function(e) {
+	      document.getElementById("b64").innerHTML = e.target.result;
+	      upload()
+	    });    
+	    FR.readAsDataURL(this.files[0]);
+	  }
+    }
+
+	function upload() {
+		var imgcanvas=document.getElementById("can");
+		var fileinput=document.getElementById("imginput");
+		var image=new SimpleImage(fileinput);
+		image.drawTo(imgcanvas);
+		imgcanvas.style.width = '500px'; // explicitly setting its unit 'px'
+		imgcanvas.style.height = '300px';
+		canvasHold.innerHTML="";
+	}
+
+	$(document).on('submit','#new_user_form',function(e) {
+		canvasHold.innerHTML="";
+		canvasHold.innerHTML='<canvas id="pie-chart"></canvas>';
+    	e.preventDefault();
+        load.style.display="block";
+        load.innerHTML = '<i class="fa fa-spinner fa-spin "></i>';
+        var data = new FormData();
+        var img = $('#imginput')[0].files[0];
+        var file = $('#fileinput')[0].files[0];
+        var base64=document.getElementById("b64").innerHTML
+        base64=base64.split(",");
+        data.append('csrfmiddlewaretoken',$('input[name=csrfmiddlewaretoken]').val())
+        var OBJDETECT={ "signatures": 
+ 			{
+
+				"inputs": [[{
+		   		"key" : "inputs",
+		  		"formatter": {
+			  		"label": "objectDetection",
+			  		"custom": "false",
+			  		"script" : "",
+			  		"command":"python3",
+				},
+		  	"data": base64[1]
+			}]],
+			"name": "serving_default",
+		}
+	};
+ 	data.append('SIGNATURE',JSON.stringify(OBJDETECT));
+    data.append('program','objdetect');
+ 	data.append('text_file', file);
+	data.append('numofclasses',document.getElementById('numclasses').value)
+        var path=window.location.href
+        path=path+"predict"
+
+        $.ajax({
+          type : 'POST',
+          url: path,
+          data:data,
+          dataType:"json",
+          processData: false,
+          contentType: false,
+          success:function(data){
+          	load.style.display="none";
+            if(data.error != undefined){
+                var obj = JSON.parse(data.error)
+                alert(obj.error)
+                return
+            }
+          	canvasHold.innerHTML="";
+          	$('#canvasHold').html('<br/><b>Result:</b><br/><a href="data:image/png;base64,'+ data.result + '" data-toggle="lightbox" data-width="1500"><img src="data:image/png;base64,'+ data.result + '"  width="600" height="400" class="img-responsive img-fluid"/></a><br/><br/> '); 	
+          },
+          error: function (request, status, error) {
+                alert(request.responseText);
+                load.style.display="none";
+          }
+      });
+
+      })
+
+	</script>
+
+	</body>
+</html>
