@@ -1,0 +1,200 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>welcome</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+		<style type="text/css">
+	        .btn-bs-file{
+            	position:relative;
+		 	}
+			.btn-bs-file input[type="file"]{
+			    position: absolute;
+			    top: -9999999;
+			    filter: alpha(opacity=0);
+			    opacity: 0;
+			    width:200px;
+			    height:100px;
+			    outline: none;
+			    cursor: inherit;
+			}
+			.id1 {
+			    height: 10em;
+			    position: relative
+			}
+			.middle{
+			    margin: 0;
+			    position: absolute;
+			    top: 60%;
+			    left: 50%;
+			    margin-right: -50%;
+			    transform: translate(-50%, -50%)
+			}
+		</style>
+	</head>
+<body>
+	<div class="container-fluid"><br/><br/>
+				<p id="b64"></p>
+		<form  id="new_user_form"  enctype="multipart/form-data">
+			<div class="row" style="border-bottom-style: outset;">
+				<div class="col-lg-5 col-md-5 col-sm-5" style="text-align: center; padding-top:20px; color: black; border-right-style: dotted;">
+					{%csrf_token%}
+					<label class="btn-bs-file" style="color:#080808ab;">
+					<input type="file" id="finput" name = "picture" required multiple="false" accept="image\*" onchange="upload()"/><i class="fas fa-file-upload fa-5x" style="border-style: dotted; border-radius:10px; padding: 10px;"></i>
+					</label>
+					<br/><br/>Click to Select files to Upload or Try dropping some files here <br/><br/><br/><br/>
+				</div>
+				<div class="col-lg-5 col-md-5 col-sm-5 text-center">
+					<canvas id="can" class="img-responsive"></canvas>
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-2 id1 ">
+					<button class="btn btn-primary middle" id="button1">Predict  <i class="fa fa-pie-chart"></i></button>
+				</div>
+			</div>
+		</form>
+		<div class="row">
+			<div class="col-lg-3 col-md-2 col-sm-2">
+			</div>
+			<div class="col-lg-5 col-md-8 col-sm-8">
+				<span id="demo"  style="font-size:60px; margin-left: 200px; "></span>
+			    <div id=canvasHold><canvas id="pie-chart"></canvas></div>
+			</div>
+		</div>
+ 	</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://www.dukelearntoprogram.com/course1/common/js/image/SimpleImage.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+
+	<script>
+		var load=document.getElementById("demo");
+		var canvasHold=document.getElementById("canvasHold");
+		document.getElementById('button1').style.display = "none";
+		document.getElementById('b64').style.display = "none";
+		document.getElementById("finput").addEventListener("change", readFile);
+		function readFile() {
+    		if (this.files && this.files[0]) {
+   	    		var FR= new FileReader();
+    		    FR.addEventListener("load", function(e) {
+            	document.getElementById("b64").innerHTML = e.target.result;
+            	upload()
+        	}); 
+         	FR.readAsDataURL( this.files[0] );
+    		}
+		}
+		function upload() {
+			document.getElementById('button1').style.display = "block";
+			var imgcanvas=document.getElementById("can");
+			var fileinput=document.getElementById("finput");
+			var image=new SimpleImage(fileinput);
+			image.drawTo(imgcanvas);
+			imgcanvas.style.width = '400px'; 
+			imgcanvas.style.height = '200px';
+			document.getElementById('pie-chart').style.display = "none";
+		}
+
+		$(document).on('submit','#new_user_form',function(e) {
+			canvasHold.innerHTML="";
+			canvasHold.innerHTML='<canvas id="pie-chart"></canvas>';
+	        e.preventDefault();
+	        load.style.display="block";
+	        load.innerHTML = '<i class="fa fa-spinner fa-spin "></i>';
+	        var data = new FormData();
+	        var img = $('#finput')[0].files[0];
+	        var base64=document.getElementById("b64").innerHTML
+	        base64=base64.split(",");
+	        data.append('csrfmiddlewaretoken',$('input[name=csrfmiddlewaretoken]').val())
+			var CD = {
+				"signatures": 
+					{
+						"inputs": [[{
+					   		"key" : "inputs",
+					  		"formatter": {
+						  		"label": "file2b64",
+						  		"custom": "false",
+						  		"script" : "",
+						  		"command":""
+							},
+					  	"data": base64[1]
+					}]],
+					"name": "serving_default",
+				}
+			};
+			 data.append('SIGNATURE',JSON.stringify(CD))
+            data.append('program','catsdogs')
+            var path=window.location.href
+            console.log(path)
+            path=path+"predict"
+
+	        $.ajax({
+	          type : 'POST',
+	          url: path,
+	          data:data,
+	          dataType:"json",
+	          crossDomain: true,
+	          processData: false,
+	          contentType: false,
+	          success:function(res){
+                if(res.error != undefined){
+                    var obj = JSON.parse(res.error)
+                    alert(obj.error)
+                    load.style.display="none";
+                    return
+                }
+	          	prop=res.results;
+	          	load.style.display="none";
+	            var label=[];
+	            var Dataval=[];
+	            var colors=["#5ADDB3","#EF803D","#C4637C","#5ADDB3","#89C35E","#8e5ea2", "#3e95cd", "#EF803D", "#89C35E", "#5AC9DD", "#8787E5", "#D385DB", "#C4637C"]
+	            Dataval.push(prop[0][0][1]);
+	            Dataval.push(prop[0][1][1]);
+	            label.push(prop[0][0][0])
+	            label.push(prop[0][1][0])
+
+	           new Chart(document.getElementById("pie-chart"), {
+				   	 type: 'pie',
+				    data: {
+				      labels: label,
+				      datasets: [{
+				        label: label,
+				        backgroundColor: colors,
+				        data: Dataval
+				      }]
+				    },
+				    options: {
+				      showAllTooltips: true,
+				      title: {
+				        display: true,
+				        text: 'Result'
+				      }
+				    }
+				},{
+				  segmentShowStroke: true,
+				  segmentStrokeColor: "#fff",
+				  segmentStrokeWidth: 2,
+				  percentageInnerCutout: 50,
+				  animationSteps: 1000,
+				  animationEasing: "linear",
+				  animateRotate: true,
+				  animateScale: false,
+				});
+	              document.getElementById('pie-chart').style.display = "block";
+	          },
+              error: function (request, status, error) {
+                alert(request.responseText);
+                load.style.display="none";
+             }
+	      });
+
+	      })
+
+	</script>
+
+	</body>
+</html>
