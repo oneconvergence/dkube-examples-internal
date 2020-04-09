@@ -149,28 +149,6 @@ def main():
         model_path = '{}/saved_model.pth'.format(MODEL_DIR)
         torch.save(model.state_dict(), model_path)
 
-def load():
-    parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
-    parser.add_argument('--no-cuda', action='store_true', default=False,
-                        help='disables CUDA training')
-    args = parser.parse_args()
-    use_cuda = not args.no_cuda and torch.cuda.is_available()
-    device = torch.device("cuda" if use_cuda else "cpu")
-    saved_model = "mnist_cnn.pt"
-    checkpoint = torch.load(saved_model)
-    model = Net().to(device)
-    model.load_state_dict(checkpoint)
-    kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
-
-    test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST(DATA_DIR, train=False, transform=transforms.Compose([
-                           transforms.ToTensor(),
-                           transforms.Normalize((0.1307,), (0.3081,))
-                       ])),
-        batch_size=10, shuffle=True, **kwargs)
-
-    test(args, model, device, test_loader)
-
 if __name__ == '__main__':
     print("Training mnist model using pytorch:")
     main()
