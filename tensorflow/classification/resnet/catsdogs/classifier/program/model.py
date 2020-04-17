@@ -18,7 +18,7 @@ if 'TF_CONFIG' in os.environ:
 FLAGS = None
 DATA_DIR = "/opt/dkube/input"
 MODEL_DIR = "/opt/dkube/output"
-TFHUB_CACHE_DIR = os.getenv('TFHUB_CACHE_DIR',None)
+TFHUB_CACHE_DIR = os.getenv('TFHUB_CACHE_DIR', "/opt/dkube/input")
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
 EPOCHS = int(os.getenv('EPOCHS', 1))
 TF_TRAIN_STEPS = int(os.getenv('STEPS',1000))
