@@ -113,7 +113,7 @@ This step will download *faster-rcnn* object detection model which we will use t
  8. Model will be created in Dkube. 
  9. Please wait till status turns to *ready*.
 
-## Step 2. Create Output Model DVS
+## Step 3. Create Output Model DVS
 This step is to create a dvs model which will hold the trained output model. 
  1. Click *Repos* in side menu under *WORKFLOW* section.
  2. Click *+Model* button under *Models*.
@@ -123,7 +123,7 @@ This step is to create a dvs model which will hold the trained output model.
  6. Model will be created in Dkube. 
  7. Please wait till status turns to *ready*.
 
-## Step3: Start a training job
+## Step 4: Start a training job
  1. Click *Runs* side menu under *WORKFLOW* section.
  2. Click *+Run* and select *Training* button.
  3. Fill the fields in Job form and click *Submit* button. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
