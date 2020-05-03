@@ -1,0 +1,11 @@
+host: <cluster IP>
+user: <username>
+token: <developer settings auth token>
+jobname: auto
+workspace: mnist
+script: python model.py
+datasets:
+  - name: mnist
+    mountpath: /opt/dkube/input
+models:
+  - mnist

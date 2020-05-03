@@ -1,0 +1,25 @@
+name: dkube-training-job
+on:
+ push:
+   branches:
+     - master
+jobs:
+ create_commit:
+   runs-on: ubuntu-latest
+   steps:
+       - uses: actions/checkout@master
+       - name: launch training JOB  
+         run: |
+           sudo apt install python3-pip
+           pip3 install setuptools
+           pip3 install wheel          
+           sudo pip3 install git+https://github.com/oneconvergence/dkube.git@1.5
+           python3 -c "import sys; \
+           from dkube.sdk.dkube import *; \
+           import os ;  \
+           import yaml ; \
+           input_yaml = open('automation-mnist.yaml', 'r') ; \
+           inputs = input_yaml.read() ; \
+           inputs = yaml.safe_load(inputs) ; \
+           env = Environment(scheme='https', host=inputs['host'], user=inputs['user'], token=inputs['token'], port=32222); \
+           launch_training_job(inputs['jobname'], autogenerate=True, environ=env.external,workspace=inputs['workspace'], script=inputs['script'],datasets=inputs['datasets'],models=inputs['models'], template='')"

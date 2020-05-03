@@ -1,0 +1,27 @@
+host: <cluster IP>
+user: <username>
+token: <developer settings auth token>
+jobname: auto
+workspace: regression
+script: python train_nn.py --epochs 5
+datasets:
+  - name: clinical-train
+    mountpath: /opt/dkube/inputs/train/clinical
+  - name: clinical-test
+    mountpath: /opt/dkube/inputs/test/clinical
+  - name: clinical-val
+    mountpath: /opt/dkube/inputs/val/clinical
+  - name: images-train
+    mountpath: /opt/dkube/inputs/train/images
+  - name: images-test
+    mountpath: /opt/dkube/inputs/test/images
+  - name: images-val
+    mountpath: /opt/dkube/inputs/val/images
+  - name: rna-train
+    mountpath: /opt/dkube/inputs/train/rna
+  - name: rna-test
+    mountpath: /opt/dkube/inputs/test/rna
+  - name: rna-val
+    mountpath: /opt/dkube/inputs/val/rna
+models:
+  - regression-model
