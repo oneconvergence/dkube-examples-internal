@@ -1,0 +1,9 @@
+[core]
+	bare = false
+	worktree = /
+[remote "origin"]
+	url = https://github.com/oneconvergence/dkube-examples.git
+	fetch = +refs/heads/2.0:refs/remotes/origin/2.0
+[branch "2.0"]
+	remote = origin
+	merge = refs/heads/2.0
