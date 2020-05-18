@@ -159,11 +159,13 @@ def train(_):
     }
     global TFHUB_CACHE_DIR
     if TFHUB_CACHE_DIR != None:
+        EXTRACT_PATH = "/tmp/tfhub-cache-dir"
         files = [os.path.join(TFHUB_CACHE_DIR, f) for f in tf.gfile.ListDirectory(TFHUB_CACHE_DIR) if f.endswith('tar.gz')]
         for fname in files:
             tar = tarfile.open(fname, "r:gz")
-            tar.extractall(TFHUB_CACHE_DIR)
+            tar.extractall(EXTRACT_PATH)
             tar.close()
+            TFHUB_CACHE_DIR = EXTRACT_PATH
     else:
         TFHUB_CACHE_DIR = params['module_spec']
 
