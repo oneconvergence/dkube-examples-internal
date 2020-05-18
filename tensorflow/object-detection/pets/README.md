@@ -94,8 +94,7 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
  2. Click *+Project* button under *Projects* section.
  3. Enter a unique name say *pets-detector-training* .
  4. Select *Project Source* as *Git*.
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/preprocessing
- ](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/preprocessing)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training)* in the URL text box.
  6. Click *Add Project* button.
  7. Enter branch name in *Branch* text-box.
  8. Project will be created and imported in Dkube. Progress of import can be seen.
@@ -142,6 +141,8 @@ This step is to create a dvs model which will hold the trained output model.
 	    - Models: Click on **+** button and select *pets-detector*.
 	    - Enter mount path: Enter path say */opt/dkube/output*.
 	    - Click *Next*.
+	  - *Configuration* section
+	    - Parameters upload configuration: Select the pipeline.config file which is stored locally(Download from [https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training/pipeline.config](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training/pipeline.config))
 4. Click *Submit* button.
 5. Check the *Status* field for lifecycle of Training run under *All Runs* section, wait till it shows *complete*.
 
