@@ -15,7 +15,7 @@ user = args.user
 
 api = DkubeApi(dkubeURL=dkubeURL, authToken=authToken)
 
-project = DkubeProject(user, name='regression2')
+project = DkubeProject(user, name='regression')
 project.update_project_source(source='github')
 project.update_github_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo/reg_demo', branch='reg-demo', authmode = 'apikey')
 try:
@@ -23,7 +23,7 @@ try:
 except:
     print("Datum already exists")
     
-dataset = DkubeDataset(user, name='clinical2')
+dataset = DkubeDataset(user, name='clinical')
 dataset.update_dataset_source(source='github')
 dataset.update_github_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/clinical', branch='reg-demo-data')
 try:
@@ -31,7 +31,7 @@ try:
 except:
     print("Datum already exists")
     
-dataset = DkubeDataset(user, name='images2')
+dataset = DkubeDataset(user, name='images')
 dataset.update_dataset_source(source='github')
 dataset.update_github_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/image_data', branch='reg-demo-data')
 try:
@@ -39,7 +39,7 @@ try:
 except:
     print("Datum already exists")
     
-dataset = DkubeDataset(user, name='rna2')
+dataset = DkubeDataset(user, name='rna')
 dataset.update_dataset_source(source='github')
 dataset.update_github_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/rna', branch='reg-demo-data')
 try:
