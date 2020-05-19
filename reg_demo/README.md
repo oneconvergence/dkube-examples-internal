@@ -1,4 +1,4 @@
-# roche-mlops
+# Dkube-mlops
 Holds the Machine learning model related work for DKube mlops project
 
 Data is in AWS S3 Bucket.
