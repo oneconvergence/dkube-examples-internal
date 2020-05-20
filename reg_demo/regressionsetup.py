@@ -17,7 +17,7 @@ api = DkubeApi(dkubeURL=dkubeURL, authToken=authToken)
 
 project = DkubeProject(user, name='regression')
 project.update_project_source(source='github')
-project.update_github_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo/reg_demo', branch='reg-demo', authmode = 'apikey')
+project.update_github_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo/reg_demo', branch='reg-demo')
 try:
     api.create_project(project)
 except:
