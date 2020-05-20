@@ -172,7 +172,7 @@ if __name__== "__main__":
     metrics = {'metrics':metrics}
     with open(metric_path + 'metrics.json', 'w') as outfile:
         json.dump(metrics, outfile, indent=4)
-############### Saving Model ###############################
+############### Saving Model  ###############################
     version = 0
     if not tf.io.gfile.exists(export_path):
         tf.io.gfile.makedirs(export_path)
