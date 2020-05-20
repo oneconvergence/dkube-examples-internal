@@ -6,7 +6,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--url', dest = 'url', type=str)
 parser.add_argument('--auth_token',dest = 'authtoken', type=str)
-parser.add_argument('--user',dest = 'user' type=str)
+parser.add_argument('--user',dest = 'user', type=str)
 args = parser.parse_args()
 
 dkubeURL = args.url
