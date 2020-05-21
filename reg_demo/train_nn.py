@@ -195,4 +195,4 @@ if __name__== "__main__":
             export_path + str(version),
             inputs={t.name: t for t in model.inputs},
             outputs={'output': model.output})
-    print("Model saved, version =  ", version)
+    print("Model saved, version = ", version)
