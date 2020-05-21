@@ -1,8 +1,8 @@
-host: <cluster IP>
-user: <username>
-token: <developer settings auth token>
+host: 54.184.39.86
+user: larryc1200
+token: eyJhbGciOiJSUzI1NiIsImtpZCI6Ijc0YmNkZjBmZWJmNDRiOGRhZGQxZWIyOGM2MjhkYWYxIn0.eyJ1c2VybmFtZSI6ImxhcnJ5YzEyMDAiLCJyb2xlIjoiZGF0YXNjaWVudGlzdCIsImV4cCI6NDgyOTk0OTI4OCwiaWF0IjoxNTg5OTQ5Mjg4LCJpc3MiOiJES3ViZSJ9.gIavkG91neZxlvXdx81rJ83jpXPIpXfSuzx7mTuzlprqtqqvIIM0rbjN4KBD_xj5z39AnzkTbLErYcv9ZF8OIwrasL0U47D8O8SmJPQuXNrF3Jg0looONNf6hCznKAidv5lMou_wQ8JGFNipyOhHWLYFn_jmH-UENCKCkmlaUVxGWjEjNfbfXDIPj5CFRxHSQGf8WxxmBPaP8yuhIRwi728f99Xr-fTIsEHJopJxd18zYnCrBix6ml9Wj_icMNghGIpa7BNd-75QfNrf2sL_i-SqAkWmiYeif-lQSmPLKSiZQLe5LLjRmMAsdZKQ_d3M10ObuE9rbrdkdicjfX5Kvg
 jobname: auto
-workspace: regression
+workspace: regression-new
 script: python train_nn.py --epochs 5
 datasets:
   - name: clinical-train
