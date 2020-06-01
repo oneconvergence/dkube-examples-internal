@@ -2,7 +2,7 @@
 
 This repository contains the DL examples ported to run on Dkube and showcase the features of Dkube platform.
 
-Features such as:
+Features such as -
 
 - Deep learning training on known frameworks like Tensorflow, Pytorch...
 - Custom container based training which could be using custom frameworks or simple python/C++ code
