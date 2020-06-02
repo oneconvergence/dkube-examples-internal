@@ -148,7 +148,7 @@ This step is to create a dvs model which will hold the trained output model.
 
 # How to Serve
 After the job is *complete* from above step. The trained model will get generated inside *Dkube*.
- 1. Click on the training run named *run-training-pets-detector.
+ 1. Click on the training run named *training-pets-detector*.
  2. Select *Lineage* tab beside the *Summary* details page.
  3. Click on *OUTPUTS* model *pets-detector*.
  4. Click on *Test Inference* button. 
