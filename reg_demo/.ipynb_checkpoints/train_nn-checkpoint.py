@@ -20,7 +20,7 @@ import argparse
 import requests
 import cv2, json
 
-DATA_DIR = '/opt/dkube/inputs/'
+DATA_DIR =  '/opt/dkube/inputs/'
 TRAIN_DATA_CLI = DATA_DIR + 'train/clinical/'
 TRAIN_DATA_IMG = DATA_DIR + 'train/images/'
 TRAIN_DATA_RNA = DATA_DIR + 'train/rna/'
