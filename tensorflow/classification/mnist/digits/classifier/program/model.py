@@ -137,7 +137,7 @@ def model_fn(features, labels, mode, params):
     tf.identity(accuracy[1], name='train_accuracy')
     tf.summary.scalar('train_accuracy', accuracy[1])
     logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
-            "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train", total_steps: TF_TRAIN_STEPS }, every_n_iter=summary_interval)
+            "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train", "total_steps": TF_TRAIN_STEPS }, every_n_iter=summary_interval)
     return tf.estimator.EstimatorSpec(
             mode=tf.estimator.ModeKeys.TRAIN,
             loss=loss,
@@ -149,7 +149,7 @@ def model_fn(features, labels, mode, params):
     accuracy = tf.metrics.accuracy(
         labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
     logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
-        "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"eval", total_steps: TF_TRAIN_STEPS }, every_n_iter=summary_interval)
+        "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"eval", "total_steps": TF_TRAIN_STEPS }, every_n_iter=summary_interval)
     return tf.estimator.EstimatorSpec(
                 mode=tf.estimator.ModeKeys.EVAL,
                 loss=loss,
