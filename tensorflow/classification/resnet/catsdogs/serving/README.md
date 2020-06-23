@@ -19,7 +19,7 @@ Update the python package requirements in *requirements.txt*
 
 Build the container using - docker build -t <registry/image:tag> .
 
-Push in the container registry and make the image *public*
+Push in the container registry and make the image **public**
 
 NOTE - Its very important to return *token* in the returned response. See below line in the example.
 
