@@ -28,7 +28,7 @@ NOTE - Its very important to return *token* in the returned response. See below 
 Use in DKube
 ============
 Use the transformer image in *Test Inference* functionality of DKube.
-Supply this image while deploying this model for inference.
+Supply the image built as input while deploying the model for inference.
 
 
 How to test
