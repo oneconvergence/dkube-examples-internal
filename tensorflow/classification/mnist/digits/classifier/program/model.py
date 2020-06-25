@@ -24,16 +24,18 @@ import json
 import tensorflow as tf
 import dataset
 import json
-
+if os.getenv('DKUBE_JOB_CLASS',None) == 'notebook':
+    print("hello")
 FLAGS = None
 TF_TRAIN_STEPS = int(os.getenv('STEPS',1000))
 
-if os.getenv('DKUBE_JOB_CLASS', None) == 'notebook':
-    MODEL_DIR = "./"
-    DATA_DIR = "/opt/dkube/input" 
+if os.getenv('DKUBE_JOB_CLASS',None) == 'notebook':
+    MODEL_DIR = "model"
+    DATA_DIR = "/opt/dkube/input"
+    os.makedirs('model')
 else:
-    MODEL_DIR = "/opt/dkube/output"
-    DATA_DIR = "/opt/dkube/input" 
+    MODEL_DIR = "/opt/dkube/output"
+    DATA_DIR = "/opt/dkube/input"
     
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
 EPOCHS = int(os.getenv('EPOCHS', 1))
