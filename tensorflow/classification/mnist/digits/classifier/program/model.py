@@ -32,7 +32,7 @@ TF_TRAIN_STEPS = int(os.getenv('STEPS',1000))
 if os.getenv('DKUBE_JOB_CLASS',None) == 'notebook':
     MODEL_DIR = "model"
     DATA_DIR = "/opt/dkube/input"
-    if not os.path.exists('model):
+    if not os.path.exists('model'):
         os.makedirs('model')
 else:
     MODEL_DIR = "/opt/dkube/output"
