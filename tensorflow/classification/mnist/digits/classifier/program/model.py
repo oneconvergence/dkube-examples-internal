@@ -9,7 +9,7 @@
 #  Unless required by applicable law or agreed to in writing, software
 #  distributed under the License is distributed on an "AS IS" BASIS,
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language  governing permissions and
+#  See the License for the specific language governing permissions and
 #  limitations under the License.
 """Convolutional Neural Network Estimator for MNIST, built with tf.layers."""
 
@@ -24,11 +24,20 @@ import json
 import tensorflow as tf
 import dataset
 import json
-
+if os.getenv('DKUBE_JOB_CLASS',None) == 'notebook':
+    print("hello")
 FLAGS = None
 TF_TRAIN_STEPS = int(os.getenv('STEPS',1000))
-MODEL_DIR = "/opt/dkube/output"
-DATA_DIR = "/opt/dkube/input"
+
+if os.getenv('DKUBE_JOB_CLASS',None) == 'notebook':
+    MODEL_DIR = "model"
+    DATA_DIR = "/opt/dkube/input"
+    if not os.path.exists('model'):
+        os.makedirs('model')
+else:
+    MODEL_DIR = "/opt/dkube/output"
+    DATA_DIR = "/opt/dkube/input"
+    
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
 EPOCHS = int(os.getenv('EPOCHS', 1))
 TF_MODEL_DIR = MODEL_DIR
