@@ -264,6 +264,4 @@ def run():
 if __name__ == '__main__':
     if os.getenv("STEPS") is None:
         os.environ['STEPS'] = str(TF_TRAIN_STEPS)
-    if os.getenv("EPOCHS") is None:
-        os.environ["EPOCHS"] = str(EPOCHS)
     run()
