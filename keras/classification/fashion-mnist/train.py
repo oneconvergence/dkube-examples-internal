@@ -9,7 +9,7 @@ from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras import metrics
 from tensorflow.keras.callbacks import TensorBoard
 
-defaults = dict(
+config = dict(
     dropout=0.2,
     hidden_layer_size=128,
     layer_1_size=16,
