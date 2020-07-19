@@ -17,7 +17,7 @@ config = dict(
     learn_rate=0.01,
     decay=1e-6,
     momentum=0.9,
-    epochs=7,
+    epochs=50,
 )
 
 (X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
@@ -94,12 +94,15 @@ metrics = [
 
 model.compile(loss="categorical_crossentropy", optimizer=sgd, metrics=metrics)
 tensorboard = TensorBoard(log_dir="/opt/dkube/model/")
+os.system("ls -l /opt/dkube/model")
 model.fit(
     X_train,
     y_train,
+    verbose=0,
     validation_data=(X_test, y_test),
     epochs=config["epochs"],
     callbacks=[tensorboard],
 )
 
-# model.save("cnn.h5")
+model.save("/opt/dkube/model/cnn.h5")
+os.system("ls -l /opt/dkube/model")
