@@ -13,21 +13,23 @@ http://cs231n.stanford.edu/tiny-imagenet-200.zip
 4. Create custom job with above details.
 
 Inference steps:
-1. Use prebuild kfserving docker image (docker.io/ocdr/pytorchserver:v2)
+1. Use prebuild kfserving docker image ```docker.io/ocdr/pytorchserver:v2```
 2. Build kfserving pytorchserver image if one want to modify:
+
    a. Clone kfserving repo as:
       ```https://github.com/kubeflow/kfserving.git```
-   b. Replace kfserving/python/pytorchserver with pytorchserver code in this repo as:
+ 
+   b. Replace kfserving/python/pytorchserver with [pytorchserver](./pytorchserver) code in this repo as:
       ```
       rm -rf kfserving/python/pytorchserver
       cp -r pytorchserver kfserving/python/.
       cp pytorch.Dockerfile kfserving/python/.
       ```
    c. Build pytorch docker image as:
-   ```
+      ```
       cd kfserving/python
       docker build -t ocdr/pytorchserver:v2 -f pytorch.Dockerfile .
-    ```
+      ```
    
 3. Edit kfserving config install/0.2.2/kfserving.yaml with pytorchserver image.
    Following is the diff of changes:
@@ -55,8 +57,8 @@ Inference steps:
    sudo docker build -t inference:v1 -f inference.dockerfile .   
    kubectl apply -f inference.yaml
    ```
-8. Open https://<server-ip>:31123/inference and select
-   Model Serving URL as:  http://<istio-ingressgateway-ip>/v1/models/pytorch-resnet50:predict
+8. Open ```https://<server-ip>:31123/inference``` and select
+   Model Serving URL as:  ```http://<istio-ingressgateway-ip>/v1/models/pytorch-resnet50:predict```
    Program: catsdogs and upload image for inference.
    istio-ingressgatewayip is CLUSTER-IP from following command:
-   kubectl -n istio-system get service istio-ingressgateway
+   ```kubectl -n istio-system get service istio-ingressgateway```
