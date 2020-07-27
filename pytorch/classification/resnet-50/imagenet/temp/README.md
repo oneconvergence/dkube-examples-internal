@@ -72,7 +72,7 @@ http://cs231n.stanford.edu/tiny-imagenet-200.zip
    ```
 ## kfserving installation
    1. Clone kfserving repo
-   ```https://github.com/kubeflow/kfserving.git```
+   ```git clone https://github.com/kubeflow/kfserving.git```
    
    2. Update install/0.2.2/kfserving.yaml with following to use kustomized pytorch server docker image for deployment.
    ```
@@ -90,19 +90,25 @@ http://cs231n.stanford.edu/tiny-imagenet-200.zip
    
    ```kubectl apply -f install/0.2.2/kfserving.yaml```
 
-### Follow below steps to update pytorch server docker image and repeat above step 2 & 3. (Optional)
-
-   1. Replace kfserving/python/pytorchserver with [pytorchserver](./pytorchserver) code in this repo as:
-      ```
-      rm -rf kfserving/python/pytorchserver
-      cp -r pytorchserver kfserving/python/.
-      cp pytorch.Dockerfile kfserving/python/.
-      ```
-   2. Build pytorch docker image as:
-      ```
-      cd kfserving/python
-      docker build -t ocdr/pytorchserver:v2 -f pytorch.Dockerfile .
-      ```
+   4. Optional: If you want to modify pytorchserver then follow below steps and repeat step 2 and 3.
+   
+      a. Replace kfserving/python/pytorchserver with [pytorchserver](./pytorchserver) code in this repo as:
+         ```
+         rm -rf kfserving/python/pytorchserver
+         cp -r pytorchserver kfserving/python/.
+         cp pytorch.Dockerfile kfserving/python/.
+         ```
+      b. Build pytorch docker image as:
+         ```
+         cd kfserving/python
+         docker build -t ocdr/pytorchserver:v3 -f pytorch.Dockerfile .
+         # push this image to dockerhub
+         ```
+         
+      c. Delete existing kfserving deplyment and repeat step 2 & 3
+         ```
+         kubectl apply -f install/0.2.2/kfserving.yaml
+         ```
 
 ## Update s3/minio creads
    Edit [s3_secret.yaml](./s3_secret.yaml) with s3/minio creds where trained pytorch model is located and apply the conf as:
@@ -117,7 +123,7 @@ http://cs231n.stanford.edu/tiny-imagenet-200.zip
 ## Build & Deploy inference server as:
 
    ```
-   sudo docker build -t inference:v1 -f inference.dockerfile .   
+   sudo docker build -t inference:v1 -f: inference.dockerfile .   
    kubectl apply -f inference.yaml
    ```
    
