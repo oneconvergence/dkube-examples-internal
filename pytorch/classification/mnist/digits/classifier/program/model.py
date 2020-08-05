@@ -146,7 +146,7 @@ def main():
         scheduler.step()
 
     if args.save_model:
-        model_path = '{}/saved_model.pth'.format(MODEL_DIR)
+        model_path = '{}/saved_model.pt'.format(MODEL_DIR)
         torch.save(model.state_dict(), model_path)
 
 if __name__ == '__main__':
