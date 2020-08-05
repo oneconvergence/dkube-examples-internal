@@ -18,7 +18,7 @@ if 'TF_CONFIG' in os.environ:
 FLAGS = None
 DATA_DIR = "/opt/dkube/input"
 MODEL_DIR = "/opt/dkube/output"
-TFHUB_CACHE_DIR = os.getenv('TFHUB_CACHE_DIR',None)
+TFHUB_CACHE_DIR = os.getenv('TFHUB_CACHE_DIR', "/opt/dkube/input")
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
 EPOCHS = int(os.getenv('EPOCHS', 1))
 TF_TRAIN_STEPS = int(os.getenv('STEPS',1000))
@@ -159,11 +159,13 @@ def train(_):
     }
     global TFHUB_CACHE_DIR
     if TFHUB_CACHE_DIR != None:
+        EXTRACT_PATH = "/tmp/tfhub-cache-dir"
         files = [os.path.join(TFHUB_CACHE_DIR, f) for f in tf.gfile.ListDirectory(TFHUB_CACHE_DIR) if f.endswith('tar.gz')]
         for fname in files:
             tar = tarfile.open(fname, "r:gz")
-            tar.extractall(TFHUB_CACHE_DIR)
+            tar.extractall(EXTRACT_PATH)
             tar.close()
+            TFHUB_CACHE_DIR = EXTRACT_PATH
     else:
         TFHUB_CACHE_DIR = params['module_spec']
 
@@ -215,4 +217,6 @@ def run():
     tf.app.run(main=train)
 
 if __name__ == '__main__':
+    if os.getenv("STEPS") is None:
+        os.environ['STEPS'] = str(TF_TRAIN_STEPS)
     run()

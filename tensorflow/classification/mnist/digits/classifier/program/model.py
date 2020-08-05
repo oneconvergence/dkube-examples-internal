@@ -262,4 +262,6 @@ def run():
   tf.app.run(main=main)
 
 if __name__ == '__main__':
+    if os.getenv("STEPS") is None:
+        os.environ['STEPS'] = str(TF_TRAIN_STEPS)
     run()
