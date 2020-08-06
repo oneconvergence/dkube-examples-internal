@@ -4,6 +4,7 @@ import random
 import shutil
 import time
 import warnings
+import zipfile
 
 import torch
 import torch.nn as nn
@@ -22,10 +23,21 @@ import torchvision.models as models
 TRAIN_STEPS = int(os.getenv('STEPS',10))
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
 EPOCHS = int(os.getenv('EPOCHS', 1))
+DATA_DIR = os.getenv('DKUBE_INPUT_DATASETS', "/opt/dkube/input")
+if DATA_DIR is not None:
+    DATA_DIR = DATA_DIR.split(",")[0]
+MODEL_DIR = os.getenv('DKUBE_JOB_OUTPUT_S3', "/opt/dkube/output")
 
-MODEL_DIR = "/opt/dkube/output"
-DATA_DIR = "/opt/dkube/input"
+ZIP_FILE = DATA_DIR + "/tiny-imagenet-200.zip"
 
+if os.path.exists(ZIP_FILE):
+    print("Extracting compressed training data...")
+    archive = zipfile.ZipFile(ZIP_FILE)
+    archive.extractall(DATA_DIR)
+    DATA_DIR = DATA_DIR + "/tiny-imagenet-200"
+    print("Training data successfuly extracted")
+
+#DATA_DIR = DATA_DIR + "/tiny-imagenet-200"
 MODEL_NAME = "resnet50-dkube.pth"
 
 model_names = sorted(name for name in models.__dict__
@@ -85,7 +97,6 @@ parser.add_argument('--multiprocessing-distributed', action='store_true',
                          'multi node data parallel training')
 
 best_acc1 = 0
-
 
 def main():
     args = parser.parse_args()
