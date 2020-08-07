@@ -20,7 +20,6 @@ import io
 import numpy as np
 import base64
 import argparse
-from .image_transformer import ImageTransformer
 
 import sys,json
 import requests
