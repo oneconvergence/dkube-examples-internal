@@ -194,7 +194,7 @@ if not os.path.exists('../output/clinical'):
     os.makedirs('../output/clinical')
     
 if os.getenv('DKUBE_JOB_CLASS',None) == 'notebook':
-    modeldir = "../model"
+    modeldir = "../model/"
     if os.path.exists(modeldir):
         shutil.rmtree(modeldir)
     if not os.path.exists(modeldir):
@@ -236,6 +236,10 @@ data = data.fillna(0)
 # In[6]:
 
 
+# x_vars = ['age_at_initial_pathologic_diagnosis', 'days_to_birth', 'karnofsky_performance_score']
+# sns.pairplot(data, x_vars=x_vars, y_vars='days_to_death', height=5, aspect=1)
+
+
 # ## 1.2 - Data Preprocessing and visualization
 
 # In[7]:
@@ -256,12 +260,17 @@ min_max_scaler = preprocessing.MinMaxScaler()
 scaled_array = min_max_scaler.fit_transform(float_array)
 data['days_to_death'] = pd.DataFrame(scaled_array)
 data.to_csv(outfile, index = 0)
+
+
+# In[8]:
+
+
 # sns.pairplot(data, x_vars=x_vars, y_vars='days_to_death', height=5, aspect=1)
 
 
 # # 2 - Splitting data into train, validation and test
 
-# In[8]:
+# In[9]:
 
 
 DATA_DIR = '/opt/dkube/input/'
@@ -295,7 +304,7 @@ save_imgs(chunks, imgfolder, [TRAIN_DATA, VAL_DATA, TEST_DATA], 'IMG')
 
 # ## 3.1 - Reading Data 
 
-# In[9]:
+# In[10]:
 
 
 DATA_DIR = '../data_splits/'
@@ -374,7 +383,7 @@ X2_test = X2_test.reshape(X2_test.shape[0],X2_test.shape[1],X2_test.shape[2],1)
 
 # ## 3.2 - Building and training model on different learning rates 
 
-# In[10]:
+# In[11]:
 
 
 lrs =  [0.1, 0.01, 0.02, 0.05]
@@ -408,7 +417,7 @@ for lr in lrs:
 
 # ## 3.3 Saving Model
 
-# In[11]:
+# In[ ]:
 
 
 version = 1
@@ -421,3 +430,4 @@ with tf.keras.backend.get_session() as sess:
         inputs={t.name: t for t in model.inputs},
         outputs={'output': model.output})
 print("Model saved, version = ", version)
+
