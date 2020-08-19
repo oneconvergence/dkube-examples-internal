@@ -44,15 +44,12 @@ if __name__ == "__main__":
 
     print ("MODEL_DIR:{}, DATA_DIR:{}".format(MODEL_DIR,DATA_DIR))
     get_data(DATA_DIR +'/goog.csv')
-
     dates = np.reshape(dates,(len(dates), 1))
 
     svm = SVR(kernel= kernel, C= C, degree= degree, gamma=gamma)
-
     svm.fit(dates, prices)
 
     predictions = svm.predict(dates)
-
     (rmse, mae, r2) = eval_metrics(prices, predictions)
     
     metrics = []
@@ -69,11 +66,8 @@ if __name__ == "__main__":
     metrics = {'metrics':metrics}
     with open(metric_path + 'metrics.json', 'w') as outfile:
         json.dump(metrics, outfile, indent=4)
-        
-    if not os.path.exists(MODEL_DIR + "/model"):
-        os.makedirs(MODEL_DIR + "/model")
-    
-    filename = MODEL_DIR + '/model/stock_prediction.joblib'
+            
+    filename = MODEL_DIR + '/model.joblib'
     joblib.dump(svm, filename)
 
     plt.scatter(dates, prices, color= 'black', label= 'Data')

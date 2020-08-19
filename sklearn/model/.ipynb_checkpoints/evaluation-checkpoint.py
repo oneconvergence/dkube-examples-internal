@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     dates = np.reshape(dates,(len(dates), 1))
 
-    svm = joblib.load(MODEL_DIR + 'model/stock_prediction.joblib') 
+    svm = joblib.load(MODEL_DIR + 'model.joblib') 
 
     predictions = svm.predict(dates)
 
