@@ -1,6 +1,6 @@
 from __future__ import print_function
 import argparse
-import os
+import os, shutil
 import json
 import torch
 import torch.nn as nn
@@ -10,12 +10,12 @@ from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.tensorboard import SummaryWriter
 
+class_file = 'class_file/Net.py'
 MODEL_DIR = "/opt/dkube/output"
 DATA_DIR = "/opt/dkube/input"
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 64))
 EPOCHS = int(os.getenv('EPOCHS', 1))
 print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
-
 # Tensorboard config
 # Writer will output to ./runs/ directory by default
 logs_dir = "{}/eval".format(MODEL_DIR)
@@ -146,8 +146,9 @@ def main():
         scheduler.step()
 
     if args.save_model:
-        model_path = '{}/saved_model.pt'.format(MODEL_DIR)
+        model_path = '{}/model.pt'.format(MODEL_DIR)
         torch.save(model.state_dict(), model_path)
+        shutil.copyfile(class_file, os.path.join(MODEL_DIR,class_file.split('/')[-1]))
 
 if __name__ == '__main__':
     print("Training mnist model using pytorch:")
