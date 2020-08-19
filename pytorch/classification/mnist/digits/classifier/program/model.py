@@ -10,7 +10,7 @@ from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.tensorboard import SummaryWriter
 
-class_file = 'class_file/Net.py'
+CLASS_FILE = 'class_file/Net.py'
 MODEL_DIR = "/opt/dkube/output"
 DATA_DIR = "/opt/dkube/input"
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 64))
@@ -148,7 +148,7 @@ def main():
     if args.save_model:
         model_path = '{}/model.pt'.format(MODEL_DIR)
         torch.save(model.state_dict(), model_path)
-        shutil.copyfile(class_file, os.path.join(MODEL_DIR,class_file.split('/')[-1]))
+        shutil.copyfile(CLASS_FILE , os.path.join(MODEL_DIR,CLASS_FILE.split('/')[-1]))
 
 if __name__ == '__main__':
     print("Training mnist model using pytorch:")
