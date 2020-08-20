@@ -20,13 +20,11 @@ import torchvision.datasets as datasets
 import torchvision.models as models
 
 
-TRAIN_STEPS = int(os.getenv('STEPS',10))
+DATA_DIR = "/opt/dkube/input"
+MODEL_DIR = "/opt/dkube/output"
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
 EPOCHS = int(os.getenv('EPOCHS', 1))
-DATA_DIR = os.getenv('DKUBE_INPUT_DATASETS', "/opt/dkube/input")
-if DATA_DIR is not None:
-    DATA_DIR = DATA_DIR.split(",")[0]
-MODEL_DIR = os.getenv('DKUBE_JOB_OUTPUT_S3', "/opt/dkube/output")
+TRAIN_STEPS = int(os.getenv('STEPS',10))
 
 ZIP_FILE = DATA_DIR + "/tiny-imagenet-200.zip"
 

@@ -10,17 +10,13 @@ from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.tensorboard import SummaryWriter
 
+DATA_DIR = "/opt/dkube/input"
+MODEL_DIR = "/opt/dkube/output"
 TRAIN_STEPS = int(os.getenv('STEPS',10))
-MODEL_DIR = os.getenv('DKUBE_JOB_OUTPUT_MOUNTPATH', None)
-DATA_DIR = os.getenv('DKUBE_INPUT_DATASETS', None)
-if DATA_DIR is not None:
-    DATA_DIR = DATA_DIR.split(",")[0]
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
 EPOCHS = int(os.getenv('EPOCHS', 1))
+
 print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
-if os.getenv('TF_CONFIG') != '':
-    config = json.loads(os.getenv('TF_CONFIG'))
-    print (config)
 
 # Tensorboard config
 # Writer will output to ./runs/ directory by default
