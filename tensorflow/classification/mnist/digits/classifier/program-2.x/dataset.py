@@ -33,7 +33,7 @@ def read32(bytestream):
 
 def check_image_file_header(filename):
   """Validate that filename corresponds to images for the MNIST dataset."""
-  with tf.gfile.Open(filename, 'rb') as f:
+  with tf.io.gfile.GFile(filename, 'rb') as f:
     magic = read32(f)
     num_images = read32(f)
     rows = read32(f)
@@ -49,7 +49,7 @@ def check_image_file_header(filename):
 
 def check_labels_file_header(filename):
   """Validate that filename corresponds to labels for the MNIST dataset."""
-  with tf.gfile.Open(filename, 'rb') as f:
+  with tf.io.gfile.GFile(filename, 'rb') as f:
     magic = read32(f)
     num_items = read32(f)
     if magic != 2049:
@@ -60,10 +60,10 @@ def check_labels_file_header(filename):
 def download(directory, filename):
   """Download (and unzip) a file from the MNIST dataset if not already done."""
   filepath = os.path.join(directory, filename)
-  if tf.gfile.Exists(filepath):
+  if tf.io.gfile.exists(filepath):
     return filepath
-  if not tf.gfile.Exists(directory):
-    tf.gfile.MakeDirs(directory)
+  if not tf.io.gfile.exists(directory):
+    tf.io.gfile.makedirs(directory)
   # CVDF mirror of http://yann.lecun.com/exdb/mnist/
   url = 'https://storage.googleapis.com/cvdf-datasets/mnist/' + filename + '.gz'
   zipped_filepath = filepath + '.gz'
@@ -84,13 +84,13 @@ def dataset(directory, images_file, labels_file):
 
   def decode_image(image):
     # Normalize from [0, 255] to [0.0, 1.0]
-    image = tf.decode_raw(image, tf.uint8)
+    image = tf.io.decode_raw(image, tf.uint8)
     image = tf.cast(image, tf.float32)
     image = tf.reshape(image, [784])
     return image / 255.0
 
   def one_hot_label(label):
-    label = tf.decode_raw(label, tf.uint8)  # tf.string -> tf.uint8
+    label = tf.io.decode_raw(label, tf.uint8)  # tf.string -> tf.uint8
     label = tf.reshape(label, [])  # label is a scalar
     return tf.one_hot(label, 10)
 
