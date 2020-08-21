@@ -70,11 +70,11 @@ if __name__ == "__main__":
     filename = MODEL_DIR + '/model.joblib'
     joblib.dump(svm, filename)
 
-    plt.scatter(dates, prices, color= 'black', label= 'Data')
-    plt.plot(dates,predictions, color= 'red', label= 'SVM model')
+    plt.plot(dates, prices, color= 'black', label = "Data", marker = '*')
+    plt.plot(dates,predictions, color= 'red', label = "Predictions", marker = 'o')
     plt.xlabel('Date')
     plt.ylabel('Price')
-    plt.title('SVM with '+kernel+ ' kernel')
+    plt.title('SVM predictions with '+kernel+ ' kernel')
     plt.legend()
     plt.savefig('svm.png')
 
@@ -84,4 +84,4 @@ if __name__ == "__main__":
 
     img = cv2.imread('svm.png')
     log_histogram('Stock Prices', prices, step=1)
-    log_images('Stock Prediction Model',[img])
+    log_images('Stock Prections by SVM',[img])
