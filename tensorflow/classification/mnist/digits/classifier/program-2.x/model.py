@@ -25,6 +25,8 @@ import tensorflow as tf
 import dataset
 import json
 
+tf.compat.v1.disable_eager_execution()
+
 FLAGS = None
 TF_TRAIN_STEPS = int(os.getenv('STEPS',1000))
 MODEL_DIR = "/opt/dkube/output"
