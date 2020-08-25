@@ -43,6 +43,7 @@ class dkubeLoggerHook(tf.estimator.LoggingTensorHook):
                              int(os.getenv('STEPS', 1000)))) if 'step'
                              in metrics else -1),
                     'jobid': os.getenv('DKUBE_JOB_ID'),
+                    'jobuuid': os.getenv('DKUBE_JOB_UUID'),
                     'username': os.getenv('DKUBE_USER_LOGIN_NAME'),
                     'max_steps': os.getenv('STEPS', '-1'),
                     })
