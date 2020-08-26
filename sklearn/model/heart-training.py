@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 import pickle
 import json
-from sklearn.externals import joblib 
+import joblib 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score , log_loss
 
