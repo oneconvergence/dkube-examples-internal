@@ -1,49 +1,48 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  generateName: mnist-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2020-08-25T13:38:37.648254',
-    pipelines.kubeflow.org/pipeline_spec: '{"description": "sample mnist digits pipeline
-      with dkube components", "inputs": [{"default": "", "name": "auth_token", "optional":
-      true}, {"default": "default", "name": "job_group", "optional": true}, {"default":
-      "tensorflow", "name": "framework", "optional": true}, {"default": "1.14", "name":
-      "version", "optional": true}, {"default": "{\"image\": \"docker.io/ocdr/d3-datascience-tf-cpu:v1.14\",
-      \"username\": \"\", \"password\": \"\"}", "name": "training_container", "optional":
-      true}, {"default": "mnist", "name": "training_program", "optional": true}, {"default":
+  generateName: resnetv2-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2020-08-25T13:53:25.657964',
+    pipelines.kubeflow.org/pipeline_spec: '{"description": "sample resnetv2 model
+      based catsdogs classification pipeline with dkube components", "inputs": [{"default":
+      "", "name": "auth_token", "optional": true}, {"default": "default", "name":
+      "job_group", "optional": true}, {"default": "tensorflow", "name": "framework",
+      "optional": true}, {"default": "1.14", "name": "version", "optional": true},
+      {"default": "{\"image\": \"docker.io/ocdr/d3-datascience-tf-cpu:v1.14\", \"username\":
+      \"\", \"password\": \"\"}", "name": "training_container", "optional": true},
+      {"default": "catsdogs", "name": "training_program", "optional": true}, {"default":
       "python model.py", "name": "training_script", "optional": true}, {"default":
-      "{}", "name": "tuning", "optional": true}, {"default": "[\"mnist\"]", "name":
-      "training_datasets", "optional": true}, {"default": "[\"/opt/dkube/input\"]",
-      "name": "training_input_dataset_mounts", "optional": true}, {"default": "[\"mnist\"]",
-      "name": "training_outputs", "optional": true}, {"default": "[\"/opt/dkube/output\"]",
-      "name": "training_output_mounts", "optional": true}, {"default": "0", "name":
-      "training_gpus", "optional": true}, {"default": "[{\"steps\": 100}]", "name":
-      "training_envs", "optional": true}, {"default": "cpu", "name": "serving_device",
-      "optional": true}, {"default": "{\"image\": \"docker.io/ocdr/tensorflowserver:1.14\",
-      \"username\": \"\", \"password\": \"\"}", "name": "serving_image", "optional":
-      true}, {"default": "{\"image\": \"docker.io/ocdr/mnist-example-preprocess:2.0.7\",
-      \"username\": \"\", \"password\": \"\"}", "name": "transformer_image", "optional":
-      true}, {"default": "mnist-transformer", "name": "transformer_project", "optional":
-      true}, {"default": "tensorflow/classification/mnist/digits/transformer/transformer.py",
-      "name": "transformer_code", "optional": true}], "name": "mnist"}'}
+      "[\"catsdogs\"]", "name": "training_datasets", "optional": true}, {"default":
+      "[\"/opt/dkube/input\"]", "name": "training_input_dataset_mounts", "optional":
+      true}, {"default": "[\"catsdogs\"]", "name": "training_outputs", "optional":
+      true}, {"default": "[\"/opt/dkube/output\"]", "name": "training_output_mounts",
+      "optional": true}, {"default": "0", "name": "training_gpus", "optional": true},
+      {"default": "[{\"steps\": 100}]", "name": "training_envs", "optional": true},
+      {"default": "{\"image\": \"docker.io/ocdr/tensorflowserver:1.14\", \"username\":
+      \"\", \"password\": \"\"}", "name": "serving_image", "optional": true}, {"default":
+      "{\"image\": \"docker.io/ocdr/catdogs-example-preprocess:2.0.7\", \"username\":
+      \"\", \"password\": \"\"}", "name": "transformer_image", "optional": true},
+      {"default": "catsdogs-transformer", "name": "transformer_project", "optional":
+      true}, {"default": "tensorflow/classification/resnet/catsdogs/transformer/transformer.py",
+      "name": "transformer_code", "optional": true}], "name": "resnetv2"}'}
   labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0}
 spec:
-  entrypoint: mnist
+  entrypoint: resnetv2
   templates:
   - name: dkube-serving
     container:
       args: [serving, --accessurl, --token, '{{inputs.parameters.auth_token}}', --model,
-        '{{inputs.parameters.dkube-training-artifact}}', --device, '{{inputs.parameters.serving_device}}',
-        --serving_image, '{{inputs.parameters.serving_image}}', --transformer_image,
-        '{{inputs.parameters.transformer_image}}', --transformer_project, '{{inputs.parameters.transformer_project}}',
-        --transformer_code, '{{inputs.parameters.transformer_code}}', --transformer_commit_id,
-        --runid, '{{pod.name}}', --wfid, '{{workflow.uid}}']
+        '{{inputs.parameters.dkube-training-artifact}}', --device, --serving_image,
+        '{{inputs.parameters.serving_image}}', --transformer_image, '{{inputs.parameters.transformer_image}}',
+        --transformer_project, '{{inputs.parameters.transformer_project}}', --transformer_code,
+        '{{inputs.parameters.transformer_code}}', --transformer_commit_id, --runid,
+        '{{pod.name}}', --wfid, '{{workflow.uid}}']
       command: [dkubepl]
       image: ocdr/dkubepl:ansu
     inputs:
       parameters:
       - {name: auth_token}
       - {name: dkube-training-artifact}
-      - {name: serving_device}
       - {name: serving_image}
       - {name: transformer_code}
       - {name: transformer_image}
@@ -110,10 +109,9 @@ spec:
         --models, --input_model_mounts, --outputs, '{{inputs.parameters.training_outputs}}',
         --output_mounts, '{{inputs.parameters.training_output_mounts}}', --ngpus,
         '{{inputs.parameters.training_gpus}}', --nworkers, --auto, --config, --tuning,
-        '{{inputs.parameters.tuning}}', --envs, '{{inputs.parameters.training_envs}}',
-        --gdrdma, --job_group, '{{inputs.parameters.job_group}}', --framework, '{{inputs.parameters.framework}}',
-        --version, '{{inputs.parameters.version}}', --runid, '{{pod.name}}', --wfid,
-        '{{workflow.uid}}']
+        --envs, '{{inputs.parameters.training_envs}}', --gdrdma, --job_group, '{{inputs.parameters.job_group}}',
+        --framework, '{{inputs.parameters.framework}}', --version, '{{inputs.parameters.version}}',
+        --runid, '{{pod.name}}', --wfid, '{{workflow.uid}}']
       command: [dkubepl]
       image: ocdr/dkubepl:ansu
     inputs:
@@ -130,7 +128,6 @@ spec:
       - {name: training_outputs}
       - {name: training_program}
       - {name: training_script}
-      - {name: tuning}
       - {name: version}
     outputs:
       parameters:
@@ -227,13 +224,12 @@ spec:
         stage: training
         dkube.garbagecollect: "true"
         dkube.garbagecollect.policy: all
-  - name: mnist
+  - name: resnetv2
     inputs:
       parameters:
       - {name: auth_token}
       - {name: framework}
       - {name: job_group}
-      - {name: serving_device}
       - {name: serving_image}
       - {name: training_container}
       - {name: training_datasets}
@@ -247,7 +243,6 @@ spec:
       - {name: transformer_code}
       - {name: transformer_image}
       - {name: transformer_project}
-      - {name: tuning}
       - {name: version}
     dag:
       tasks:
@@ -258,7 +253,6 @@ spec:
           parameters:
           - {name: auth_token, value: '{{inputs.parameters.auth_token}}'}
           - {name: dkube-training-artifact, value: '{{tasks.dkube-training.outputs.parameters.dkube-training-artifact}}'}
-          - {name: serving_device, value: '{{inputs.parameters.serving_device}}'}
           - {name: serving_image, value: '{{inputs.parameters.serving_image}}'}
           - {name: transformer_code, value: '{{inputs.parameters.transformer_code}}'}
           - {name: transformer_image, value: '{{inputs.parameters.transformer_image}}'}
@@ -279,7 +273,6 @@ spec:
           - {name: training_outputs, value: '{{inputs.parameters.training_outputs}}'}
           - {name: training_program, value: '{{inputs.parameters.training_program}}'}
           - {name: training_script, value: '{{inputs.parameters.training_script}}'}
-          - {name: tuning, value: '{{inputs.parameters.tuning}}'}
           - {name: version, value: '{{inputs.parameters.version}}'}
   arguments:
     parameters:
@@ -289,20 +282,18 @@ spec:
     - {name: version, value: '1.14'}
     - {name: training_container, value: '{"image": "docker.io/ocdr/d3-datascience-tf-cpu:v1.14",
         "username": "", "password": ""}'}
-    - {name: training_program, value: mnist}
+    - {name: training_program, value: catsdogs}
     - {name: training_script, value: python model.py}
-    - {name: tuning, value: '{}'}
-    - {name: training_datasets, value: '["mnist"]'}
+    - {name: training_datasets, value: '["catsdogs"]'}
     - {name: training_input_dataset_mounts, value: '["/opt/dkube/input"]'}
-    - {name: training_outputs, value: '["mnist"]'}
+    - {name: training_outputs, value: '["catsdogs"]'}
     - {name: training_output_mounts, value: '["/opt/dkube/output"]'}
     - {name: training_gpus, value: '0'}
     - {name: training_envs, value: '[{"steps": 100}]'}
-    - {name: serving_device, value: cpu}
     - {name: serving_image, value: '{"image": "docker.io/ocdr/tensorflowserver:1.14",
         "username": "", "password": ""}'}
-    - {name: transformer_image, value: '{"image": "docker.io/ocdr/mnist-example-preprocess:2.0.7",
+    - {name: transformer_image, value: '{"image": "docker.io/ocdr/catdogs-example-preprocess:2.0.7",
         "username": "", "password": ""}'}
-    - {name: transformer_project, value: mnist-transformer}
-    - {name: transformer_code, value: tensorflow/classification/mnist/digits/transformer/transformer.py}
+    - {name: transformer_project, value: catsdogs-transformer}
+    - {name: transformer_code, value: tensorflow/classification/resnet/catsdogs/transformer/transformer.py}
   serviceAccountName: pipeline-runner
