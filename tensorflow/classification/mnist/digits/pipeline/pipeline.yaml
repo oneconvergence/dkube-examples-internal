@@ -1,0 +1,273 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: mnist-
+spec:
+  arguments:
+    parameters:
+    - name: auth-token
+      value: ''
+    - name: training-container
+      value: '{"image": "docker.io/ocdr/d3-datascience-tf-cpu:v1.14", "username": "", "password": ""}'
+    - name: training-program
+      value: mnist
+    - name: training-script
+      value: python model.py
+    - name: tuning
+      value: ''
+    - name: training-datasets
+      value: '["mnist"]'
+    - name: training-input-dataset-mounts
+      value: '["/opt/dkube/input"]'
+    - name: training-outputs
+      value: '["mnist"]'
+    - name: training-output-mounts
+      value: '["/opt/dkube/output"]'
+    - name: training-gpus
+      value: '0'
+    - name: training-envs
+      value: '[{"steps": 100}]'
+    - name: serving-device
+      value: cpu
+    - name: serving-container
+      value: '{"image": "docker.io/ocdr/mnist-example-preprocess:2.0.7", "username": "", "password": ""}'
+  entrypoint: mnist
+  serviceAccountName: pipeline-runner
+  templates:
+  - container:
+      args:
+      - serving
+      - --accessurl
+      - ''
+      - --token
+      - '{{inputs.parameters.auth-token}}'
+      - --model
+      - '{{inputs.parameters.dkube-training-artifact}}'
+      - --device
+      - '{{inputs.parameters.serving-device}}'
+      - --serve_container
+      - '{{inputs.parameters.serving-container}}'
+      - --runid
+      - '{{pod.name}}'
+      - --wfid
+      - '{{workflow.uid}}'
+      command:
+      - dkubepl
+      image: ocdr/dkubepl:2.0.7
+    inputs:
+      parameters:
+      - name: auth-token
+      - name: dkube-training-artifact
+      - name: serving-container
+      - name: serving-device
+    metadata:
+      annotations:
+        platform: Dkube
+      labels:
+        dkube.garbagecollect: 'true'
+        dkube.garbagecollect.policy: all
+        logger: dkubepl
+        platform: Dkube
+        runid: '{{pod.name}}'
+        stage: serving
+        wfid: '{{workflow.uid}}'
+    name: dkube-serving
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        path: /mlpipeline-ui-metadata.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      - name: mlpipeline-metrics
+        path: /mlpipeline-metrics.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      parameters:
+      - name: dkube-serving-rundetails
+        valueFrom:
+          path: /tmp/rundetails
+      - name: dkube-serving-servingurl
+        valueFrom:
+          path: /tmp/servingurl
+  - container:
+      args:
+      - training
+      - --accessurl
+      - ''
+      - --token
+      - '{{inputs.parameters.auth-token}}'
+      - --container
+      - '{{inputs.parameters.training-container}}'
+      - --script
+      - '{{inputs.parameters.training-script}}'
+      - --program
+      - '{{inputs.parameters.training-program}}'
+      - --datasets
+      - '{{inputs.parameters.training-datasets}}'
+      - --input_dataset_mounts
+      - '{{inputs.parameters.training-input-dataset-mounts}}'
+      - --models
+      - '[]'
+      - --input_model_mounts
+      - '[]'
+      - --outputs
+      - '{{inputs.parameters.training-outputs}}'
+      - --output_mounts
+      - '{{inputs.parameters.training-output-mounts}}'
+      - --ngpus
+      - '{{inputs.parameters.training-gpus}}'
+      - --nworkers
+      - '0'
+      - --auto
+      - 'false'
+      - --config
+      - ''
+      - --tuning
+      - '{{inputs.parameters.tuning}}'
+      - --envs
+      - '{{inputs.parameters.training-envs}}'
+      - --gdrdma
+      - 'false'
+      - --runid
+      - '{{pod.name}}'
+      - --wfid
+      - '{{workflow.uid}}'
+      command:
+      - dkubepl
+      image: ocdr/dkubepl:2.0.7
+    inputs:
+      parameters:
+      - name: auth-token
+      - name: training-container
+      - name: training-datasets
+      - name: training-envs
+      - name: training-gpus
+      - name: training-input-dataset-mounts
+      - name: training-output-mounts
+      - name: training-outputs
+      - name: training-program
+      - name: training-script
+      - name: tuning
+    metadata:
+      annotations:
+        platform: Dkube
+      labels:
+        dkube.garbagecollect: 'true'
+        dkube.garbagecollect.policy: all
+        logger: dkubepl
+        platform: Dkube
+        runid: '{{pod.name}}'
+        stage: training
+        wfid: '{{workflow.uid}}'
+    name: dkube-training
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        path: /mlpipeline-ui-metadata.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-ui-metadata.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      - name: mlpipeline-metrics
+        path: /mlpipeline-metrics.json
+        s3:
+          accessKeySecret:
+            key: accesskey
+            name: mlpipeline-minio-artifact
+          bucket: mlpipeline
+          endpoint: minio-service.kubeflow:9000
+          insecure: true
+          key: runs/{{workflow.uid}}/{{pod.name}}/mlpipeline-metrics.tgz
+          secretKeySecret:
+            key: secretkey
+            name: mlpipeline-minio-artifact
+      parameters:
+      - name: dkube-training-artifact
+        valueFrom:
+          path: /tmp/artifact
+      - name: dkube-training-rundetails
+        valueFrom:
+          path: /tmp/rundetails
+  - dag:
+      tasks:
+      - arguments:
+          parameters:
+          - name: auth-token
+            value: '{{inputs.parameters.auth-token}}'
+          - name: dkube-training-artifact
+            value: '{{tasks.dkube-training.outputs.parameters.dkube-training-artifact}}'
+          - name: serving-container
+            value: '{{inputs.parameters.serving-container}}'
+          - name: serving-device
+            value: '{{inputs.parameters.serving-device}}'
+        dependencies:
+        - dkube-training
+        name: dkube-serving
+        template: dkube-serving
+      - arguments:
+          parameters:
+          - name: auth-token
+            value: '{{inputs.parameters.auth-token}}'
+          - name: training-container
+            value: '{{inputs.parameters.training-container}}'
+          - name: training-datasets
+            value: '{{inputs.parameters.training-datasets}}'
+          - name: training-envs
+            value: '{{inputs.parameters.training-envs}}'
+          - name: training-gpus
+            value: '{{inputs.parameters.training-gpus}}'
+          - name: training-input-dataset-mounts
+            value: '{{inputs.parameters.training-input-dataset-mounts}}'
+          - name: training-output-mounts
+            value: '{{inputs.parameters.training-output-mounts}}'
+          - name: training-outputs
+            value: '{{inputs.parameters.training-outputs}}'
+          - name: training-program
+            value: '{{inputs.parameters.training-program}}'
+          - name: training-script
+            value: '{{inputs.parameters.training-script}}'
+          - name: tuning
+            value: '{{inputs.parameters.tuning}}'
+        name: dkube-training
+        template: dkube-training
+    inputs:
+      parameters:
+      - name: auth-token
+      - name: serving-container
+      - name: serving-device
+      - name: training-container
+      - name: training-datasets
+      - name: training-envs
+      - name: training-gpus
+      - name: training-input-dataset-mounts
+      - name: training-output-mounts
+      - name: training-outputs
+      - name: training-program
+      - name: training-script
+      - name: tuning
+    name: mnist
