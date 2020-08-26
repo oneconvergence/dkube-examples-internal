@@ -1,4 +1,5 @@
 import pandas as pd
+import requests
 import pickle
 from sklearn.externals import joblib 
 from sklearn.ensemble import RandomForestClassifier
