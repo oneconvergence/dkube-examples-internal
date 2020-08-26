@@ -110,7 +110,7 @@ def main():
 
     parser.add_argument('--save-model', action='store_true', default=True,
                         help='For Saving the current Model')
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
     if DATA_DIR is None:
