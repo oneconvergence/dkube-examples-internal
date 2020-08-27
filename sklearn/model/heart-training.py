@@ -2,6 +2,7 @@ import pandas as pd
 import requests
 import pickle
 import json
+import os
 import joblib 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score , log_loss
@@ -22,7 +23,7 @@ def eval_metrics(actual, pred):
 
 if __name__ == "__main__":
 	metrics={}
-	url="http://dkube-ext.dkube:9401/export-training-info"
+	url="http://dkube-exporter.dkube:9401/export-training-info"
 	train_data=read_data(DATA_DIR +'/train_data_heart.csv')
 	x_train=train_data.iloc[:,:-1].values
 	y_train=train_data.iloc[:,13].values
@@ -35,8 +36,15 @@ if __name__ == "__main__":
 	y_test=test_data.iloc[:,13].values
 	y_pred=rf.predict(x_test)
 	accuracy,loss=eval_metrics(y_test,y_pred)
-	metrics['accuracy']=accuracy
+	metrics['mode']="eval"
 	metrics['loss']=loss
+	metrics['accuracy']=accuracy
+	metrics['epoch']=1
+	metrics['step']=1
+	metrics['jobid']=os.getenv('DKUBE_JOB_ID')
+	metrics['jobuuid']=os.getenv('DKUBE_JOB_UUID')
+	metrics['username']=os.getenv('DKUBE_USER_LOGIN_NAME')
+	metrics['max_steps']=1
 	requests.post(url, data=json.dumps({'data': [metrics]}))
 
 
