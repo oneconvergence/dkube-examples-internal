@@ -1,3 +1,4 @@
+############### Importing Libraries ##############
 import pandas as pd
 import requests
 import pickle
@@ -8,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score , log_loss
 
 
-
+############# Mount Paths ############
 DATA_DIR = '/opt/dkube/input'
 MODEL_DIR = '/opt/dkube/model'
 
@@ -24,18 +25,22 @@ def eval_metrics(actual, pred):
 if __name__ == "__main__":
 	metrics={}
 	url="http://dkube-exporter.dkube:9401/export-training-info"
+	######## Training ###########
 	train_data=read_data(DATA_DIR +'/train_data_heart.csv')
 	x_train=train_data.iloc[:,:-1].values
 	y_train=train_data.iloc[:,13].values
 	rf = RandomForestClassifier(n_estimators = 1000, random_state = 1)
 	rf.fit(x_train, y_train)
+	######## Model Saving ########
 	filename = MODEL_DIR + '/model.joblib'
 	joblib.dump(rf, filename)
+	######## Evaluation ########
 	test_data=read_data(DATA_DIR+'/test_data_heart.csv')
 	x_test=test_data.iloc[:,:-1].values
 	y_test=test_data.iloc[:,13].values
 	y_pred=rf.predict(x_test)
 	accuracy,loss=eval_metrics(y_test,y_pred)
+	####### API Calling ########
 	metrics['mode']="eval"
 	metrics['loss']=loss
 	metrics['accuracy']=accuracy
