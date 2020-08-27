@@ -44,7 +44,7 @@ if __name__ == "__main__":
 	metrics['jobid']=os.getenv('DKUBE_JOB_ID')
 	metrics['jobuuid']=os.getenv('DKUBE_JOB_UUID')
 	metrics['username']=os.getenv('DKUBE_USER_LOGIN_NAME')
-	metrics['max_steps']=1
+	metrics['max_steps']="1"
 	requests.post(url, data=json.dumps({'data': [metrics]}))
 
 
