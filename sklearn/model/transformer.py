@@ -13,7 +13,7 @@ import pandas as pd
 filename = 'temp.csv'
 img = ""
 
-def preprocess(self, inputs: Dict) -> Dict:
+def preprocess(inputs: Dict) -> Dict:
     # inputs is a json file, inside that data, using the data value form a image
     # write into jpeg file
     del inputs['instances']
@@ -33,7 +33,7 @@ def preprocess(self, inputs: Dict) -> Dict:
     payload = {'instances': dates.tolist() , 'token':inputs['token']}
     return payload
 
-def postprocess(self, predictions: List) -> List:
+def postprocess(predictions: List) -> List:
     logging.info("prep =======> %s",str(type(predictions)))
     preds = predictions["predictions"]
     data = pd.read_csv(filename)
