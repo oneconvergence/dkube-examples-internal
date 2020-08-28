@@ -30,7 +30,8 @@ def preprocess(inputs: Dict) -> Dict:
     dates = [date.split('-')[0] for date in dates]
     l = len(dates)
     dates = np.asarray(dates).reshape(l,1)
-    payload = {'instances': dates.tolist() , 'token':inputs['token']}
+    payload = {"instances": dates.tolist() , "token":inputs["token"]}
+    logging.info("token =======> %s",str(inputs["token"]))
     return payload
 
 def postprocess(predictions: List) -> List:
