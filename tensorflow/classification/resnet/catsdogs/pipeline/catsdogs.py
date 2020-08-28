@@ -43,7 +43,7 @@ def d3pipeline(
     #Any envs to be passed to the training program
     training_envs=json.dumps([{"steps": 100}]),
     #Serving image
-    serving_image=json.dumps({'image':'docker.io/ocdr/tensorflowserver:1.14', 'username':'', 'password': ''}),
+    serving_image=json.dumps({'image':'ocdr/tensorflowserver:1.14', 'username':'', 'password': ''}),
     #Transformer image
     transformer_image=json.dumps({'image':'docker.io/ocdr/catdogs-example-preprocess:2.0.7', 'username':'', 'password': ''}),
     #Script to execute the transformer

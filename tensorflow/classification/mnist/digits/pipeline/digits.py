@@ -46,7 +46,7 @@ def d3pipeline(
     #Device to be used for serving - dkube mnist example trained on gpu needs gpu for serving else set this param to 'cpu'
     serving_device='cpu',
     #Serving image
-    serving_image=json.dumps({'image':'docker.io/ocdr/tensorflowserver:1.14', 'username':'', 'password': ''}),
+    serving_image=json.dumps({'image':'ocdr/tensorflowserver:1.14', 'username':'', 'password': ''}),
     #Transformer image
     transformer_image=json.dumps({'image':'docker.io/ocdr/mnist-example-preprocess:2.0.7', 'username':'', 'password': ''}),
     #Script to execute the transformer
