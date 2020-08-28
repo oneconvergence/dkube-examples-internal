@@ -83,7 +83,7 @@ spec:
         '{{inputs.parameters.transformer_code}}', --transformer_commit_id, --runid,
         '{{pod.name}}', --wfid, '{{workflow.uid}}']
       command: [dkubepl]
-      image: ocdr/dkubepl:2.1.3
+      image: ocdr/dkubepl:2.1.3.1
     inputs:
       parameters:
       - {name: auth_token}
@@ -111,7 +111,7 @@ spec:
           {"inputValue": "transformer_code"}, "--transformer_commit_id", {"inputValue":
           "transformer_commit_id"}, "--runid", "{{pod.name}}", "--wfid", "{{workflow.uid}}"],
           "command": ["dkubepl"], "fileOutputs": {"rundetails": "/tmp/rundetails",
-          "servingurl": "/tmp/servingurl"}, "image": "ocdr/dkubepl:2.1.3"}}, "inputs":
+          "servingurl": "/tmp/servingurl"}, "image": "ocdr/dkubepl:2.1.3.1"}}, "inputs":
           [{"description": "Required. Dkube authentication token.", "name": "auth_token",
           "type": "String"}, {"description": "Required. Trained model in Dkube which
           is to be deployed for serving.", "name": "model", "type": "String"}, {"default":
@@ -157,7 +157,7 @@ spec:
         --framework, '{{inputs.parameters.framework}}', --version, '{{inputs.parameters.version}}',
         --runid, '{{pod.name}}', --wfid, '{{workflow.uid}}']
       command: [dkubepl]
-      image: ocdr/dkubepl:2.1.3
+      image: ocdr/dkubepl:2.1.3.1
     inputs:
       parameters:
       - {name: auth_token}
@@ -204,7 +204,7 @@ spec:
           "gdrdma"}, "--job_group", {"inputValue": "job_group"}, "--framework", {"inputValue":
           "framework"}, "--version", {"inputValue": "version"}, "--runid", "{{pod.name}}",
           "--wfid", "{{workflow.uid}}"], "command": ["dkubepl"], "fileOutputs": {"artifact":
-          "/tmp/artifact", "rundetails": "/tmp/rundetails"}, "image": "ocdr/dkubepl:2.1.3"}},
+          "/tmp/artifact", "rundetails": "/tmp/rundetails"}, "image": "ocdr/dkubepl:2.1.3.1"}},
           "inputs": [{"description": "Required. Dkube authentication token.", "name":
           "auth_token", "type": "String"}, {"description": "Required. Container to
           use for training. Format: {\"image\":<url>, \"username\":<>, \"password\":<>}",
