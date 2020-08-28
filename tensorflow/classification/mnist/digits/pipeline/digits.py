@@ -34,7 +34,7 @@ def d3pipeline(
     training_container=json.dumps({'image':'docker.io/ocdr/d3-datascience-tf-cpu:v1.14', 'username':'', 'password': ''}),
     #Script to run inside the training container
     training_script="python model.py",
-    tuning = '{ "studyName": "mnist-dkube-tuning", "owner": "crd", "optimizationtype": "maximize", "objectivevaluename": "train_accuracy_1", "optimizationgoal": 0.99, "requestcount": 1, "metricsnames": [ "train_accuracy_1" ], "parameterconfigs": [ { "name": "--learning_rate", "parametertype": "double", "feasible": { "min": "0.01", "max": "0.05" } }, { "name": "--batch_size", "parametertype": "int", "feasible": { "min": "100", "max": "200" } }, { "name": "--num_epochs", "parametertype": "int", "feasible": { "min": "1", "max": "10" } } ] }',
+    tuning = json.dumps({}),
     #Input dataset mount path
     training_input_dataset_mount="/opt/dkube/input",
     #Output dataset mount paths
@@ -49,8 +49,6 @@ def d3pipeline(
     serving_image=json.dumps({'image':'docker.io/ocdr/tensorflowserver:1.14', 'username':'', 'password': ''}),
     #Transformer image
     transformer_image=json.dumps({'image':'docker.io/ocdr/mnist-example-preprocess:2.0.7', 'username':'', 'password': ''}),
-    #Name of the transformer project in dkube. Update accordingly if different name is used while creating a workspace in dkube.
-    transformer_project="mnist-transformer",
     #Script to execute the transformer
     transformer_code="tensorflow/classification/mnist/digits/transformer/transformer.py"):
 
@@ -65,7 +63,7 @@ def d3pipeline(
     serving     = dkube_serving_op(auth_token, train.outputs['artifact'],
                                 device=serving_device, serving_image=serving_image,
                                 transformer_image=transformer_image,
-                                transformer_project=transformer_project,
+                                transformer_project=training_program,
                                 transformer_code=transformer_code).after(train)
     #inference   = dkube_viewer_op(auth_token, serving.outputs['servingurl'],
     #                             'digits', viewtype='inference').after(serving)

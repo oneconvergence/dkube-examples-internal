@@ -46,8 +46,6 @@ def d3pipeline(
     serving_image=json.dumps({'image':'docker.io/ocdr/tensorflowserver:1.14', 'username':'', 'password': ''}),
     #Transformer image
     transformer_image=json.dumps({'image':'docker.io/ocdr/catdogs-example-preprocess:2.0.7', 'username':'', 'password': ''}),
-    #Name of the transformer project in dkube. Update accordingly if different name is used while creating a workspace in dkube.
-    transformer_project="catsdogs-transformer",
     #Script to execute the transformer
     transformer_code="tensorflow/classification/resnet/catsdogs/transformer/transformer.py"
 ):
@@ -63,7 +61,7 @@ def d3pipeline(
     serving     = dkube_serving_op(auth_token, train.outputs['artifact'],
                                 serving_image=serving_image,
                                 transformer_image=transformer_image,
-                                transformer_project=transformer_project,
+                                transformer_project=training_program,
                                 transformer_code=transformer_code).after(train)
 if __name__ == '__main__':
   import kfp.compiler as compiler
