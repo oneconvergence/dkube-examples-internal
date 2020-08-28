@@ -33,15 +33,17 @@ def preprocess(inputs: Dict) -> Dict:
     payload = {'instances': dates.tolist() , 'token':inputs['token']}
     return payload
 
-def postprocess(predictions: List) -> List:
+def postprocess(self, predictions: List) -> List:
     logging.info("prep =======> %s",str(type(predictions)))
     preds = predictions["predictions"]
-    data = pd.read_csv(filename)
-    dates = data['Date']
-    dates = [date for date in dates]
-    l = len(dates)
-    st = ''
+    l = len(preds)
+    if l == 1:
+        st = 'Stock value is, '
+    else:
+        st = 'Stock values are, '
     for i in range(l):
-        st += 'Stock value on date {} is {}'.format(dates[i], predictions[i])
-        st += ',  '
-    return {'result': st}
+        st += str(round(preds[i],3))
+        if i != l-1:
+            st += ',  '
+    st += '.'
+    return {"result": st}
