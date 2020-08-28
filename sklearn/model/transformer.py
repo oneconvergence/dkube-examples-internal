@@ -33,7 +33,7 @@ def preprocess(inputs: Dict) -> Dict:
     payload = {'instances': dates.tolist() , 'token':inputs['token']}
     return payload
 
-def postprocess(self, predictions: List) -> List:
+def postprocess(predictions: List) -> List:
     logging.info("prep =======> %s",str(type(predictions)))
     preds = predictions["predictions"]
     l = len(preds)
