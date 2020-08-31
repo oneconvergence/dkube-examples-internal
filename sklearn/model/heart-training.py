@@ -29,7 +29,8 @@ def get_metrics(actual, pred):
 
 def api_calling(train_loss,train_accuracy,eval_loss,eval_accuracy):
 	url="http://dkube-exporter.dkube:9401/export-training-info"
-	train_metrics,eval_metrics={}
+	train_metrics={}
+	eval_metrics={}
 	############# Train metrics ###############
 	train_metrics['mode']="train"
 	train_metrics['loss']=train_loss
