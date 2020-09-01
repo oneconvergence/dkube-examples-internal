@@ -35,35 +35,16 @@ parser.add_argument('--predictor_host', help='The URL for the model predict func
 
 args, _ = parser.parse_known_args()
 
-class NumpyEncoder(json.JSONEncoder):
-    """ Special json encoder for numpy types """
-    def default(self, obj):
-        if isinstance(obj, (np.int_, np.intc, np.intp, np.int8,
-            np.int16, np.int32, np.int64, np.uint8,
-            np.uint16, np.uint32, np.uint64)):
-            return int(obj)
-        elif isinstance(obj, (np.float_, np.float16, np.float32,
-            np.float64)):
-            return float(obj)
-        elif isinstance(obj,(np.ndarray,)): #### This is the fix
-            return obj.tolist()
-        return json.JSONEncoder.default(self, obj)
 def convert(input_file):
     try:
-        image = np.asarray(Image.open(input_file))
-        image = np.true_divide(image,[255.0],out=None)
-        image = np.reshape(image, (1, 784))
-        image = image.astype(np.float32)
-        data = json.dumps(image, cls=NumpyEncoder)
-        data = data[1:-1]
-        data = eval(data)
+        f = open(input_file, "rb").read()
+        data = base64.encodestring(f)
+        data = data.decode('utf-8')
     except Exception as err:
         msg = "Failed to convert input image. " + str(err)
         logging.error(msg)
         return "", msg
     return data, ""
-
-
 
 def cleanup(input_file, convertor_file):
     if input_file != None and os.path.exists(input_file):
@@ -86,9 +67,9 @@ class ImageTransformer(kfserving.KFModel):
         self.predictor_host = predictor_host
 
     def preprocess(self, inputs: Dict) -> Dict:
-        #return {'instances': [image_transform(instance) for instance in inputs['instances']]}        
+        #return {'instances': [image_transform(instance) for instance in inputs['instances']]}
+        logging.info("preprocess1")
         del inputs['instances']
-        logging.info("prep =======> %s",str(inputs['token']))
         try:
             json_data = inputs
         except ValueError:
@@ -99,11 +80,12 @@ class ImageTransformer(kfserving.KFModel):
         in_signature = json_data["signatures"]["name"]
         in_data = json_data["signatures"]["inputs"]
         rqst_list = []
-        batch_list = {}        
+        batch_list = {}
+        logging.info("preprpcess2")
         for batch in in_data:
             for element in batch:
                 batch_list.clear()
-                key = "image"
+                key = "inputs"
                 data = element["data"]
                 if data:
                     input_file = "input_" +key
@@ -116,10 +98,11 @@ class ImageTransformer(kfserving.KFModel):
                     return json.dumps({ "error": "Script did not execute successfuly" })
                 if isinstance(output, (bytes, bytearray)):
                     output = output.decode('utf-8')
-                batch_list[key] = output
+                batch_list[key] = { "b64": output}
                 cleanup(input_file, script)
             rqst_list.append(batch_list)
-        res = {"signature_name":in_signature,"instances":rqst_list,"token":inputs['token']}
+        logging.info("preprpcess3")
+        res = {"signature_name":in_signature,"examples":rqst_list,"token":inputs['token']}
         return res
 
     def postprocess(self, inputs: List) -> List:
