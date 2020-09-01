@@ -8,7 +8,7 @@ import pandas as pd
 import base64
 
 
-def preprocess(self, inputs: Dict) -> Dict:
+def preprocess(inputs: Dict) -> Dict:
     logging.info("inputs %s", str(inputs))
     del inputs['instances']
     try:
@@ -25,5 +25,5 @@ def preprocess(self, inputs: Dict) -> Dict:
     logging.info("token =======> %s",str(inputs["token"]))
     return payload
 
-def postprocess(self, inputs: List) -> List:
+def postprocess(inputs: List) -> List:
     return inputs
