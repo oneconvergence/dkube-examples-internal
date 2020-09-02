@@ -16,9 +16,9 @@ def preprocess(inputs: Dict) -> Dict:
     except ValueError:
         return json.dumps({ "error": "Recieved invalid json" })
     data = json_data["signatures"]["inputs"][0][0]["data"].encode()
-    with open("/image.png", "wb") as fh:
+    with open("image.png", "wb") as fh:
         fh.write(base64.decodebytes(data))
-    img = cv2.imread("/image.png", cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread("image.png", cv2.IMREAD_GRAYSCALE)
     img = cv2.resize(img, (28,28))
     img = img.reshape(1,1,img.shape[0],img.shape[1])
     payload = {"instances": img.tolist(), "token":inputs["token"]}
