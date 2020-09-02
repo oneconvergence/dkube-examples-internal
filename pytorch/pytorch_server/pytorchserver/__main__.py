@@ -33,4 +33,4 @@ args, _ = parser.parse_known_args()
 if __name__ == "__main__":
     model = PyTorchModel(args.model_name, args.model_class_name, args.model_dir)
     model.load()
-    kfserving.KFServer().start([model])
+    kfserving.KFServer(workers=1).start([model])
