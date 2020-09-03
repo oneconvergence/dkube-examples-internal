@@ -1,16 +1,20 @@
-import argparse
 import numpy as np
 from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import csv, sys
 import matplotlib.pyplot as plt
-from tensorboard_logger import unconfigure, configure, log_value, log_histogram, log_images,  Logger
+from tensorboard_logger import configure, log_value, log_histogram, log_images,  Logger
 from PIL import Image
 import cv2, os, json
 import joblib
 
 dates = []
 prices = []
+name = str(sys.argv[1]) if len(sys.argv) > 1 else 'SVM for stock Preiction'
+kernel = str(sys.argv[2]) if len(sys.argv) > 2 else 'rbf'
+C = float(sys.argv[3]) if len(sys.argv) > 3 else 1e3
+gamma = float(sys.argv[4]) if len(sys.argv) > 4 else 0.1
+degree= int(sys.argv[5]) if len(sys.argv) > 5 else 2
 
 def eval_metrics(actual, pred):
     rmse = np.sqrt(mean_squared_error(actual, pred))
@@ -34,24 +38,9 @@ def get_data(filename):
 if not os.path.exists(MODEL_DIR + "/logs/SVMrun"):
     os.makedirs(MODEL_DIR + "/logs/SVMrun")
 
-unconfigure()
 configure(MODEL_DIR + "/logs/SVMrun", flush_secs=5)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='SKLearn stock predicton example')
-    parser.add_argument('--name', type=str, default="SVM for stock Preiction")
-    parser.add_argument('--kernel', type=str, default='rbf')
-    parser.add_argument('--C', type=float, default=1e3)
-    parser.add_argument('--gamma', type=float, default=0.1)
-    parser.add_argument('--degree', type=float, default=2)
-    args, _ = parser.parse_known_args()
-
-    name = args.name
-    kernel = args.kernel
-    C = args.C
-    gamma = args.gamma
-    degree = args.degree
-
 
     print ("MODEL_DIR:{}, DATA_DIR:{}".format(MODEL_DIR,DATA_DIR))
     get_data(DATA_DIR +'/goog.csv')
