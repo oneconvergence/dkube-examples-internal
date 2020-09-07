@@ -3,7 +3,7 @@ library(mlbench)
 library(randomForest)
 library(doMC)
 
-IN_DIR <- "/opt/dkube/input/"
+IN_DIR <- "/opt/dkube/model/"
 
 registerDoMC(cores=8)
 # load dataset

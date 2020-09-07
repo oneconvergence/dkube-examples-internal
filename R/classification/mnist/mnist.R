@@ -1,6 +1,6 @@
 library(keras)
 
-OUT_DIR <- "/opt/dkube/output/"
+OUT_DIR <- "/opt/dkube/model/"
 
 mnist <- dataset_mnist()
 x_train <- mnist$train$x

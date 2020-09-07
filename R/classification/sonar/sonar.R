@@ -4,7 +4,7 @@ library(mlbench)
 library(randomForest)
 library(doMC)
 
-OUT_DIR <- "/opt/dkube/output/"
+OUT_DIR <- "/opt/dkube/model/"
 
 registerDoMC(cores=8)
 # load dataset
