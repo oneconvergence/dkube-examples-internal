@@ -1,5 +1,7 @@
 library(keras)
 
+OUT_DIR <- "/opt/dkube/output/"
+
 mnist <- dataset_mnist()
 x_train <- mnist$train$x
 y_train <- mnist$train$y
@@ -35,7 +37,7 @@ model %>% compile(
 history <- model %>% fit(
   x_train, y_train, 
   epochs = 3, batch_size = 128, 
-  callbacks = callback_tensorboard("logs/run_a"),
+  callbacks = callback_tensorboard(paste(OUT_DIR, "logs/run_a")),
   validation_split = 0.2
 )
-tensorboard("logs/run_a")
+export_savedmodel(model, OUT_DIR)

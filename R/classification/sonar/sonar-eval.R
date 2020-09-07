@@ -1,8 +1,10 @@
-# load libraries
 library(caret)
 library(mlbench)
 library(randomForest)
 library(doMC)
+
+IN_DIR <- "/opt/dkube/input/"
+
 registerDoMC(cores=8)
 # load dataset
 data(Sonar)
@@ -10,9 +12,8 @@ set.seed(7)
 # create 80%/20% for training and validation datasets
 validation_index <- createDataPartition(Sonar$Class, p=0.80, list=FALSE)
 validation <- Sonar[-validation_index,]
-training <- Sonar[validation_index,]
-# create final standalone model using all training data
-set.seed(7)
-model <- randomForest(Class~., training, mtry=2, ntree=2000)
-# save the model to disk
-saveRDS(model, "./model.rds")
+model <- readRDS(paste(IN_DIR, "model.rds"))
+print(model)
+# make a predictions on "new data" using the final model
+final_predictions <- predict(model, validation[,1:60])
+confusionMatrix(final_predictions, validation$Class)
