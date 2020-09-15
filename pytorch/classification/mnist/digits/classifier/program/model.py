@@ -12,6 +12,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 CLASS_FILE = 'class_file/Net.py'
 MODEL_DIR = "/opt/dkube/output"
+METRIC_PATH = MODEL_DIR + '/metrics/'
 DATA_DIR = "/opt/dkube/input"
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 64))
 EPOCHS = int(os.getenv('EPOCHS', 1))
@@ -86,6 +87,7 @@ def test(args, model, device, test_loader):
         100. * correct / len(test_loader.dataset)))
     writer.add_scalar("Loss/test", test_loss)
     writer.add_scalar("Accuracy/test", 100. * correct / len(test_loader.dataset))
+    return test_loss, 100. * correct / len(test_loader.dataset)
 
 
 def main():
@@ -140,15 +142,30 @@ def main():
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
+    test_loss = 0
+    test_acc = 0
     for epoch in range(1, args.epochs + 1):
         train(args, model, device, train_loader, optimizer, epoch)
-        test(args, model, device, test_loader)
+        test_metrics = test(args, model, device, test_loader)
         scheduler.step()
 
     if args.save_model:
         model_path = '{}/model.pt'.format(MODEL_DIR)
         torch.save(model.state_dict(), model_path)
         shutil.copyfile(CLASS_FILE , os.path.join(MODEL_DIR,CLASS_FILE.split('/')[-1]))
+        metrics = []
+        metric_names = ['loss', 'accuracy']
+        if not os.path.exists(METRIC_PATH):
+            os.makedirs(METRIC_PATH)
+        for i in range(2):
+            temp = {}
+            temp['class'] = 'scalar'
+            temp['name'] = metric_names[i]
+            temp['value'] = str(test_metrics[i])
+            metrics.append(temp)
+        metrics = {'metrics':metrics}
+        with open(METRIC_PATH + 'metrics.json', 'w') as outfile:
+            json.dump(metrics, outfile, indent=4)
 
 if __name__ == '__main__':
     print("Training mnist model using pytorch:")
