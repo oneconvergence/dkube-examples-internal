@@ -16,7 +16,8 @@ RUN mkdir microservice
 COPY . /microservice
 WORKDIR /microservice
 
-
+#dkube-kfserving port must be 8080
 EXPOSE 8080
 
+#dkube-kfserving use ENTRYPOINT in the below format instead of CMD
 ENTRYPOINT ["Rscript", "microservice.R", "--model=mnist.R", "--api=REST", "--service=MODEL", "--persistence=0"]
