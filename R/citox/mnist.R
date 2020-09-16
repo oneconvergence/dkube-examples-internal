@@ -41,6 +41,7 @@ new_rf <- function(filename) {
 
 }
 
+#dkube-kfserving - take the filepath as input
 initialise_seldon <- function(filename, params) {
   new_rf(filename)
 }
