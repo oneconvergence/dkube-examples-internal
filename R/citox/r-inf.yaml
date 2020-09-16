@@ -1,0 +1,283 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  labels:
+    workflows.argoproj.io/controller-instanceid: dkube
+  name: wf-r-inference
+  namespace: predi
+spec:
+  arguments:
+    parameters:
+    - name: name
+      value: "rinf-citox"
+    - name: namespace
+      value: "predi"
+    - name: backoff-limit
+      value: "10"
+    - name: transformer
+      value: "false"
+    - name: transformer-image
+      value: ""
+    - name: predictor-image
+      value: "docker.io/ocdr/r_server:citox"
+  entrypoint: start-inference
+  serviceAccountName: predi
+  templates:
+  - inputs: {}
+    metadata: {}
+    name: start-inference
+    outputs: {}
+    steps:
+    - - arguments:
+          parameters:
+          - name: name
+            value: '{{workflow.parameters.name}}'
+          - name: resources
+            value: '{}'
+          - name: lifecycle-hook
+            value: '{}'
+          - name: security-context
+            value: '{}'
+        name: inference-with-cpu
+        template: transformer
+  - inputs:
+      parameters:
+      - name: name
+      - name: resources
+      - name: lifecycle-hook
+    metadata: {}
+    name: add-security-context
+    outputs: {}
+    steps:
+    - - arguments:
+          parameters:
+          - name: name
+            value: '{{inputs.parameters.name}}'
+          - name: resources
+            value: '{{inputs.parameters.resources}}'
+          - name: lifecycle-hook
+            value: '{{inputs.parameters.lifecycle-hook}}'
+          - name: security-context
+            value: '{}'
+        name: start-transformer
+        template: transformer
+  - inputs:
+      parameters:
+      - name: name
+      - name: resources
+      - name: lifecycle-hook
+      - name: security-context
+    metadata: {}
+    name: transformer
+    outputs: {}
+    steps:
+    - - arguments:
+          parameters:
+          - name: name
+            value: '{{inputs.parameters.name}}'
+          - name: resources
+            value: '{{inputs.parameters.resources}}'
+          - name: lifecycle-hook
+            value: '{{inputs.parameters.lifecycle-hook}}'
+          - name: security-context
+            value: '{{inputs.parameters.security-context}}'
+          - name: deployment
+            value: |
+              {
+                "predictor": {
+                  "minReplicas": 1,
+                  "serviceAccountName": "{{workflow.parameters.namespace}}",
+                  "custom": {
+                    "container": {
+                      "env": [{"name": "MODEL_NAME", "value": "{{inputs.parameters.name}}"}],
+                      "args": ["--model_name={{inputs.parameters.name}}", "--model_base_path=/microservice"],
+                      "image": "{{workflow.parameters.predictor-image}}",
+                      "name": "kfserving-container",
+                      "resources": {{inputs.parameters.resources}}
+                    }
+                  }
+                }
+              }
+        name: custom-without-transformer
+        template: serve-without-transformer
+        when: '{{workflow.parameters.transformer}} == false'
+      - arguments:
+          parameters:
+          - name: name
+            value: '{{inputs.parameters.name}}'
+          - name: resources
+            value: '{{inputs.parameters.resources}}'
+          - name: lifecycle-hook
+            value: '{{inputs.parameters.lifecycle-hook}}'
+          - name: security-context
+            value: '{{inputs.parameters.security-context}}'
+          - name: deployment
+            value: |
+              {
+                "predictor": {
+                "serviceAccountName": "{{workflow.parameters.namespace}}",
+                "custom": {
+                  "container": {
+                          #"args": ["--model_name={{inputs.parameters.name}}", "--model_base_path=/mnt/models"],
+                     "image": "{{workflow.parameters.predictor-image}}",
+                     "name": "kfserving-container",
+                     "resources": {{inputs.parameters.resources}}
+                   }
+                 }
+               },
+                "transformer": {
+                  "custom": {
+                    "container": {
+                      "image": "{{workflow.parameters.transformer-image}}",
+                      "name": "transformer-container"
+                    }
+                  }
+                }
+              }
+        name: custom-with-transformer
+        template: serve-with-transformer
+        when: '{{workflow.parameters.transformer}} == true'
+  - inputs:
+      parameters:
+      - name: name
+      - name: deployment
+      - name: resources
+      - name: lifecycle-hook
+      - name: security-context
+    metadata: {}
+    name: serve-without-transformer
+    outputs: {}
+    resource:
+      action: apply
+      manifest: |
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: VirtualService
+        metadata:
+          name: "{{inputs.parameters.name}}-allhost"
+          namespace: "{{workflow.parameters.namespace}}"
+          ownerReferences:
+          - apiVersion: argoproj.io/v1alpha1
+            blockOwnerDeletion: true
+            kind: Workflow
+            name: "{{workflow.name}}"
+            uid: "{{workflow.uid}}"
+        spec:
+          gateways:
+          - dkube/dkube-istio-gateway
+          hosts:
+          - "*"
+          http:
+          - match:
+            - uri:
+                prefix: "/dkube/inf/v1/models/{{inputs.parameters.name}}"
+            rewrite:
+              uri: "/v1/models/{{inputs.parameters.name}}"
+            route:
+            - destination:
+                host: kfserving-ingressgateway.istio-system.svc.cluster.local
+                port:
+                  number: 80
+              headers:
+                request:
+                  set:
+                    Host: "{{inputs.parameters.name}}.{{workflow.parameters.namespace}}.dkube.ai"
+            corsPolicy:
+              allowHeaders:
+              - 'Authorization'
+              allowMethods:
+              - 'POST'
+              allowOrigin:
+              - '*'
+        ---
+        apiVersion: "serving.kubeflow.org/v1alpha2"
+        kind: "InferenceService"
+        metadata:
+          name: "{{inputs.parameters.name}}"
+          namespace: "{{workflow.parameters.namespace}}"
+          annotations:
+            servingURL: "https://dkube-proxy.dkube.svc.cluster.local:443/dkube/inf/v1/models/{{inputs.parameters.name}}:predict"
+          labels:
+            logger: "dkube"
+            app: "{{inputs.parameters.name}}"
+            scope: "dkube"
+          ownerReferences:
+          - apiVersion: argoproj.io/v1alpha1
+            blockOwnerDeletion: true
+            kind: Workflow
+            name: "{{workflow.name}}"
+            uid: "{{workflow.uid}}"
+        spec:
+          default: {{inputs.parameters.deployment}}
+  - inputs:
+      parameters:
+      - name: name
+      - name: deployment
+      - name: resources
+      - name: lifecycle-hook
+      - name: security-context
+    metadata: {}
+    name: serve-with-transformer
+    outputs: {}
+    resource:
+      action: apply
+      manifest: |
+        ---
+        apiVersion: networking.istio.io/v1alpha3
+        kind: VirtualService
+        metadata:
+          name: "{{inputs.parameters.name}}-allhost"
+          namespace: "{{workflow.parameters.namespace}}"
+          ownerReferences:
+          - apiVersion: argoproj.io/v1alpha1
+            blockOwnerDeletion: true
+            kind: Workflow
+            name: "{{workflow.name}}"
+            uid: "{{workflow.uid}}"
+        spec:
+          gateways:
+          - dkube/dkube-istio-gateway
+          hosts:
+          - "*"
+          http:
+          - match:
+            - uri:
+                prefix: /dkube/inf/v1/models/{{inputs.parameters.name}}
+            rewrite:
+              uri: /v1/models/{{inputs.parameters.name}}
+            route:
+            - destination:
+                host: kfserving-ingressgateway.istio-system.svc.cluster.local
+                port:
+                  number: 80
+              headers:
+                request:
+                  set:
+                    Host: "{{inputs.parameters.name}}.{{workflow.parameters.namespace}}.dkube.ai"
+            corsPolicy:
+              allowHeaders:
+              - 'Authorization'
+              allowMethods:
+              - 'POST'
+              allowOrigin:
+              - '*'
+        ---
+        apiVersion: "serving.kubeflow.org/v1alpha2"
+        kind: "InferenceService"
+        metadata:
+          name: "{{inputs.parameters.name}}"
+          namespace: "{{workflow.parameters.namespace}}"
+          annotations:
+            servingURL: "https://dkube-proxy.dkube.svc.cluster.local:443/dkube/inf/v1/models/{{inputs.parameters.name}}:predict"
+          labels:
+            app: "{{inputs.parameters.name}}"
+            scope: "dkube"
+          ownerReferences:
+          - apiVersion: argoproj.io/v1alpha1
+            blockOwnerDeletion: true
+            kind: Workflow
+            name: "{{workflow.name}}"
+            uid: "{{workflow.uid}}"
+        spec:
+          default: {{inputs.parameters.deployment}}
+
