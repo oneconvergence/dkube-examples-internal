@@ -226,8 +226,10 @@ parse_commandline <- function() {
                        help="API type - REST", metavar = "api", default = "REST")
   parser <- add_option(parser, c("-e", "--persistence"), type="integer",
                        help="Persistence", metavar = "persistence", default = 0)
+  #dkube-kfserving - this option must be parsed
   parser <- add_option(parser, c("-n", "--model_name"), type="character",
                        help="Name of the model", metavar = "model_name")
+  #dkube-kfserving - this option must be parsed
   parser <- add_option(parser, c("-b", "--model_base_path"), type="character",
                        help="Model file base path", metavar = "model_base_path")
   args <- parse_args(parser, args = commandArgs(trailingOnly = TRUE),
@@ -294,10 +296,13 @@ if(!file.exists(args$model)){
 }
 
 #Load user model
+#dkube-kfserving - load file from specified base path
 model_base_path <- args$model_base_path
 model_file <- sprintf("%s/model.Rds", model_base_path)
+#dkube-kfserving - load file from specified base path
 
 source(args$model)
+#dkube-kfserving - pass the model_file to this function
 user_model <- initialise_seldon(model_file, params)
 
 # Setup generics
@@ -307,9 +312,11 @@ route <- function(x,...) UseMethod("route",x)
 transform_input <- function(x,...) UseMethod("transform_input",x)
 transform_output <- function(x,...) UseMethod("transform_output",x)
 
+#dkube-kfserving - read model name from args
 modelname <- args$model_name
 serve_model <- plumber$new()
 if (args$service == "MODEL") {
+  #dkube-kfserving - serve at this url
   url <- sprintf("/v1/models/%s:predict",modelname)  
   serve_model$handle("POST", url,predict_endpoint)
 } else if (args$service == "ROUTER") {
@@ -331,6 +338,7 @@ if (args$service == "MODEL") {
 
 port <- Sys.getenv("PREDICTIVE_UNIT_SERVICE_PORT")
 if (port == ''){
+  #dkube-kfserving - port has to be 8080
   port <- 8080
 } else {
   port <- as.integer(port)
