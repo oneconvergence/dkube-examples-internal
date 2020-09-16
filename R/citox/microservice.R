@@ -307,16 +307,11 @@ route <- function(x,...) UseMethod("route",x)
 transform_input <- function(x,...) UseMethod("transform_input",x)
 transform_output <- function(x,...) UseMethod("transform_output",x)
 
-#modelname <- Sys.getenv("MODEL_NAME")
 modelname <- args$model_name
 serve_model <- plumber$new()
 if (args$service == "MODEL") {
   url <- sprintf("/v1/models/%s:predict",modelname)  
   serve_model$handle("POST", url,predict_endpoint)
-  #serve_model$handle("POST", "/v1/models/rinf:predict",predict_endpoint)
-  #serve_model$handle("GET", "/predict",predict_endpoint)
-  #serve_model$handle("POST", "/send-feedback",send_feedback_endpoint)
-  #serve_model$handle("GET", "/send-feedback",send_feedback_endpoint)
 } else if (args$service == "ROUTER") {
   #serve_model$handle("POST", "/route",route_endpoint)
   #serve_model$handle("GET", "/route",route_endpoint)

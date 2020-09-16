@@ -42,7 +42,6 @@ new_rf <- function(filename) {
 }
 
 initialise_seldon <- function(filename, params) {
-  #new_rf("/microservice/mnist.Rds")
   new_rf(filename)
 }
                   
