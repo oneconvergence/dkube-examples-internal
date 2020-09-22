@@ -257,7 +257,7 @@ def main(unused_argv):
     temp['name'] = metric_names[i]
     temp['value'] = str(test_metrics[i])
     metrics.append(temp)
-    metrics = {'metrics':metrics}
+  metrics = {'metrics':metrics}
   with open(METRIC_PATH + 'metrics.json', 'w') as outfile:
     json.dump(metrics, outfile, indent=4)
 
