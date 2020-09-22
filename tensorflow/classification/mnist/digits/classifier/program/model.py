@@ -25,10 +25,13 @@ import tensorflow as tf
 import dataset
 import json
 
+tf.compat.v1.disable_eager_execution()
+
 FLAGS = None
 TF_TRAIN_STEPS = int(os.getenv('STEPS',1000))
 MODEL_DIR = "/opt/dkube/output"
 DATA_DIR = "/opt/dkube/input"
+METRIC_PATH = MODEL_DIR + '/metrics/'
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
 EPOCHS = int(os.getenv('EPOCHS', 1))
 TF_MODEL_DIR = MODEL_DIR
@@ -36,15 +39,17 @@ steps_epoch = 0
 summary_interval = 100
 print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
 print ("TF_CONFIG: {}".format(os.getenv("TF_CONFIG", '{}')))
+g_loss = 0
+g_acc = 0
 
 def count_epochs(iterator):
-    sess = tf.Session()
+    sess = tf.compat.v1.Session()
     if os.getenv('TF_CONFIG') is not None:
         cluster_spec = json.loads(os.getenv('TF_CONFIG',None))
         role = cluster_spec['task']
         host = cluster_spec['cluster'][role['type']][role['index']]
         if len(cluster_spec['cluster'].keys()) > 1:
-            sess = tf.Session('grpc://'+ host)
+            sess = tf.compat.v1.Session('grpc://'+ host)
     global steps_epoch
     if not steps_epoch:
         while True:
@@ -75,14 +80,14 @@ class Model(object):
       assert data_format == 'channels_last'
       self._input_shape = [-1, 28, 28, 1]
 
-    self.conv1 = tf.layers.Conv2D(
+    self.conv1 = tf.compat.v1.layers.Conv2D(
         32, 5, padding='same', data_format=data_format, activation=tf.nn.relu)
-    self.conv2 = tf.layers.Conv2D(
+    self.conv2 = tf.compat.v1.layers.Conv2D(
         64, 5, padding='same', data_format=data_format, activation=tf.nn.relu)
-    self.fc1 = tf.layers.Dense(1024, activation=tf.nn.relu)
-    self.fc2 = tf.layers.Dense(10)
-    self.dropout = tf.layers.Dropout(0.4)
-    self.max_pool2d = tf.layers.MaxPooling2D(
+    self.fc1 = tf.compat.v1.layers.Dense(1024, activation=tf.nn.relu)
+    self.fc2 = tf.compat.v1.layers.Dense(10)
+    self.dropout = tf.compat.v1.layers.Dropout(0.4)
+    self.max_pool2d = tf.compat.v1.layers.MaxPooling2D(
         (2, 2), (2, 2), padding='same', data_format=data_format)
 
   def __call__(self, inputs, training):
@@ -101,7 +106,7 @@ class Model(object):
     y = self.max_pool2d(y)
     y = self.conv2(y)
     y = self.max_pool2d(y)
-    y = tf.layers.flatten(y)
+    y = tf.compat.v1.layers.flatten(y)
     y = self.fc1(y)
     y = self.dropout(y, training=training)
     return self.fc2(y)
@@ -117,7 +122,7 @@ def model_fn(features, labels, mode, params):
   if mode == tf.estimator.ModeKeys.PREDICT:
     logits = model(image, training=False)
     predictions = {
-        'classes': tf.argmax(logits, axis=1),
+        'classes': tf.argmax(input=logits, axis=1),
         'probabilities': tf.nn.softmax(logits),
     }
     return tf.estimator.EstimatorSpec(
@@ -127,37 +132,39 @@ def model_fn(features, labels, mode, params):
             'classify': tf.estimator.export.PredictOutput(predictions)
         })
   if mode == tf.estimator.ModeKeys.TRAIN:
-    optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate)
+    optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=FLAGS.learning_rate)
     logits = model(image, training=True)
-    loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
-    accuracy = tf.metrics.accuracy(
-        labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
+    loss = tf.compat.v1.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
+    accuracy = tf.compat.v1.metrics.accuracy(
+        labels=tf.argmax(input=labels, axis=1), predictions=tf.argmax(input=logits, axis=1))
     # Name the accuracy tensor 'train_accuracy' to demonstrate the
     # LoggingTensorHook.
+    g_loss = loss
+    g_acc = accuracy
     tf.identity(accuracy[1], name='train_accuracy')
-    tf.summary.scalar('train_accuracy', accuracy[1])
+    tf.compat.v1.summary.scalar('train_accuracy', accuracy[1])
     logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
-            "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
+            "step" : tf.compat.v1.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"train"}, every_n_iter=summary_interval)
     return tf.estimator.EstimatorSpec(
             mode=tf.estimator.ModeKeys.TRAIN,
             loss=loss,
-            train_op=optimizer.minimize(loss, tf.train.get_or_create_global_step()),
+            train_op=optimizer.minimize(loss, tf.compat.v1.train.get_or_create_global_step()),
             training_hooks = [logging_hook])
   if mode == tf.estimator.ModeKeys.EVAL:
     logits = model(image, training=False)
-    loss = tf.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
-    accuracy = tf.metrics.accuracy(
-        labels=tf.argmax(labels, axis=1), predictions=tf.argmax(logits, axis=1))
+    loss = tf.compat.v1.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
+    accuracy = tf.compat.v1.metrics.accuracy(
+        labels=tf.argmax(input=labels, axis=1), predictions=tf.argmax(input=logits, axis=1))
     logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
-        "step" : tf.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"eval"}, every_n_iter=summary_interval)
+        "step" : tf.compat.v1.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"eval"}, every_n_iter=summary_interval)
     return tf.estimator.EstimatorSpec(
                 mode=tf.estimator.ModeKeys.EVAL,
                 loss=loss,
                 eval_metric_ops={
                     'accuracy':
-                        tf.metrics.accuracy(
-                        labels=tf.argmax(labels, axis=1),
-                        predictions=tf.argmax(logits, axis=1)),
+                        tf.compat.v1.metrics.accuracy(
+                        labels=tf.argmax(input=labels, axis=1),
+                        predictions=tf.argmax(input=logits, axis=1)),
                 },
                 evaluation_hooks = [logging_hook])
 
@@ -192,7 +199,7 @@ def main(unused_argv):
 
   # Export the model
   if MODEL_DIR is not None:
-    image = tf.placeholder(tf.float32, [None, 28, 28])
+    image = tf.compat.v1.placeholder(tf.float32, [None, 28, 28])
     input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn({
         'image': image,
     })
@@ -206,8 +213,8 @@ def main(unused_argv):
     # enough dataset that we can easily shuffle the full epoch.
     ds = dataset.train(DATA_DIR)
     ds = ds.cache().shuffle(buffer_size=50000).batch(FLAGS.batch_size).repeat(FLAGS.num_epochs)
-    (images, labels) = ds.make_one_shot_iterator().get_next()
-    (cimages, clabels) = ds.make_one_shot_iterator().get_next()
+    (images, labels) = tf.compat.v1.data.make_one_shot_iterator(ds).get_next()
+    (cimages, clabels) = tf.compat.v1.data.make_one_shot_iterator(ds).get_next()
     count_epochs(cimages)
     return (images, labels)
 
@@ -224,7 +231,7 @@ def main(unused_argv):
 
   # Evaluate the model and print results
   def eval_input_fn():
-    return dataset.test(DATA_DIR).batch(FLAGS.batch_size).make_one_shot_iterator().get_next()
+    return tf.compat.v1.data.make_one_shot_iterator(dataset.test(DATA_DIR).batch(FLAGS.batch_size)).get_next()
 
   eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn,
                                       steps=1,
@@ -235,31 +242,32 @@ def main(unused_argv):
   if os.getenv('TF_CONFIG', '') != '':
         config = json.loads(os.getenv('TF_CONFIG'))
         if config['task']['type'] == 'master':
-            mnist_classifier.export_savedmodel(MODEL_DIR, export_fn)
+            mnist_classifier.export_saved_model(MODEL_DIR, export_fn)
   else:
-        mnist_classifier.export_savedmodel(MODEL_DIR, export_fn)
+        mnist_classifier.export_saved_model(MODEL_DIR, export_fn)
 
-  '''
-  eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
-  print()
-  print('Evaluation results:\n\t%s' % eval_results)
-
-  # Export the model
-  if FLAGS.export_dir is not None:
-    image = tf.placeholder(tf.float32, [None, 28, 28])
-    input_fn = tf.estimator.export.build_raw_serving_input_receiver_fn({
-        'image': image,
-    })
-    mnist_classifier.export_savedmodel(FLAGS.export_dir, input_fn)
- '''
+  metrics = []
+  metric_names = ['loss', 'accuracy']
+  test_metrics = [g_loss, g_acc]
+  if not os.path.exists(METRIC_PATH):
+       os.makedirs(METRIC_PATH)
+  for i in range(2):
+    temp = {}
+    temp['class'] = 'scalar'
+    temp['name'] = metric_names[i]
+    temp['value'] = str(test_metrics[i])
+    metrics.append(temp)
+    metrics = {'metrics':metrics}
+  with open(METRIC_PATH + 'metrics.json', 'w') as outfile:
+    json.dump(metrics, outfile, indent=4)
 
 def run():
   global summary_interval
   summary_interval = 100
   if TF_TRAIN_STEPS%100 < 10 and TF_TRAIN_STEPS < 1000:
     summary_interval = TF_TRAIN_STEPS/10
-  tf.logging.set_verbosity(tf.logging.INFO)
-  tf.app.run(main=main)
+  tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
+  tf.compat.v1.app.run(main=main)
 
 if __name__ == '__main__':
     if os.getenv("STEPS") is None:
