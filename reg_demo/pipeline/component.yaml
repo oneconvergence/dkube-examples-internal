@@ -13,7 +13,7 @@ inputs:
     description: 'Required. Dkube Logged in User name.'}
 implementation:
   container:
-    image: docker.io/ocdr/dkube-examples-setup:regression-2131
+    image: docker.io/ocdr/dkube-examples-setup:regression-2142
     command: ['python3', 'regressionsetup.py']
     args: [
       --url, {inputValue: url},
