@@ -1,4 +1,5 @@
 from typing import List, Dict
+import kfserving
 import json
 import logging
 import argparse
