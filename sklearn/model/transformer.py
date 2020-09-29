@@ -2,6 +2,7 @@ import json
 import numpy as np
 import requests
 import kfserving
+import argparse
 from typing import List, Dict
 import logging
 import io
