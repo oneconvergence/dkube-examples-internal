@@ -19,6 +19,20 @@ from tensorflow.keras.callbacks import TensorBoard
 import argparse
 import requests
 import cv2, json
+import os
+
+def log_metrics(key, value):
+    url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
+    train_metrics = {}
+    train_metrics['mode']="train"
+    train_metrics['key'] = key
+    train_metrics['value'] = value
+    train_metrics['epoch'] = 1
+    train_metrics['step'] = 1
+    train_metrics['jobid']=os.getenv('DKUBE_JOB_ID')
+    train_metrics['run_id']=os.getenv('DKUBE_JOB_UUID')
+    train_metrics['username']=os.getenv('DKUBE_USER_LOGIN_NAME')
+    requests.post(url, json = train_metrics)
 
 DATA_DIR =  '/opt/dkube/inputs/'
 TRAIN_DATA_CLI = DATA_DIR + 'train/clinical/'
@@ -104,7 +118,6 @@ if __name__== "__main__":
     parser.add_argument("--penalty", type = float, default=0.01, dest = 'penalty', help="regularizatio penalty range 0.001 to 0.01")
     parser.add_argument("--modeldir", default='/opt/dkube/output/', dest = 'modeldir', help="path to save model")
     args = parser.parse_args()
-
     lr = args.lr
     epochs = args.epochs
     penalty = args.penalty
@@ -113,7 +126,6 @@ if __name__== "__main__":
     img_input_shape = (28,28,1)
     csv_input_shape = (15,1)
     export_path = modeldir
-    metric_path = modeldir + '/metrics/'
     log_path = modeldir + '/logs'
     cnn_block, cnn_input = build_cnn_block(img_input_shape, penalty)
     dense_block, csv_input = build_dense_block(csv_input_shape, penalty)
@@ -158,20 +170,11 @@ if __name__== "__main__":
         train_metrics = np.average(train_metrics, axis=0)
         val_metrics = np.asarray(val_metrics)
         val_metrics = np.average(val_metrics, axis =0)
+
 ############### Writing Metrics ##########################
-    metrics = []
-    metric_names = ['mse', 'mae', 'r2']
-    if not tf.io.gfile.exists(metric_path):
-        tf.io.gfile.makedirs(metric_path)
-    for i in range(3):
-        temp = {}
-        temp['class'] = 'scalar'
-        temp['name'] = metric_names[i]
-        temp['value'] = str(train_metrics[i])
-        metrics.append(temp)
-    metrics = {'metrics':metrics}
-    with open(metric_path + 'metrics.json', 'w') as outfile:
-        json.dump(metrics, outfile, indent=4)
+    log_metrics('mse', train_metrics[0])
+    log_metrics('mae', train_metrics[1])
+    log_metrics('r2', train_metrics[2])
 ############### Saving Model  ###############################
     version = 0
     if not tf.io.gfile.exists(export_path):
@@ -180,13 +183,13 @@ if __name__== "__main__":
 
     saved_models = []
     for mdir in model_contents:
-    	if mdir != 'logs' and mdir != 'metrics':
-    		saved_models.append(int(mdir))
+        if mdir != 'logs' and mdir != 'metrics':
+            saved_models.append(int(mdir))
     print(saved_models)
     if len(saved_models) < 1:
-    	version = 1
+        version = 1
     else:
-    	version = max(saved_models) + 1
+        version = max(saved_models) + 1
     model.save(export_path + 'weights.h5')
     tf.keras.backend.set_learning_phase(0)  # Ignore dropout at inference
     with tf.keras.backend.get_session() as sess:
