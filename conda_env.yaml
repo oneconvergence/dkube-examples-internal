@@ -1,0 +1,12 @@
+name: dkube-env
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.8
+  - pip
+  - pip:
+    - scikit-learn
+    - kfserving
+    - tensorflow==1.14
