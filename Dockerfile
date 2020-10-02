@@ -1,1 +1,1 @@
-FROM ocdr/d3-datascience-sklearn:v0.23.2
+FROM ocdr/d3-datascience-tf-cpu:v1.14
