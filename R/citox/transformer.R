@@ -1,26 +1,37 @@
 library(methods)
 library(randomForest)
+library(plumber)
+library(jsonlite)
+library(optparse)
+library(urltools)
+library(stringi)
 
-dinucs <- function(nucs = c('A','T','C','G'), sugars = c('L','D')){
-  
-  states.di <- apply(expand.grid(nucs, nucs,'_',sugars,sugars), 1, 
-                     function(x) paste(x,collapse = ''))
-  sort(states.di)
-  
+extract_data <- function(jdf) {
+  if ("ndarray" %in% names(jdf$data)){
+    jdf$data$ndarray
+  } else {
+    data <- jdf$data$tensor$values
+    dim(data) <- jdf$data$tensor$shape
+    data
+  }
 }
 
-split2di <- function(x) {  
-  
-  alldi <- dinucs()
-  
-  a <- paste(substring(x[1],1:(nchar(x[1])-1),2:(nchar(x[1]))),
-             substring(x[2],1:(nchar(x[2])-1),2:(nchar(x[2]))),sep='_')
-  a <- factor(a,levels = alldi)
-  table(a)
+extract_names <- function(jdf) {
+  if ("names" %in% names(jdf$data)) {
+    jdf$data$names
+  } else {
+    list()
+  }
 }
-                     
-new_rf <- function(filename) {
-  model <- readRDS(filename)
-  structure(list(model=model), class = "mnist")
 
+preprocess <- function(jdf) {
+  data = extract_data(jdf)
+  names = extract_names(jdf)
+  df <- data.frame(data)
+  colnames(df) <- names
+  df
+}
+
+postprocess <- function(df){
+  df
 }

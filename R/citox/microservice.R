@@ -75,23 +75,7 @@ validate_feedback <- function(jdf) {
   }
 }
 
-extract_data <- function(jdf) {
-  if ("ndarray" %in% names(jdf$data)){
-    jdf$data$ndarray
-  } else {
-    data <- jdf$data$tensor$values
-    dim(data) <- jdf$data$tensor$shape
-    data
-  }
-}
 
-extract_names <- function(jdf) {
-  if ("names" %in% names(jdf$data)) {
-    jdf$data$names
-  } else {
-    list()
-  }
-}
 
 create_response <- function(req_df,res_df){
   if ("ndarray" %in% names(req_df$data)){
@@ -108,13 +92,7 @@ create_response <- function(req_df,res_df){
   }
 }
 
-create_dataframe <- function(jdf) {
-  data = extract_data(jdf)
-  names = extract_names(jdf)
-  df <- data.frame(data)
-  colnames(df) <- names
-  df
-}
+
 
 # See https://github.com/trestletech/plumber/issues/105
 parse_data <- function(req){
@@ -133,8 +111,9 @@ predict_endpoint <- function(req,res,json=NULL,isDefault=NULL) {
   jdf <- fromJSON(json)
   valid_input <- validate_json(jdf)
   if (valid_input[1] == "OK") {
-    df <- create_dataframe(jdf)
-    scores <- predict(user_model,newdata=df)
+    df <- preprocess(jdf) # transformer preprocess function call
+    scores <- predict(user_model,newdata=df) # predict function call from mnist.R
+    scores <- postprocess(scores)  # postprocess function call 
     res_json = create_response(jdf,scores)
     res$body <- res_json
     res
@@ -220,6 +199,8 @@ parse_commandline <- function() {
                        help="Parameters for component", metavar = "parameters")
   parser <- add_option(parser, c("-m", "--model"), type="character",
                        help="Model file", metavar = "model")
+  parser <- add_option(parser, c("-t", "--transformer"), type="character",
+                       help="Transformer file", metavar = "transformer")
   parser <- add_option(parser, c("-s", "--service"), type="character",
                        help="Service type", metavar = "service", default = "MODEL")
   parser <- add_option(parser, c("-a", "--api"), type="character",
@@ -302,6 +283,7 @@ model_file <- sprintf("%s/model.Rds", model_base_path)
 #dkube-kfserving - load file from specified base path
 
 source(args$model)
+source(args$transformer)
 #dkube-kfserving - pass the model_file to this function
 user_model <- initialise_seldon(model_file, params)
 

@@ -20,4 +20,4 @@ WORKDIR /microservice
 EXPOSE 8080
 
 #dkube-kfserving use ENTRYPOINT in the below format instead of CMD
-ENTRYPOINT ["Rscript", "microservice.R", "--model=mnist.R", "--api=REST", "--service=MODEL", "--persistence=0"]
+ENTRYPOINT ["Rscript", "microservice.R", "--model=mnist.R", "--transformer=transformer.R", "--api=REST", "--service=MODEL", "--persistence=0"]
