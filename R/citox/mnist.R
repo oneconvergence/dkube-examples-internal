@@ -1,25 +1,6 @@
 library(methods)
 library(randomForest)
-
-
-dinucs <- function(nucs = c('A','T','C','G'), sugars = c('L','D')){
-  
-  states.di <- apply(expand.grid(nucs, nucs,'_',sugars,sugars), 1, 
-                     function(x) paste(x,collapse = ''))
-  sort(states.di)
-  
-}
-
-split2di <- function(x) {  
-  
-  alldi <- dinucs()
-  
-  a <- paste(substring(x[1],1:(nchar(x[1])-1),2:(nchar(x[1]))),
-             substring(x[2],1:(nchar(x[2])-1),2:(nchar(x[2]))),sep='_')
-  a <- factor(a,levels = alldi)
-  table(a)
-}
-
+source('transformer.R')
 
 predict.mnist <- function(mnist,newdata=list()) {
   rf_model =mnist$model 
@@ -35,11 +16,6 @@ predict.mnist <- function(mnist,newdata=list()) {
 send_feedback.mnist <- function(mnist,request=list(),reward=1,truth=list()) {
 }
 
-new_rf <- function(filename) {
-  model <- readRDS(filename)
-  structure(list(model=model), class = "mnist")
-
-}
 
 #dkube-kfserving - take the filepath as input
 initialise_seldon <- function(filename, params) {
