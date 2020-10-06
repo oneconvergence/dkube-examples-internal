@@ -12,7 +12,6 @@ from torch.utils.tensorboard import SummaryWriter
 
 CLASS_FILE = 'class_file/Net.py'
 MODEL_DIR = "/opt/dkube/output"
-METRIC_PATH = MODEL_DIR + '/metrics/'
 DATA_DIR = "/opt/dkube/input"
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 64))
 EPOCHS = int(os.getenv('EPOCHS', 1))
@@ -23,6 +22,19 @@ logs_dir = "{}/eval".format(MODEL_DIR)
 os.system("mkdir -p %s" % logs_dir)
 writer = SummaryWriter(log_dir=logs_dir)
 global_steps = 1
+
+def log_metrics(key, value):
+    url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
+    train_metrics = {}
+    train_metrics['mode']="train"
+    train_metrics['key'] = key
+    train_metrics['value'] = value
+    train_metrics['epoch'] = 1
+    train_metrics['step'] = 1
+    train_metrics['jobid']=os.getenv('DKUBE_JOB_ID')
+    train_metrics['run_id']=os.getenv('DKUBE_JOB_UUID')
+    train_metrics['username']=os.getenv('DKUBE_USER_LOGIN_NAME')
+    requests.post(url, json = train_metrics)
 
 class Net(nn.Module):
     def __init__(self):
@@ -148,24 +160,14 @@ def main():
         train(args, model, device, train_loader, optimizer, epoch)
         test_metrics = test(args, model, device, test_loader)
         scheduler.step()
+        
+    log_metrics('loss', test_metrics[0])
+    log_metrics('accuracy', test_metrics[1])
 
     if args.save_model:
         model_path = '{}/model.pt'.format(MODEL_DIR)
         torch.save(model.state_dict(), model_path)
         shutil.copyfile(CLASS_FILE , os.path.join(MODEL_DIR,CLASS_FILE.split('/')[-1]))
-        metrics = []
-        metric_names = ['loss', 'accuracy']
-        if not os.path.exists(METRIC_PATH):
-            os.makedirs(METRIC_PATH)
-        for i in range(2):
-            temp = {}
-            temp['class'] = 'scalar'
-            temp['name'] = metric_names[i]
-            temp['value'] = str(test_metrics[i])
-            metrics.append(temp)
-        metrics = {'metrics':metrics}
-        with open(METRIC_PATH + 'metrics.json', 'w') as outfile:
-            json.dump(metrics, outfile, indent=4)
 
 if __name__ == '__main__':
     print("Training mnist model using pytorch:")
