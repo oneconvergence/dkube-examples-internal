@@ -9,6 +9,7 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.tensorboard import SummaryWriter
+import requests
 
 CLASS_FILE = 'class_file/Net.py'
 MODEL_DIR = "/opt/dkube/output"

@@ -7,6 +7,7 @@ from tensorboard_logger import configure, log_value, log_histogram, log_images, 
 from PIL import Image
 import cv2, os, json
 import joblib
+import requests
 
 dates = []
 prices = []
