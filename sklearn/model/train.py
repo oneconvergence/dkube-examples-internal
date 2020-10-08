@@ -7,6 +7,7 @@ from tensorboard_logger import configure, log_value, log_histogram, log_images, 
 from PIL import Image
 import cv2, os, json
 import joblib
+import requests
 
 dates = []
 prices = []
@@ -22,9 +23,21 @@ def eval_metrics(actual, pred):
     r2 = r2_score(actual, pred)
     return rmse, mae, r2
 
+def log_metrics(key, value):
+    url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
+    train_metrics = {}
+    train_metrics['mode']="train"
+    train_metrics['key'] = key
+    train_metrics['value'] = value
+    train_metrics['epoch'] = 1
+    train_metrics['step'] = 1
+    train_metrics['jobid']=os.getenv('DKUBE_JOB_ID')
+    train_metrics['run_id']=os.getenv('DKUBE_JOB_UUID')
+    train_metrics['username']=os.getenv('DKUBE_USER_LOGIN_NAME')
+    requests.post(url, json = train_metrics)
+
 DATA_DIR = '/opt/dkube/input'
 MODEL_DIR = '/opt/dkube/model'
-metric_path = MODEL_DIR + '/metrics/'
 
 def get_data(filename):
 	with open(filename, 'r') as csvfile:
@@ -52,23 +65,9 @@ if __name__ == "__main__":
     predictions = svm.predict(dates)
     (rmse, mae, r2) = eval_metrics(prices, predictions)
     
-    metrics = []
-    metric_names = ['rmse', 'mae', 'r2']
-    train_metrics = [rmse, mae, r2]
-    if not os.path.exists(metric_path):
-        os.makedirs(metric_path)
-    for i in range(3):
-        temp = {}
-        temp['class'] = 'scalar'
-        temp['name'] = metric_names[i]
-        temp['value'] = str(train_metrics[i])
-        metrics.append(temp)
-    metrics = {'metrics':metrics}
-    with open(metric_path + 'metrics.json', 'w') as outfile:
-        json.dump(metrics, outfile, indent=4)
-            
-    filename = MODEL_DIR + '/model.joblib'
-    joblib.dump(svm, filename)
+    log_metrics('RMSE', rmse)
+    log_metrics('MAE', mae)
+    log_metrics('R2', r2)
 
     plt.plot(dates, prices, color= 'black', label = "Data", marker = '*')
     plt.plot(dates,predictions, color= 'red', label = "Predictions", marker = 'o')
