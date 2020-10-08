@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: dkube-cats-dogs-pl-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2020-10-07T11:03:23.585032',
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2020-10-08T07:58:03.796112',
     pipelines.kubeflow.org/pipeline_spec: '{"description": "sample cats dogs pipeline
       with dkube components", "inputs": [{"name": "auth_token"}, {"name": "training_program"},
       {"name": "training_dataset"}, {"name": "training_output_model"}, {"default":
@@ -15,8 +15,8 @@ metadata:
       "optional": true}, {"default": "/opt/dkube/output", "name": "training_output_mount",
       "optional": true}, {"default": "0", "name": "training_gpus", "optional": true},
       {"default": "[{\"steps\": 100}]", "name": "training_envs", "optional": true},
-      {"default": "{\"image\": \"docker.io/ocdr/tensorflowserver:1.14\", \"username\":
-      \"\", \"password\": \"\"}", "name": "serving_image", "optional": true}, {"default":
+      {"default": "{\"image\": \"ocdr/tensorflowserver:1.14\", \"username\": \"\",
+      \"password\": \"\"}", "name": "serving_image", "optional": true}, {"default":
       "{\"image\": \"ocdr/catdogs-example-preprocess:2.0.7\", \"username\": \"\",
       \"password\": \"\"}", "name": "transformer_image", "optional": true}, {"default":
       "tensorflow/classification/resnet/catsdogs/transformer/transformer.py", "name":
@@ -296,8 +296,8 @@ spec:
     - {name: training_output_mount, value: /opt/dkube/output}
     - {name: training_gpus, value: '0'}
     - {name: training_envs, value: '[{"steps": 100}]'}
-    - {name: serving_image, value: '{"image": "docker.io/ocdr/tensorflowserver:1.14",
-        "username": "", "password": ""}'}
+    - {name: serving_image, value: '{"image": "ocdr/tensorflowserver:1.14", "username":
+        "", "password": ""}'}
     - {name: transformer_image, value: '{"image": "ocdr/catdogs-example-preprocess:2.0.7",
         "username": "", "password": ""}'}
     - {name: transformer_code, value: tensorflow/classification/resnet/catsdogs/transformer/transformer.py}
