@@ -65,7 +65,7 @@ class ImageTransformer(kfserving.KFModel):
             result = "Cat"
         else:
             result = "Dog"
-        return result
+        return {"Class":result}
 
 if __name__ == "__main__":
     transformer = ImageTransformer(args.model_name, predictor_host=args.predictor_host)
