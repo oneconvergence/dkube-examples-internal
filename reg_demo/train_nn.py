@@ -21,14 +21,14 @@ import requests
 import cv2, json
 import os
 
-def log_metrics(key, value):
+def log_metrics(key, value, epoch, step):
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
     train_metrics = {}
     train_metrics['mode']="train"
     train_metrics['key'] = key
     train_metrics['value'] = value
-    train_metrics['epoch'] = 1
-    train_metrics['step'] = 1
+    train_metrics['epoch'] = epoch
+    train_metrics['step'] = step
     train_metrics['jobid']=os.getenv('DKUBE_JOB_ID')
     train_metrics['run_id']=os.getenv('DKUBE_JOB_UUID')
     train_metrics['username']=os.getenv('DKUBE_USER_LOGIN_NAME')
@@ -142,11 +142,10 @@ if __name__== "__main__":
     
     callback = TensorBoard(log_path)
     callback.set_model(model)
-
+    no_of_pass = int(len(X2_train)/step)
+    pass_count = 1
     for each_epoch in range(epochs):
         idx = 0
-        pass_count = 1
-        no_of_pass = int(len(X2_train)/step)
         train_metrics = []
         val_metrics = []
         for each_pass in range(1 , no_of_pass+1):
@@ -165,16 +164,16 @@ if __name__== "__main__":
             idx = each_pass*step
             train_metrics.append(logs)
             val_metrics.append(val_logs)
-            print('Epoch = ', each_epoch+1, ', step = ', each_pass, ', loss = ',logs[0], ', val_loss = ', val_logs[0])
+            bt_step = step * pass_count
+            print('Epoch = ', each_epoch+1, ', step = ', bt_step, ', loss = ',logs[0], ', val_loss = ', val_logs[0])
+            pass_count += 1
+            
         train_metrics = np.asarray(train_metrics)
         train_metrics = np.average(train_metrics, axis=0)
-        val_metrics = np.asarray(val_metrics)
-        val_metrics = np.average(val_metrics, axis =0)
-
-############### Writing Metrics ##########################
-    log_metrics('mse', train_metrics[0])
-    log_metrics('mae', train_metrics[1])
-    log_metrics('r2', train_metrics[2])
+        log_metrics('mse', train_metrics[0], each_epoch + 1, bt_step)
+        log_metrics('mae', train_metrics[1], each_epoch + 1, bt_step)
+        log_metrics('r2', train_metrics[2], each_epoch + 1, bt_step)
+        
 ############### Saving Model  ###############################
     version = 0
     if not tf.io.gfile.exists(export_path):
