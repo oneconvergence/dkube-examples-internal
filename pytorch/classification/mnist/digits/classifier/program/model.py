@@ -15,7 +15,7 @@ CLASS_FILE = 'class_file/Net.py'
 MODEL_DIR = "/opt/dkube/output"
 DATA_DIR = "/opt/dkube/input"
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 64))
-EPOCHS = int(os.getenv('EPOCHS', 1))
+EPOCHS = int(os.getenv('EPOCHS', 5))
 print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
 # Tensorboard config
 # Writer will output to ./runs/ directory by default
@@ -24,14 +24,14 @@ os.system("mkdir -p %s" % logs_dir)
 writer = SummaryWriter(log_dir=logs_dir)
 global_steps = 1
 
-def log_metrics(key, value):
+def log_metrics(key, value, epoch, step):
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
     train_metrics = {}
     train_metrics['mode']="train"
     train_metrics['key'] = key
     train_metrics['value'] = value
-    train_metrics['epoch'] = 1
-    train_metrics['step'] = 1
+    train_metrics['epoch'] = epoch
+    train_metrics['step'] = step
     train_metrics['jobid']=os.getenv('DKUBE_JOB_ID')
     train_metrics['run_id']=os.getenv('DKUBE_JOB_UUID')
     train_metrics['username']=os.getenv('DKUBE_USER_LOGIN_NAME')
@@ -157,13 +157,14 @@ def main():
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
     test_loss = 0
     test_acc = 0
+    step = 1
     for epoch in range(1, args.epochs + 1):
         train(args, model, device, train_loader, optimizer, epoch)
         test_metrics = test(args, model, device, test_loader)
+        log_metrics('loss', test_metrics[0], epoch, step)
+        log_metrics('accuracy', test_metrics[1], epoch, step)
+        step += 1
         scheduler.step()
-        
-    log_metrics('loss', test_metrics[0])
-    log_metrics('accuracy', test_metrics[1])
 
     if args.save_model:
         model_path = '{}/model.pt'.format(MODEL_DIR)

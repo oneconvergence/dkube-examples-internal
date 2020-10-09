@@ -16,8 +16,12 @@ import requests
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--epochs", dest = 'epochs', type = int, default = 10, help="no. of epochs")
+parser.add_argument("--learning_rate", dest = 'lr', type = float, default = 0.001, help="no. of epochs")
+parser.add_argument("--batch_size", dest = 'batch_size', type = int, default = 64, help="no. of epochs")
 args = parser.parse_args()
 epochs = args.epochs
+lr = args.lr
+batch_size = args.batch_size
 
 DATA_DIR = "/opt/dkube/input/"
 MODEL_DIR = "/opt/dkube/output/"
@@ -25,14 +29,14 @@ EXTRACT_PATH = "/tmp/data/"
 ZIP_FILE = DATA_DIR + "data.zip"
 img_shape = (298,298)
 
-def log_metrics(key, value):
+def log_metrics(key, value, epoch, step):
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
     train_metrics = {}
     train_metrics['mode']="train"
     train_metrics['key'] = key
     train_metrics['value'] = value
-    train_metrics['epoch'] = 1
-    train_metrics['step'] = 1
+    train_metrics['epoch'] = epoch
+    train_metrics['step'] = step
     train_metrics['jobid']=os.getenv('DKUBE_JOB_ID')
     train_metrics['run_id']=os.getenv('DKUBE_JOB_UUID')
     train_metrics['username']=os.getenv('DKUBE_USER_LOGIN_NAME')
@@ -48,8 +52,8 @@ if os.path.exists(ZIP_FILE):
     DATA_DIR = EXTRACT_PATH + "/data"
     
 datagen = ImageDataGenerator(rescale=1.0/255.0)
-train_it = datagen.flow_from_directory(DATA_DIR + '/train/', class_mode='binary', batch_size=64, target_size=img_shape)
-test_it = datagen.flow_from_directory(DATA_DIR + '/valid/', class_mode='binary', batch_size=64, target_size=img_shape)
+train_it = datagen.flow_from_directory(DATA_DIR + '/train/', class_mode='binary', batch_size=batch_size, target_size=img_shape)
+test_it = datagen.flow_from_directory(DATA_DIR + '/valid/', class_mode='binary', batch_size=batch_size, target_size=img_shape)
 
 model = ResNet50(include_top=False, input_shape=(298, 298, 3))
 for layer in model.layers:
@@ -59,17 +63,19 @@ class1 = Dense(128, activation='relu', kernel_initializer='he_uniform')(flat1)
 output = Dense(1, activation='sigmoid')(class1)
 model = Model(inputs=model.inputs, outputs=output)
 
-opt = SGD(lr=0.001, momentum=0.9)
+opt = SGD(lr=lr, momentum=0.9)
 model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 
 history = model.fit_generator(train_it, steps_per_epoch=len(train_it), epochs=epochs, verbose=1)
 
 if 'acc' in history.history.keys():
-    log_metrics('accuracy', float(history.history['acc'][-1]))
-    log_metrics('loss', float(history.history['loss'][-1]))
+    for i in range(1, epochs + 1):
+        log_metrics('accuracy', float(history.history['acc'][i-1]), i, i)
+        log_metrics('loss', float(history.history['loss'][i-1]), i, i)
 else:
-    log_metrics('accuracy', float(history.history['accuracy'][-1]))
-    log_metrics('loss', float(history.history['loss'][-1]))
+    for i in range(1, epochs + 1):
+        log_metrics('accuracy', float(history.history['accuracy'][i-1]), i, i)
+        log_metrics('loss', float(history.history['loss'][i-1]), i, i)
 
 export_path = MODEL_DIR
 version = 0
