@@ -122,9 +122,9 @@ def main(unused_argv):
           checkpoint_every_n=FLAGS.checkpoint_every_n,
           record_summaries=FLAGS.record_summaries)
 
-  ##### Export the model ######
+ ##### Export the model ######
 
-  pipeline_config = pipeline_pb2.TrainEvalPipelineConfig()
+  '''pipeline_config = pipeline_pb2.TrainEvalPipelineConfig()
   with tf.io.gfile.GFile(FLAGS.pipeline_config_path, 'r') as f:
     text_format.Merge(f.read(), pipeline_config)
   text_format.Merge(FLAGS.config_override, pipeline_config)
@@ -138,7 +138,7 @@ def main(unused_argv):
     tf.gfile.Rename(FLAGS.model_dir+'/inference/saved_model', FLAGS.model_dir+'/2')
     tf.gfile.DeleteRecursively(FLAGS.model_dir+'/export')
     with tf.gfile.GFile(FLAGS.model_dir+'/2/variables/Dummy', 'w') as file:
-        file.write("dummy file")
+        file.write("dummy file")'''
 
 if __name__ == '__main__':
   tf.compat.v1.app.run()
