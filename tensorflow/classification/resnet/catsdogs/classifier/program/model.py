@@ -72,10 +72,14 @@ if 'acc' in history.history.keys():
     for i in range(1, epochs + 1):
         log_metrics('accuracy', float(history.history['acc'][i-1]), i, i)
         log_metrics('loss', float(history.history['loss'][i-1]), i, i)
+        print("accuracy=",float(history.history['acc'][i-1]))
+        print("loss=",float(history.history['loss'][i-1]))
 else:
     for i in range(1, epochs + 1):
         log_metrics('accuracy', float(history.history['accuracy'][i-1]), i, i)
         log_metrics('loss', float(history.history['loss'][i-1]), i, i)
+        print("accuracy=",float(history.history['accuracy'][i-1]))
+        print("loss=",float(history.history['loss'][i-1]))
 
 export_path = MODEL_DIR
 version = 0
