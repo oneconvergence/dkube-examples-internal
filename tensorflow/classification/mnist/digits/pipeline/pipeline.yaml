@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: dkube-mnist-pl-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2020-10-07T11:04:04.519841',
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2020-10-20T05:44:19.749657',
     pipelines.kubeflow.org/pipeline_spec: '{"description": "sample mnist digits pipeline
       with dkube components", "inputs": [{"name": "auth_token"}, {"name": "training_program"},
       {"name": "training_dataset"}, {"name": "training_output_model"}, {"default":
@@ -18,7 +18,7 @@ metadata:
       "training_envs", "optional": true}, {"default": "cpu", "name": "serving_device",
       "optional": true}, {"default": "{\"image\": \"ocdr/tensorflowserver:1.14\",
       \"username\": \"\", \"password\": \"\"}", "name": "serving_image", "optional":
-      true}, {"default": "{\"image\": \"docker.io/ocdr/mnist-example-preprocess:2.0.7\",
+      true}, {"default": "{\"image\": \"docker.io/ocdr/d3-datascience-tf-cpu:v1.14\",
       \"username\": \"\", \"password\": \"\"}", "name": "transformer_image", "optional":
       true}, {"default": "tensorflow/classification/mnist/digits/transformer/transformer.py",
       "name": "transformer_code", "optional": true}], "name": "dkube-mnist-pl"}'}
@@ -88,7 +88,7 @@ spec:
         '{{inputs.parameters.training_program}}', --transformer_code, '{{inputs.parameters.transformer_code}}',
         --transformer_commit_id, --runid, '{{pod.name}}', --wfid, '{{workflow.uid}}']
       command: [dkubepl]
-      image: ocdr/dkubepl:2.1.5.1
+      image: ocdr/dkubepl:2.1.6.1
     inputs:
       parameters:
       - {name: auth_token}
@@ -118,7 +118,7 @@ spec:
           "transformer_code"}, "--transformer_commit_id", {"inputValue": "transformer_commit_id"},
           "--runid", "{{pod.name}}", "--wfid", "{{workflow.uid}}"], "command": ["dkubepl"],
           "fileOutputs": {"rundetails": "/tmp/rundetails", "servingurl": "/tmp/servingurl"},
-          "image": "ocdr/dkubepl:2.1.5.1"}}, "inputs": [{"description": "Required.
+          "image": "ocdr/dkubepl:2.1.6.1"}}, "inputs": [{"description": "Required.
           Dkube authentication token.", "name": "auth_token", "type": "String"}, {"description":
           "Required. Trained model in Dkube which is to be deployed for serving.",
           "name": "model", "type": "String"}, {"description": "Optional. Trained model
@@ -142,7 +142,7 @@ spec:
           "wfid": "{{workflow.uid}}"}}, "name": "dkube-serving", "outputs": [{"description":
           "Details of the dkube run", "name": "rundetails"}, {"description": "URL
           at which the serving web server is accessible.", "name": "servingurl"}]}',
-        pipelines.kubeflow.org/component_ref: '{"digest": "a26a53a3cb53434177536366e83ac9f21cb34aaf50424b2494a592ccc4d4d907",
+        pipelines.kubeflow.org/component_ref: '{"digest": "3b61f93bbfbfbef1d8d0d3d6ac81794aec15253ed652aaaba7f68a3a3e281c10",
           "url": "../components/serving/component.yaml"}'}
       labels:
         platform: Dkube
@@ -166,7 +166,7 @@ spec:
         --framework, '{{inputs.parameters.framework}}', --version, '{{inputs.parameters.version}}',
         --runid, '{{pod.name}}', --wfid, '{{workflow.uid}}']
       command: [dkubepl]
-      image: ocdr/dkubepl:2.1.5.1
+      image: ocdr/dkubepl:2.1.6.1
     inputs:
       parameters:
       - {name: auth_token}
@@ -217,7 +217,7 @@ spec:
           "job_group"}, "--framework", {"inputValue": "framework"}, "--version", {"inputValue":
           "version"}, "--runid", "{{pod.name}}", "--wfid", "{{workflow.uid}}"], "command":
           ["dkubepl"], "fileOutputs": {"artifact": "/tmp/artifact", "rundetails":
-          "/tmp/rundetails"}, "image": "ocdr/dkubepl:2.1.5.1"}}, "inputs": [{"description":
+          "/tmp/rundetails"}, "image": "ocdr/dkubepl:2.1.6.1"}}, "inputs": [{"description":
           "Required. Dkube authentication token.", "name": "auth_token", "type": "String"},
           {"description": "Required. Container to use for training. Format: {\"image\":<url>,
           \"username\":<>, \"password\":<>}", "name": "container", "type": "Dict"},
@@ -277,7 +277,7 @@ spec:
           "wfid": "{{workflow.uid}}"}}, "name": "dkube-training", "outputs": [{"description":
           "Details of the dkube run", "name": "rundetails"}, {"description": "Identifier
           in Dkube storage where artifacts of training are stored.", "name": "artifact"}]}',
-        pipelines.kubeflow.org/component_ref: '{"digest": "c1cd68aa891e0304da1ef833e170e96bb0307fa9b74db9e2992e3e202916d96c",
+        pipelines.kubeflow.org/component_ref: '{"digest": "5831051283af13fe9fac044614a923c996613a989fedb6e61af5cc4124a42571",
           "url": "../components/training/component.yaml"}'}
       labels:
         platform: Dkube
@@ -307,7 +307,7 @@ spec:
     - {name: serving_device, value: cpu}
     - {name: serving_image, value: '{"image": "ocdr/tensorflowserver:1.14", "username":
         "", "password": ""}'}
-    - {name: transformer_image, value: '{"image": "docker.io/ocdr/mnist-example-preprocess:2.0.7",
+    - {name: transformer_image, value: '{"image": "docker.io/ocdr/d3-datascience-tf-cpu:v1.14",
         "username": "", "password": ""}'}
     - {name: transformer_code, value: tensorflow/classification/mnist/digits/transformer/transformer.py}
   serviceAccountName: pipeline-runner
