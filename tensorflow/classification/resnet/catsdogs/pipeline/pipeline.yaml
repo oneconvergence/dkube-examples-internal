@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: dkube-cats-dogs-pl-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2020-10-20T05:42:09.219574',
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2020-10-20T07:58:35.652122',
     pipelines.kubeflow.org/pipeline_spec: '{"description": "sample cats dogs pipeline
       with dkube components", "inputs": [{"name": "auth_token"}, {"name": "training_program"},
       {"name": "training_dataset"}, {"name": "training_output_model"}, {"default":
@@ -83,7 +83,7 @@ spec:
         --transformer_code, '{{inputs.parameters.transformer_code}}', --transformer_commit_id,
         --runid, '{{pod.name}}', --wfid, '{{workflow.uid}}']
       command: [dkubepl]
-      image: ocdr/dkubepl:2.1.6.1
+      image: ocdr/dkubepl:2.1.6.2
     inputs:
       parameters:
       - {name: auth_token}
@@ -112,7 +112,7 @@ spec:
           "transformer_code"}, "--transformer_commit_id", {"inputValue": "transformer_commit_id"},
           "--runid", "{{pod.name}}", "--wfid", "{{workflow.uid}}"], "command": ["dkubepl"],
           "fileOutputs": {"rundetails": "/tmp/rundetails", "servingurl": "/tmp/servingurl"},
-          "image": "ocdr/dkubepl:2.1.6.1"}}, "inputs": [{"description": "Required.
+          "image": "ocdr/dkubepl:2.1.6.2"}}, "inputs": [{"description": "Required.
           Dkube authentication token.", "name": "auth_token", "type": "String"}, {"description":
           "Required. Trained model in Dkube which is to be deployed for serving.",
           "name": "model", "type": "String"}, {"description": "Optional. Trained model
@@ -136,7 +136,7 @@ spec:
           "wfid": "{{workflow.uid}}"}}, "name": "dkube-serving", "outputs": [{"description":
           "Details of the dkube run", "name": "rundetails"}, {"description": "URL
           at which the serving web server is accessible.", "name": "servingurl"}]}',
-        pipelines.kubeflow.org/component_ref: '{"digest": "3b61f93bbfbfbef1d8d0d3d6ac81794aec15253ed652aaaba7f68a3a3e281c10",
+        pipelines.kubeflow.org/component_ref: '{"digest": "671cfb6f74068a71f525dc0ec4482c3f41db6f023f88d920c7f8353ecb7f0cd4",
           "url": "../components/serving/component.yaml"}'}
       labels:
         platform: Dkube
@@ -160,7 +160,7 @@ spec:
         --version, '{{inputs.parameters.version}}', --runid, '{{pod.name}}', --wfid,
         '{{workflow.uid}}']
       command: [dkubepl]
-      image: ocdr/dkubepl:2.1.6.1
+      image: ocdr/dkubepl:2.1.6.2
     inputs:
       parameters:
       - {name: auth_token}
@@ -210,7 +210,7 @@ spec:
           "job_group"}, "--framework", {"inputValue": "framework"}, "--version", {"inputValue":
           "version"}, "--runid", "{{pod.name}}", "--wfid", "{{workflow.uid}}"], "command":
           ["dkubepl"], "fileOutputs": {"artifact": "/tmp/artifact", "rundetails":
-          "/tmp/rundetails"}, "image": "ocdr/dkubepl:2.1.6.1"}}, "inputs": [{"description":
+          "/tmp/rundetails"}, "image": "ocdr/dkubepl:2.1.6.2"}}, "inputs": [{"description":
           "Required. Dkube authentication token.", "name": "auth_token", "type": "String"},
           {"description": "Required. Container to use for training. Format: {\"image\":<url>,
           \"username\":<>, \"password\":<>}", "name": "container", "type": "Dict"},
@@ -270,7 +270,7 @@ spec:
           "wfid": "{{workflow.uid}}"}}, "name": "dkube-training", "outputs": [{"description":
           "Details of the dkube run", "name": "rundetails"}, {"description": "Identifier
           in Dkube storage where artifacts of training are stored.", "name": "artifact"}]}',
-        pipelines.kubeflow.org/component_ref: '{"digest": "5831051283af13fe9fac044614a923c996613a989fedb6e61af5cc4124a42571",
+        pipelines.kubeflow.org/component_ref: '{"digest": "ca3eb2219c2505e4d982d8e18291cf874d562582bfb4afb77716ea5b71d0fc7c",
           "url": "../components/training/component.yaml"}'}
       labels:
         platform: Dkube
