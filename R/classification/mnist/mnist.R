@@ -40,4 +40,6 @@ history <- model %>% fit(
   callbacks = callback_tensorboard(paste(OUT_DIR, "logs/run_a")),
   validation_split = 0.2
 )
+dir.create(file.path(OUT_DIR, '1'))
+OUT_DIR <- "/opt/dkube/model/1/"
 export_savedmodel(model, OUT_DIR)
