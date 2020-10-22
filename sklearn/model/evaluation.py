@@ -3,6 +3,20 @@ from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import csv, sys
 import joblib
+import requests
+
+def log_metrics(key, value):
+    url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
+    train_metrics = {}
+    train_metrics['mode']="train"
+    train_metrics['key'] = key
+    train_metrics['value'] = value
+    train_metrics['epoch'] = 1
+    train_metrics['step'] = 1
+    train_metrics['jobid']=os.getenv('DKUBE_JOB_ID')
+    train_metrics['run_id']=os.getenv('DKUBE_JOB_UUID')
+    train_metrics['username']=os.getenv('DKUBE_USER_LOGIN_NAME')
+    requests.post(url, json = train_metrics)
 
 dates = []
 prices = []
@@ -44,6 +58,9 @@ if __name__ == "__main__":
     predictions = svm.predict(dates)
 
     (rmse, mae, r2) = eval_metrics(prices, predictions)
+    log_metrics('RMSE', rmse)
+    log_metrics('MAE', mae)
+    log_metrics('R2', r2)
     print('RMSE', rmse)
     print('R2', r2)
     print('MAE', mae)
