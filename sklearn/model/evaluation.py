@@ -3,7 +3,7 @@ from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import csv, sys
 import joblib
-import requests
+import requests, os
 
 def log_metrics(key, value):
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
