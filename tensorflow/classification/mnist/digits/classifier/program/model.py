@@ -181,7 +181,7 @@ def main(unused_argv):
   parser.add_argument('--batch_size', type=int, default=int(hyperparams['batch_size']), help='Batch size for training.')
   parser.add_argument('--num_epochs', type=int, default=int(hyperparams['num_epochs']), help='Number of epochs to train for.')
   global FLAGS
-  FLAGS, unparsed = parser.parse_known_args()
+  FLAGS, unparsed = parser.parse_known_args("")
   data_format = None
   if data_format is None:
     data_format = ('channels_first'
