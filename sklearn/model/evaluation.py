@@ -23,6 +23,7 @@ dates = []
 prices = []
 name = args.name
 kernel = args.kernel
+C=args.C
 gamma = args.gamma
 degree= args.degree
 
