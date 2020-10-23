@@ -170,25 +170,23 @@ After the job is *complete* from above step. The trained model will get generate
 8. Click _Predict_ button and the image is displayed with detection boxes returned by the model.
 
 # Steps for running JupyterLab Notebook for tensorflow version 2 :
-Requirements:
-1.generate_tfrecord.py
 
-2.label_map.pbtxt
+1.Create a Repo in Dkube:
 
-3.pipeline.config
-Copy all the above files in your dkube workspace directory from [https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets/tf-notebooks]
+Project Name : PETS-TF2
+Github url :
+[https://github.com/oneconvergence/dkube-examples/tree/obj-det-tf2/tensorflow/object-detection/pets]
+2.Change the following paths in pipeline config file, by replacing all instances of /home/ocdkube to your home dir.:
 
-Change the following paths in pipeline config file, by replacing all instances of /home/ocdkube to your home dir.:
+a.fine_tune_checkpoint:"/home/ocdkube/workspace/pets_detection/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0"
 
-1.fine_tune_checkpoint:"/home/ocdkube/workspace/pets_detection/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0"
-
-2.train_input_reader {
+b.train_input_reader {
  label_map_path:"/home/ocdkube/workspace/pets_detection/annotations/label_map.pbtxt"
   tf_record_input_reader {
                input_path:"/home/ocdkube/workspace/pets_detection/annotations/train.record"
   }
 
-3.eval_input_reader {
+c.eval_input_reader {
   label_map_path: "/home/ocdkube/workspace/pets_detection/label_map.pbtxt"
   shuffle: false
   num_epochs: 1
@@ -196,7 +194,7 @@ Change the following paths in pipeline config file, by replacing all instances o
     input_path: "/home/ocdkube/workspace/pets_detection/annotations/test.record"
   }
 
-Steps for Inference :
+3.Steps for Inference :
 Copy all the images for which you want inference in /home/ocdkube/workspace/pets_detection/inference-images folder
 
 
