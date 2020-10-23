@@ -8,14 +8,15 @@ from PIL import Image
 import cv2, os, json
 import joblib
 import requests
+import argparse
 
 dates = []
 prices = []
-name = str(sys.argv[1]) if len(sys.argv) > 1 else 'SVM for stock Preiction'
-kernel = str(sys.argv[2]) if len(sys.argv) > 2 else 'rbf'
-C = float(sys.argv[3]) if len(sys.argv) > 3 else 1e3
-gamma = float(sys.argv[4]) if len(sys.argv) > 4 else 0.1
-degree= int(sys.argv[5]) if len(sys.argv) > 5 else 2
+name = args.name
+kernel = args.kernel
+C=args.C
+gamma = args.gamma
+degree= args.degree
 
 def eval_metrics(actual, pred):
     rmse = np.sqrt(mean_squared_error(actual, pred))
@@ -54,6 +55,13 @@ if not os.path.exists(MODEL_DIR + "/logs/SVMrun"):
 configure(MODEL_DIR + "/logs/SVMrun", flush_secs=5)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Argument parser')
+    parser.add_argument('name',metavar='name',type=str,help='name',default='SVM for stock Prediction')
+    parser.add_argument('kernel',metavar='kernel',type=str,help='kernel type',default='rbf')
+    parser.add_argument('C',metavar='C',type=float,help='penality parameter for the error term',default=1e3)
+    parser.add_argument('gamma',metavar='gamma',type=float,help='gamma parameter',default=0.1)
+    parser.add_argument('degree',metavar='degree',type=int,help='degree of polynomial kernel function',default=2)
+    args=parser.parse_args("")
 
     print ("MODEL_DIR:{}, DATA_DIR:{}".format(MODEL_DIR,DATA_DIR))
     get_data(DATA_DIR +'/goog.csv')
