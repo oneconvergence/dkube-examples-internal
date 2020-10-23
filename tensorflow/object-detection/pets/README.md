@@ -168,3 +168,40 @@ After the job is *complete* from above step. The trained model will get generate
 6. Upload an image for inference, images in **inference** folder can be used.
 7. Upload the labe map file in the file upload section. The pet_label_map.pbtxt file in **inference** cab be used.
 8. Click _Predict_ button and the image is displayed with detection boxes returned by the model.
+
+# Steps for running JupyterLab Notebook for tensorflow version 2 :
+
+1.Create a Repo in Dkube:
+
+Project Name : PETS-TF2
+Github url :
+[https://github.com/oneconvergence/dkube-examples/tree/obj-det-tf2/tensorflow/object-detection/pets]
+2.Change the following paths in pipeline config file, by replacing all instances of /home/ocdkube to your home dir.:
+
+a.fine_tune_checkpoint:"/home/ocdkube/workspace/pets_detection/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0"
+
+b.train_input_reader {
+ label_map_path:"/home/ocdkube/workspace/pets_detection/annotations/label_map.pbtxt"
+  tf_record_input_reader {
+               input_path:"/home/ocdkube/workspace/pets_detection/annotations/train.record"
+  }
+
+c.eval_input_reader {
+  label_map_path: "/home/ocdkube/workspace/pets_detection/label_map.pbtxt"
+  shuffle: false
+  num_epochs: 1
+  tf_record_input_reader {
+    input_path: "/home/ocdkube/workspace/pets_detection/annotations/test.record"
+  }
+
+3.Steps for Inference :
+Copy all the images for which you want inference in /home/ocdkube/workspace/pets_detection/inference-images folder
+
+
+
+
+
+
+
+
+
