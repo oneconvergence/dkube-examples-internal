@@ -1,4 +1,4 @@
-  
+install.packages('hash')  
 library(caret)
 library(mlbench)
 library(randomForest)
