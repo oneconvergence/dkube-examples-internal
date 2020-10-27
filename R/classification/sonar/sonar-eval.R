@@ -35,9 +35,9 @@ train_metrics[['key']]<-key
 train_metrics[['value']]<-value
 train_metrics[['epoch']]<-1
 train_metrics[['step']]<-1
-train_metrics[['jobid']]<-os.getenv('DKUBE_JOB_ID')
-train_metrics[['run_id']]<-os.getenv('DKUBE_JOB_UUID')
-train_metrics[['username']]<-os.getenv('DKUBE_USER_LOGIN_NAME')
+train_metrics[['jobid']]<-Sys.getenv('DKUBE_JOB_ID')
+train_metrics[['run_id']]<-Sys.getenv('DKUBE_JOB_UUID')
+train_metrics[['username']]<-Sys.getenv('DKUBE_USER_LOGIN_NAME')
 POST(url,body = train_metrics,encode="json")}
 
 ##### Logging the metrics #######
