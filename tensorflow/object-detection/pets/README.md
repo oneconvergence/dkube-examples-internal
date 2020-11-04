@@ -172,13 +172,13 @@ After the job is *complete* from above step. The trained model will get generate
 
 1. Create a Repo in Dkube.
 
-*Project Name* : PETS-TF2
+*Project Name* : PETS-TF2 .
 *Github url* :[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets)
 
 2. Create a IDE with the below details.
 
-Project : PETS-TF2 tab
-Image Name : ocdr/d3-object-detection-gpu-tf:v2.2-2.1.6 tab
+Project : PETS-TF2 .
+Image Name : ocdr/d3-object-detection-gpu-tf:v2.2-2.1.6 .
 
 3. Change the following paths in pipeline config file, by replacing all instances of /home/ocdkube to your home dir.
 
