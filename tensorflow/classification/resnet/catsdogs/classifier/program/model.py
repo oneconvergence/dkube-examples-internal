@@ -18,10 +18,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--epochs", dest = 'epochs', type = int, default = 10, help="no. of epochs")
 parser.add_argument("--learning_rate", dest = 'lr', type = float, default = 0.001, help="no. of epochs")
 parser.add_argument("--batch_size", dest = 'batch_size', type = int, default = 64, help="no. of epochs")
-args = parser.parse_args()
-epochs = args.epochs
-lr = args.lr
-batch_size = args.batch_size
+
+global FLAGS
+FLAGS,unparsed=parser.parse_known_args()
+epochs = FLAGS.epochs
+lr = FLAGS.lr
+batch_size = FLAGS.batch_size
 
 DATA_DIR = "/opt/dkube/input/"
 MODEL_DIR = "/opt/dkube/output/"
@@ -89,7 +91,7 @@ model_contents = tf.io.gfile.listdir(export_path)
 
 saved_models = []
 for mdir in model_contents:
-    if mdir != 'logs' and mdir != 'metrics':
+    if mdir != 'logs' and mdir != 'metrics'and mdir != 'weights.h5':
         saved_models.append(int(mdir))
 if len(saved_models) < 1:
     version = 1
