@@ -107,10 +107,9 @@ This step will download *faster-rcnn* object detection model which we will use t
  3. Enter a unique name say *faster-rcnn* .
  4. Select *Model Source* as *Other*.
  5. Paste link *[http://storage.googleapis.com/download.tensorflow.org/models/object_detection/faster_rcnn_resnet101_coco_11_06_2017.tar.gz](http://storage.googleapis.com/download.tensorflow.org/models/object_detection/faster_rcnn_resnet101_coco_11_06_2017.tar.gz)* in the URL text box.
- 6. Select extract uploaded file checkbox.
- 7. Click *Add Model* button.
- 8. Model will be created in Dkube. 
- 9. Please wait till status turns to *ready*.
+ 6. Click *Add Model* button.
+ 7. Model will be created in Dkube. 
+ 8. Please wait till status turns to *ready*.
 
 ## Step 3. Create Output Model DVS
 This step is to create a dvs model which will hold the trained output model. 
@@ -171,37 +170,35 @@ After the job is *complete* from above step. The trained model will get generate
 
 # Steps for running JupyterLab Notebook for tensorflow version 2 :
 
-1.Create a Repo in Dkube:
+1. Create a Repo in Dkube.
 
-Project Name : PETS-TF2
-Github url :
-[https://github.com/oneconvergence/dkube-examples/tree/obj-det-tf2/tensorflow/object-detection/pets]
-2.Change the following paths in pipeline config file, by replacing all instances of /home/ocdkube to your home dir.:
+*Project Name* : PETS-TF2
+*Github url* :[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets)
 
-a.fine_tune_checkpoint:"/home/ocdkube/workspace/pets_detection/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0"
+2. Create a IDE with the below details.
 
-b.train_input_reader {
- label_map_path:"/home/ocdkube/workspace/pets_detection/annotations/label_map.pbtxt"
-  tf_record_input_reader {
-               input_path:"/home/ocdkube/workspace/pets_detection/annotations/train.record"
+Project : PETS-TF2 tab
+Image Name : ocdr/d3-object-detection-gpu-tf:v2.2-2.1.6 tab
+
+3. Change the following paths in pipeline config file, by replacing all instances of /home/ocdkube to your home dir.
+
+a. fine_tune_checkpoint:"/home/ocdkube/workspace/pets_detection/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0" .
+
+b. train_input_reader { label_map_path:"/home/ocdkube/workspace/pets_detection/annotations/label_map.pbtxt" 
+   tf_record_input_reader {
+               input_path:"/home/ocdkube/workspace/pets_detection/annotations/train.record" 
   }
 
-c.eval_input_reader {
-  label_map_path: "/home/ocdkube/workspace/pets_detection/label_map.pbtxt"
-  shuffle: false
-  num_epochs: 1
-  tf_record_input_reader {
-    input_path: "/home/ocdkube/workspace/pets_detection/annotations/test.record"
+c. eval_input_reader {
+   label_map_path: "/home/ocdkube/workspace/pets_detection/label_map.pbtxt"
+   shuffle: false
+   num_epochs: 1
+   tf_record_input_reader {
+     input_path: "/home/ocdkube/workspace/pets_detection/annotations/test.record"
   }
 
-3.Steps for Inference :
+4. Steps for Inference.
 Copy all the images for which you want inference in /home/ocdkube/workspace/pets_detection/inference-images folder
-
-
-
-
-
-
 
 
 
