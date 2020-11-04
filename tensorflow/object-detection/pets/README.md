@@ -127,7 +127,7 @@ This step is to create a dvs model which will hold the trained output model.
  3. Fill the fields in Job form and click *Submit* button. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
     - **Basic** tab
 	  - Enter a unique name say *training-pets-detector* 
-	  - Start-up script : `bash process.sh; python model_main.py`
+	  - Start-up script : `bash process.sh; pip install --user --force-reinstall tf-slim enum34; python model_main.py`
 	  - Click *Next*.
 	- **Repos** tab
 	  - *Inputs* section
@@ -172,15 +172,15 @@ After the job is *complete* from above step. The trained model will get generate
 
 1. Create a Repo in Dkube.
 
-*Project Name* : PETS-TF2 .
-*Github url* :[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets)
+**Project Name** : PETS-TF2 .
+**Github url** :[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets)
 
 2. Create a IDE with the below details.
 
-Project : PETS-TF2 .
-Image Name : ocdr/d3-object-detection-gpu-tf:v2.2-2.1.6 .
+**Project** : PETS-TF2 .
+**Image Name** : ocdr/d3-object-detection-gpu-tf:v2.2-2.1.6 .
 
-3. Change the following paths in pipeline config file, by replacing all instances of /home/ocdkube to your home dir.
+3. Change the following paths in pipeline.config file present in tf-notebooks, by replacing all instances of /home/ocdkube to your home dir.
 
 a. fine_tune_checkpoint:"/home/ocdkube/workspace/pets_detection/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0" .
 
