@@ -1,13 +1,13 @@
 # MNIST example using PyTorch
-## Step1: Create a workspace
- 1. Click *Workspaces* side menu option.
- 2. Click *+Workspace* button.
- 3. Select *Github* option.
+## Step1: Create a Project
+ 1. Click *Repos* side menu option.
+ 2. Click *+Project button inside the Projects section.
+ 3. Select Project source as Git.
  4. Enter a unique name say *mnist-pt*
  5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/pytorch/classification/mnist/digits/classifier/program 
  ](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/pytorch/classification/mnist/digits/classifier/program)* in the URL text box.
- 6. Click *Add Workspace* button.
- 7. Workspace will be created and imported in Dkube. Progress of import can be seen.
+ 6. Click *Add Project* button.
+ 7. Project will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
 
 ## Step2: Create a dataset

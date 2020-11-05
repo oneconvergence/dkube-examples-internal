@@ -1,14 +1,14 @@
 # Stock Prediction using :SKlearn
 ## Step1: Workspace/Project
 1. Click *Repos* side menu option.
-2. Click *+Project* button.
+2. Click *+Project* button under the Projects section.
 3. Select source as *Git*.
 4. Enter a unique name say *stock-prediction*
 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/sklearn/model
  ](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/sklearn/model)* in the URL text box.
 6. Branch: 2.1.5
-7. Click *Add Workspace* button.
-8. Workspace will be created and imported in Dkube. Progress of import can be seen.
+7. Click *Add Project* button.
+8. Project will be created and imported in Dkube. Progress of import can be seen.
 9. Please wait till status turns to *ready*.
 
 ## Step2: Create a dataset

@@ -7,8 +7,8 @@
 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/R/classification
  ](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/R/classification)* in the URL text box.
 6. Branch: 2.1.5
-7. Click *Add Workspace* button.
-8. Workspace will be created and imported in Dkube. Progress of import can be seen.
+7. Click *Add Project* button.
+8. Project will be created and imported in Dkube. Progress of import can be seen.
 9. Please wait till status turns to *ready*.
 
 ## Step2: Create a dataset
