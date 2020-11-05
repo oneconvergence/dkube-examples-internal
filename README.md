@@ -34,5 +34,18 @@ Following examples are provided,
 
 ## Pytorch Examples
 
-**Will be added soon**
+- MNIST Example.
+  [https://github.com/oneconvergence/dkube-examples/tree/2.1.5/pytorch/classification/mnist/digits/README.md](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/pytorch/classification/mnist/digits/README.md)
+
+## Sklearn Example
+
+- Stock prediction using sklearn.
+
+  [https://github.com/oneconvergence/dkube-examples/tree/2.1.5/sklearn/README.md](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/sklearn/README.md)
+
+## R Examples
+
+- Sonar Example.
+
+  [https://github.com/oneconvergence/dkube-examples/tree/2.1.5/R/classification/sonar/README.md](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/R/classification/sonar/README.md)
 
