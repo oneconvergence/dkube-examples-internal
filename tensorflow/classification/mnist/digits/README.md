@@ -24,7 +24,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
 3. Enter a name say mnist-digits
 4. Enter tag name in Tag text-box
 5. Select Project Source as Git
-6. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.0.7/tensorflow/classification/mnist/digits/classifier/program in the URL text box.
+6. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/classification/mnist/digits/classifier/program in the URL text box for tensorflow version 1.14 or https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/classification/mnist/digits/classifier/program-2.x for tensorflow version 2.0.
 7. Enter branch name or version in Branch text-box.
 8. Click the Add Project button.
 9. Project will be created and imported in Dkube. Progress of import can be seen.
@@ -39,7 +39,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
 5. Select Versioning as DVS 
 6. Select Dataset store as default
 7. Select Dataset Source as Git
-8. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.0.7/tensorflow/classification/mnist/digits/classifier/data in the URL text box
+8. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/classification/mnist/digits/classifier/data  in the URL text box.
 9. Enter branch name or version  in Branch text-box 
 10. Click the Add Dataset button..
 11. Dataset will be created and imported in Dkube. Progress of import can be seen.
@@ -79,7 +79,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
   - Enter mount path: Enter path say /opt/dkube/output
   - Click Next
 - Configuration Tab
-  - Enter GPUs in GPUs to allocate  text-box
+  - Enter GPUs in GPUs to allocate text-box
 4. Click on Submit Button
 5. A new entry with name mnist-digits will be created in Jobs table
 6. Check the Status field for the lifecycle of the job, wait till it shows complete.
@@ -99,6 +99,11 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
  10. Wait till status field shows running
  11. Copy the URL shown in Endpoint field of the serving job
 
+# Test Inference Details for tensorflow version 1.14 and 2.0 
+1. Serving image : (use default one)
+2. Transformer image : (use default one)
+3. Transformer Project : (use default one)
+4. Transformer code : tensorflow/classification/mnist/digits/transformer/transformer.py
 
 # How to test Inference
 1. To test inference open a new tab with link https://< DKUBE_URL:port/inference >

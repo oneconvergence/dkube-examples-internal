@@ -48,6 +48,12 @@
 5. A new entry with name *digits-classifier* will be created in *Runs* table.
 6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
 
+## Test Inference Details
+1. Serving image : (use default one)
+2. Transformer image : (use default)
+3. Transformer project (use default)
+4. Transformer code :pytorch/classification/mnist/digits/classifier/transformer/transformer.py 
+
 ## Step5: Create a Test Inference
 1. Go to the model version and create inference.
 2. Check transformer.

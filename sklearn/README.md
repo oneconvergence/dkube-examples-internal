@@ -63,6 +63,12 @@
 - Input Model: stock-pred
 - Mount-Point: /opt/dkube/model
 
+## Test Inference Details
+1. Serving image : (use default one)
+2. Transformer image : (use default)
+3. Transformer project (use default)
+4. Transformer code : sklearn/model/transformer.py 
+
 ## Test Inference(only for release 2.1.3.1 and later)
 1. Go to the model version and click test inference.
 2. Give a name and check the transformer.
@@ -104,7 +110,5 @@ stock-inp.json https://raw.githubusercontent.com/oneconvergence/dkube-examples/2
 8. Save the text from the URL in a CSV file *[https://raw.githubusercontent.com/oneconvergence/dkube-examples/2.1.5/sklearn/dataset/goog.csv](https://raw.githubusercontent.com/oneconvergence/dkube-examples/2.1.5/sklearn/dataset/goog.csv)*
 9. Upload the CSV file
 10. Click Predict.
-
-
 
 

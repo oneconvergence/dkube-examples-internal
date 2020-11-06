@@ -97,6 +97,12 @@ After the job is complete from above step. The trained model will get generated 
 9. Wait till status field shows running
 10. Copy the URL shown in Endpoint field of the serving job.
 
+## Test Inference Details
+1. Serving image:  (use default one)
+2. Transformer image: (use default one)
+3. Transformer Project : (use default one)
+4. Transformer code: tensorflow/classification/resnet/catsdogs/transformer/transformer.py
+
 ## How to test Inference
 1. To test inference open a new tab with link < DKUBE_URL:port/inference >
 2. Copy and Paste Dkube OAuth token from Developer Settings present in menu on top right to Authorization
@@ -169,3 +175,4 @@ pip install https://storage.googleapis.com/ml-pipeline/release/0.1.18/kfp.tar.gz
 2. Use the command below to compile the DSL,
 ```dsl-compile --py [path/to/python/file] --output [path/to/output/tar.gz]```
 3. Once the tar ball is generated. Follow the procedure mentioned in [section](##%20How%20to%20use%20catsdogs.tar.gz). 
+
