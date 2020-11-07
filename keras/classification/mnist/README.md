@@ -20,20 +20,20 @@ This example is derived from the [keras example](https://github.com/keras-team/k
 3. sudo docker build -t ocdr/custom-datascience-keras:training-gpu -f docker/custom-datascience-keras-gpu.dockerfile .
 4. sudo docker push ocdr/custom-datascience-keras:training-gpu
 
-## Step2: Create a workspace
- 1. Click on *Workspaces* side menu option.
- 2. Click on *+Workspace* button.
- 3. Select the *Github* option.
+## Step2: Create a Project
+ 1. Click on *Repos* side menu option.
+ 2. Click on *+Project* button.
+ 3. Select source as Git.
  4. Enter a unique name, say *keras-mnist*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/keras/classification/mnist/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/master/keras/classification/mnist/classifier/program)* in the URL text box.
- 6. Click on *Add Workspace* button.
- 7. Workspace will be created and imported in Dkube. The progress of import can be seen in Dkube UI.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/keras/classification/mnist/classifier/program](https://github.com/oneconvergence/dkube-examples/2.1.5/master/keras/classification/mnist/classifier/program)* in the URL text box.
+ 6. Click on *Add Project* button.
+ 7. Project will be created and imported in Dkube. The progress of import can be seen in Dkube UI.
  8. Wait till status turns to *ready*.
 
 ## Step3: Start a training job
- 1. Click on *Jobs* side menu option.
- 2. Click on *+Training Job* button.
- 3. Fill in the fields in the Job form and click on *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form. For advanced usage please refer to **Dkube User Guide**.
+ 1. Click on *Runs* side menu option.
+ 2. Click on *+Runs* and select Training.
+ 3. Fill in the fields in the Run form and click on *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form. For advanced usage please refer to **Dkube User Guide**.
 	- Enter a unique name, say *keras-digits-classifier*
 	- **Container** section
 		- Select Container - Select Custom
@@ -45,16 +45,16 @@ This example is derived from the [keras example](https://github.com/keras-team/k
 		- Epochs - 5
 		- Batch size - 128
 		- Steps - 100
-	- **Workspace** section - Please select the workspace *keras-mnist* created in *Step2*.
+	- **Project** section - Please select the workspace *keras-mnist* created in *Step2*.
 	- **Model** section - Do not select any model.
 	- **Dataset** section - Do not select any model.
 4. Click *Submit* button.
-5. A new entry with name *digits-classifier* will be created in *Jobs* table.
-6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
+5. A new entry with name *digits-classifier* will be created in *Runs* table.
+6. Check the *Status* field for lifecycle of run, wait till it shows *complete*.
 
 # How to Serve
 
- 1. After the job is *complete* from above step, a trained model will get generated inside *Dkube*. Link to this model will be reflected in the *Model* field of a job in *Job* table.
+ 1. After the training run is *complete* from above step, a trained model will get generated inside *Dkube*. Link to this model will be reflected in the *Model* field of a job in *Job* table.
  2. Click the link to see the trained model details.
  3. Click on the *Deploy* button to deploy the trained model for serving. A form will get displayed.
  4. Enter the unique name, say *keras-digits-serving*
