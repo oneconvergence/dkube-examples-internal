@@ -170,7 +170,7 @@ parameterconfigs:
 ```
 python3.5 or greater
 pip install --upgrade "urllib3==1.22" 
-pip install https://storage.googleapis.com/ml-pipeline/release/0.1.18/kfp.tar.gz --upgrade
+pip install https://storage.googleapis.com/ml-pipeline/release/1.0.0/kfp.tar.gz --upgrade
 ```
 2. Use the command below to compile the DSL,
 ```dsl-compile --py [path/to/python/file] --output [path/to/output/tar.gz]```
