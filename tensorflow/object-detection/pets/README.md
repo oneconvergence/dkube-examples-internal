@@ -14,19 +14,19 @@ This example is derived from [tensorflow object detection example](https://githu
 # How to Preprocess Data
 Tensorflow object detection API expects the input dataset to be in TFRecord format. But the pet dataset available is in .jpg and .xml format. We need some preprocessing to convert this into TFRecord format.
 ## Step 1: Create a Project
- 1. Click *Repos* in side menu under *WORKFLOW* section.
+ 1. Click *Repos* in side menu option.
  2. Click *+Project* button under *Projects* section.
  3. Enter a unique name say *pets-detector-preprocessing* .
  4. Select *Project Source* as *Git*.
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/preprocessing
- ](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/preprocessing)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets/program/preprocessing
+ ](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets/program/preprocessing)* in the URL text box.
  6. Click *Add Project* button.
  7. Enter branch name in *Branch* text-box.
  8. Project will be created and imported in Dkube. Progress of import can be seen.
  9. Please wait till status turns to *ready*.
 ## Step 2. Create Download Dataset DVS
 This step is to create a dvs dataset which will hold the downloaded dataset. This will act as the output dataset for download preprocess run.
- 1. Click *Repos* in side menu under *WORKFLOW* section.
+ 1. Click *Repos* in side menu option.
  2. Click *+Dataset* button under *Datasets*.
  3. Enter a unique name say *pets-download-dataset* .
  4. Select *Dataset Source* as *None*.
@@ -56,7 +56,7 @@ This step will download the images.tar.gz and annotations.tar.gz for Oxford IIT 
 
 ## Step 4. Create TF-record Dataset DVS
 This step is to prepare a *DVS* dataset for storing output of preprocess job which will convert downloaded dataset into *tf-record*.
- 1. Click *Repos* in side menu under *WORKFLOW* section.
+ 1. Click *Repos* in side menu option.
  2. Click *+Dataset* button under *Datasets*.
  3. Enter a unique name say *preprocess-pets-dataset* .
  4. Select *Dataset Source* as *None*.
@@ -66,9 +66,9 @@ This step is to prepare a *DVS* dataset for storing output of preprocess job whi
  
 ## Step 5: Preprocess Data (Conversion to TFRecord format)
 This step converts the downloaded dataset to TFRecords, the format expected by tensorflow object detection API.
- 1. Click *Runs* side menu under *WORKFLOW* section.
+ 1. Click *Runs* side menu option.
  2. Click *+Run* and select *Preprocessing* button.
- 3. Fill the fields in Job form and click *Submit* button. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
+ 3. Fill the fields in Run form and click *Submit* button. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
     - **Basic** tab
 	  - Enter a unique name say *preprocess-pets-dataset* 
 	  - Docker Image URL :  docker.io/ocdr/dkube-datascience-preprocess:1.2
@@ -90,11 +90,11 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 # How to Train
 ## Step 1: Create a Project
 
-1. Click *Repos* in side menu under *WORKFLOW* section.
+1. Click *Repos* in side menu option.
  2. Click *+Project* button under *Projects* section.
  3. Enter a unique name say *pets-detector-training* .
  4. Select *Project Source* as *Git*.
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets/program/training](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets/program/training)* in the URL text box.
  6. Click *Add Project* button.
  7. Enter branch name in *Branch* text-box.
  8. Project will be created and imported in Dkube. Progress of import can be seen.
@@ -102,7 +102,7 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 
 ## Step 2: Add model for transfer learning
 This step will download *faster-rcnn* object detection model which we will use to perform transfer learning.
- 1. Click *Repos* in side menu under *WORKFLOW* section.
+ 1. Click *Repos* in side menu option.
  2. Click *+Model* button under *Models*.
  3. Enter a unique name say *faster-rcnn* .
  4. Select *Model Source* as *Other*.
@@ -113,7 +113,7 @@ This step will download *faster-rcnn* object detection model which we will use t
 
 ## Step 3. Create Output Model DVS
 This step is to create a dvs model which will hold the trained output model. 
- 1. Click *Repos* in side menu under *WORKFLOW* section.
+ 1. Click *Repos* in side menu option.
  2. Click *+Model* button under *Models*.
  3. Enter a unique name say *pets-detector* .
  4. Select *Model Source* as *None*.
@@ -122,9 +122,9 @@ This step is to create a dvs model which will hold the trained output model.
  7. Please wait till status turns to *ready*.
 
 ## Step 4: Start a training job
- 1. Click *Runs* side menu under *WORKFLOW* section.
+ 1. Click *Runs* side menu options.
  2. Click *+Run* and select *Training* button.
- 3. Fill the fields in Job form and click *Submit* button. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
+ 3. Fill the fields in Run form and click *Submit* button. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
     - **Basic** tab
 	  - Enter a unique name say *training-pets-detector* 
 	  - Start-up script : `bash process.sh; pip install --user --force-reinstall tf-slim enum34; python model_main.py`
@@ -141,7 +141,7 @@ This step is to create a dvs model which will hold the trained output model.
 	    - Enter mount path: Enter path say */opt/dkube/output*.
 	    - Click *Next*.
 	  - *Configuration* section
-	    - Parameters upload configuration: Select the pipeline.config file which is stored locally(Download from [https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training/pipeline.config](https://github.com/oneconvergence/dkube-examples/tree/master/tensorflow/object-detection/pets/program/training/pipeline.config))
+	    - Parameters upload configuration: Select the pipeline.config file which is stored locally(Download from [https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets/program/training/pipeline.config](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets/program/training/pipeline.config))
 4. Click *Submit* button.
 5. Check the *Status* field for lifecycle of Training run under *All Runs* section, wait till it shows *complete*.
 
@@ -154,7 +154,7 @@ After the job is *complete* from above step. The trained model will get generate
  5. Enter a meaningful name for inference job say *pets-inference*.
  6. Select CPU/GPU. A button named *Test Inference* appear.
  7. Click on *Test inference* button.
- 8. Click *Test Inferences* in side menu under *WORKFLOW* section.
+ 8. Click *Test Inferences* in side menu.
  9. Wait till *status* field shows *running*.
  10. Copy the *URL* shown in *Endpoint* field of the serving job.
  
@@ -172,24 +172,24 @@ After the job is *complete* from above step. The trained model will get generate
 
 1. Create a Repo in Dkube.
 
-**Project Name** : PETS-TF2 .
-**Github url** :[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets)
+    -Project Name : PETS-TF2 .
+    -Github url :[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/object-detection/pets)
 
 2. Create a IDE with the below details.
 
-**Project** : PETS-TF2 .
-**Image Name** : ocdr/d3-object-detection-gpu-tf:v2.2-2.1.6 .
+   -Project: PETS-TF2 .
+   -Image Name: ocdr/d3-object-detection-gpu-tf:v2.2-2.1.6 .
 
 3. Change the following paths in pipeline.config file present in tf-notebooks, by replacing all instances of /home/ocdkube to your home dir.
 
-a. fine_tune_checkpoint:"/home/ocdkube/workspace/pets_detection/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0" .
+   1. fine_tune_checkpoint:"/home/ocdkube/workspace/pets_detection/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0" .
 
-b. train_input_reader { label_map_path:"/home/ocdkube/workspace/pets_detection/annotations/label_map.pbtxt" 
+   2. train_input_reader { label_map_path:"/home/ocdkube/workspace/pets_detection/annotations/label_map.pbtxt" 
    tf_record_input_reader {
                input_path:"/home/ocdkube/workspace/pets_detection/annotations/train.record" 
   }
 
-c. eval_input_reader {
+   3. eval_input_reader {
    label_map_path: "/home/ocdkube/workspace/pets_detection/label_map.pbtxt"
    shuffle: false
    num_epochs: 1
