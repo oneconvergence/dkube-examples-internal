@@ -5,7 +5,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-inp_path = 'tensorflow/classification/mnist-fs/digits/classifier/data'
+inp_path = '/opt/dkube/input/'
 out_path = '/opt/dkube/output/'
 filename = 'featureset.parquet'
 
