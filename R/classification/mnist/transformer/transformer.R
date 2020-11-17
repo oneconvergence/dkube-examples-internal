@@ -15,11 +15,9 @@ library(OpenImage)
 preprocess <- function(json_data) {
   json_data$instances<-NULL
   data=json_data$signatures$inputs[[1]][[3]]
-  json_data=utf8_encode(data)
   image <- readImage("image.png")
   image <- resizeImage(image, width = 28, height = 28, method = 'nearest')
-  image <- array(image[1:28,1:28], dim = c(1,1,28,28))
-  image <- dbl(image)
+  image <- array(image[1:28,1:28], dim = c(1,784))
   instances<-list(image)
   token <- json_data["token"]
   payload<-hash()
@@ -27,8 +25,6 @@ preprocess <- function(json_data) {
   payload[["token"]]=token
   payload
 }
-
-
 
 
 postprocess <- function(df){

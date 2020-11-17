@@ -112,9 +112,9 @@ predict_endpoint <- function(req,res,json=NULL,isDefault=NULL) {
   valid_input <- validate_json(jdf)
   if (valid_input[1] == "OK") {
     df <- preprocess(jdf) # transformer preprocess function call
-    scores <- predict(user_model,newdata=df) # predict function call from mnist.R
-    scores <- postprocess(scores)  # postprocess function call 
-    res_json = create_response(jdf,scores)
+    class <- predict(user_model,newdata=df$instances) # predict function call from mnist.R
+    class <- postprocess(class)  # postprocess function call 
+    res_json = create_response(jdf,class)
     res$body <- res_json
     res
   } else {
@@ -208,11 +208,9 @@ parse_commandline <- function() {
   parser <- add_option(parser, c("-e", "--persistence"), type="integer",
                        help="Persistence", metavar = "persistence", default = 0)
   #dkube-kfserving - this option must be parsed
-  parser <- add_option(parser, c("-n", "--model_name"), type="character",
-                       help="Name of the model", metavar = "model_name")
+  #parser <- add_option(parser, c("-n", "--model_name"), type="character",help="Name of the model", metavar = "model_name")
   #dkube-kfserving - this option must be parsed
-  parser <- add_option(parser, c("-b", "--model_base_path"), type="character",
-                       help="Model file base path", metavar = "model_base_path")
+  #parser <- add_option(parser, c("-b", "--model_url"), type="character",help="serving model url", metavar = "model_base_path")
   args <- parse_args(parser, args = commandArgs(trailingOnly = TRUE),
                      convert_hyphens_to_underscores = TRUE)
   
@@ -278,14 +276,15 @@ if(!file.exists(args$model)){
 
 #Load user model
 #dkube-kfserving - load file from specified base path
-model_base_path <- args$model_base_path
-model_file <- sprintf("%s/model.Rds", model_base_path)
+#model_base_path <- args$model_base_path
+#model_file <- sprintf("%s/model.Rds", model_base_path)
 #dkube-kfserving - load file from specified base path
 
+
 source(args$model)
-source(args$transformer)
+user_model <- model
 #dkube-kfserving - pass the model_file to this function
-user_model <- initialise_seldon(model_file, params)
+
 
 # Setup generics
 # Predict already exists in base R
@@ -306,8 +305,8 @@ if (args$service == "MODEL") {
   #serve_model$handle("GET", "/route",route_endpoint)
   #serve_model$handle("POST", "/send-feedback",send_feedback_endpoint)
   #serve_model$handle("GET", "/send-feedback",send_feedback_endpoint)
-}  else if (args$service == "TRANSFORMER") {  
-  #serve_model$handle("POST", "/transform-output",transform_output_endpoint)
+}  else if (args$service == "TRANSFORMER") {   
+  serve_model$handle("POST",/transform-output,predict_endpoint)
   #serve_model$handle("GET", "/transform-output",transform_output_endpoint)
   #serve_model$handle("POST", "/transform-input",transform_input_endpoint)
   #serve_model$handle("GET", "/transform-input",transform_input_endpoint)
@@ -326,3 +325,4 @@ if (port == ''){
   port <- as.integer(port)
 }
 serve_model$run(host="0.0.0.0", port = 8080)
+
