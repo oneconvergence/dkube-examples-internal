@@ -5,7 +5,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-inp_path = '/opt/dkube/input'
+inp_path = 'tensorflow/classification/mnist-fs/digits/classifier/data'
 out_path = '/opt/dkube/output/'
 filename = 'featureset.parquet'
 
@@ -28,7 +28,7 @@ def read_idx(dataset = "training", path = "../data"):
     return img, lbl
 
 img, lbl = read_idx(path = inp_path)
-dataset = pd.DataFrame(data = img.reshape(60000, 784))
+dataset = pd.DataFrame(data = img.reshape(60000, 784))/255
 dataset['label'] = lbl
 table = pa.Table.from_pandas(dataset)
 pq.write_table(table, os.path.join(out_path, filename))
