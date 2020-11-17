@@ -112,10 +112,10 @@ predict_endpoint <- function(req,res,json=NULL,isDefault=NULL) {
   valid_input <- validate_json(jdf)
   if (valid_input[1] == "OK") {
     df <- preprocess(jdf) # transformer preprocess function call
-    class <- predict(user_model,newdata=df$instances) # predict function call from mnist.R
+    class <- user_model %>% predict_classes(df$instances)# predict function call from mnist.R
     class <- postprocess(class)  # postprocess function call 
-    res_json = create_response(jdf,class)
-    res$body <- res_json
+    #res_json = create_response(jdf,class)
+    res$body <- class
     res
   } else {
     res$status <- 400 # Bad request
