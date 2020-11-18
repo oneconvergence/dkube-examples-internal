@@ -7,7 +7,7 @@ library(urltools)
 library(stringi)
 
 library(hash)
-library(OpenImageR
+library(OpenImageR)
 library(reticulate)
 
 
