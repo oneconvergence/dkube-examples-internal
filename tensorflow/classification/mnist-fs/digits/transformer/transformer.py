@@ -49,12 +49,11 @@ class ImageTransformer(kfserving.KFModel):
             return json.dumps({ "error": "Recieved invalid json" })
         data = json_data["signatures"]["inputs"][0][0]["data"]
         b64_filewriter(filename, data)
-        image = cv2.imread(filename)
-        img = image
-        x = image
-        x = cv2.resize(x, (img_w, img_h, 1))
+        img = cv2.imread(filenmae, cv2.IMREAD_GRAYSCALE)
+        x = img
+        x = cv2.resize(x, (img_w, img_h))
         x = np.array(x, dtype=np.float64)
-        x = x.reshape(1,img_h,img_w,3)
+        x = x.reshape(img_h,img_w,1)
         payload = {"inputs": {'input': x.tolist()}, 'token':inputs['token']}
         return payload
 
