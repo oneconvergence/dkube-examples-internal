@@ -111,11 +111,10 @@ predict_endpoint <- function(req,res,json=NULL,isDefault=NULL) {
   jdf <- fromJSON(json)
   valid_input <- validate_json(jdf)
   if (valid_input[1] == "OK") {
-    df <- preprocess(jdf) # transformer preprocess function call
-    class <- user_model %>% predict_classes(df$instances)# predict function call from mnist.R
-    class <- postprocess(class)  # postprocess function call 
-    #res_json = create_response(jdf,class)
-    res$body <- class
+    scores <- predict(user_model,newdata=df) # predict function call from mnist.R
+    scores <- postprocess(scores)  # postprocess function call 
+    res_json = create_response(jdf,scores)
+    res$body <- res_json
     res
   } else {
     res$status <- 400 # Bad request
@@ -166,10 +165,11 @@ transform_output_endpoint <- function(req,res,json=NULL,isDefault=NULL) {
   jdf <- fromJSON(json)
   valid_input <- validate_json(jdf)
   if (valid_input[1] == "OK") {
-    df <- create_dataframe(jdf)
-    trans <- transform_output(user_model,newdata=df)
-    res_json = create_response(jdf,trans)
-    res$body <- res_json
+    df <- preprocess(jdf) # transformer preprocess function call
+    class <- user_model %>% predict_classes(df$instances)# predict function call from mnist.R
+    class <- postprocess(class)  # postprocess function call 
+    #res_json = create_response(jdf,class)
+    res$body <- class
     res
   } else {
     res$status <- 400 # Bad request
@@ -282,6 +282,7 @@ if(!file.exists(args$model)){
 
 
 source(args$model)
+source(args$transformer)
 user_model <- model
 #dkube-kfserving - pass the model_file to this function
 
@@ -306,7 +307,7 @@ if (args$service == "MODEL") {
   #serve_model$handle("POST", "/send-feedback",send_feedback_endpoint)
   #serve_model$handle("GET", "/send-feedback",send_feedback_endpoint)
 }  else if (args$service == "TRANSFORMER") {   
-  serve_model$handle("POST",/transform-output,predict_endpoint)
+  serve_model$handle("POST",/transform-output,transform_output_endpoint)
   #serve_model$handle("GET", "/transform-output",transform_output_endpoint)
   #serve_model$handle("POST", "/transform-input",transform_input_endpoint)
   #serve_model$handle("GET", "/transform-input",transform_input_endpoint)
@@ -325,4 +326,3 @@ if (port == ''){
   port <- as.integer(port)
 }
 serve_model$run(host="0.0.0.0", port = 8080)
-
