@@ -28,7 +28,7 @@ def read_idx(dataset = "training", path = "../data"):
     return img, lbl
 
 img, lbl = read_idx(path = inp_path)
-dataset = pd.DataFrame(data = img.reshape(60000, 784))/255
+dataset = pd.DataFrame(data = img.reshape(img.shape[0], 784))/255
 dataset['label'] = lbl
 table = pa.Table.from_pandas(dataset)
 pq.write_table(table, os.path.join(out_path, filename))

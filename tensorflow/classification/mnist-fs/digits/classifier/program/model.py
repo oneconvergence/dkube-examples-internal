@@ -49,7 +49,7 @@ feature_df = table.to_pandas()
 y = feature_df['label'].values
 x = feature_df.drop('label', 1).values
 
-x = x.reshape(60000, 28, 28, 1)
+x = x.reshape(x.shape[0], 28, 28, 1)
 
 y = get_one_hot(y, 10)
 
