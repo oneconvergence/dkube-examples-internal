@@ -47,7 +47,7 @@ def d3pipeline(
     #Transformer image
     transformer_image=json.dumps({'image':'docker.io/ocdr/catdogs-example-preprocess:2.0.7', 'username':'', 'password': ''}),
     #Script to execute the transformer
-    transformer_code="tensorflow/classification/resnet/catsdogs/transformer/transformer.py"
+    transformer_code="tf/classification/resnet/catsdogs/transformer/transformer.py"
 ):
 
     train       = dkube_training_op(auth_token, training_container,

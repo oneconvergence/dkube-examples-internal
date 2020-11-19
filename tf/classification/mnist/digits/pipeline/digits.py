@@ -50,7 +50,7 @@ def d3pipeline(
     #Transformer image
     transformer_image=json.dumps({'image':'docker.io/ocdr/mnist-example-preprocess:2.0.7', 'username':'', 'password': ''}),
     #Script to execute the transformer
-    transformer_code="tensorflow/classification/mnist/digits/transformer/transformer.py"):
+    transformer_code="tf/classification/mnist/digits/transformer/transformer.py"):
 
     train       = dkube_training_op(auth_token, training_container,
                                     program=training_program, run_script=training_script,
