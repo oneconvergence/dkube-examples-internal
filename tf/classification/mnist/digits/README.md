@@ -24,7 +24,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
 3. Enter a name say mnist-digits
 4. Enter tag name in Tag text-box
 5. Select Project Source as Git
-6. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tf/classification/mnist/digits/classifier/program in the URL text box for tensorflow version 1.14 or https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tf/classification/mnist/digits/classifier/program-2.x for tensorflow version 2.0.
+6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program in the URL text box for tensorflow version 1.14 or https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program-2.x for tensorflow version 2.0.
 7. Enter branch name or version in Branch text-box.
 8. Click the Add Project button.
 9. Project will be created and imported in Dkube. Progress of import can be seen.
@@ -39,7 +39,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
 5. Select Versioning as DVS 
 6. Select Dataset store as default
 7. Select Dataset Source as Git
-8. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tf/classification/mnist/digits/classifier/data  in the URL text box.
+8. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/data  in the URL text box.
 9. Enter branch name or version  in Branch text-box 
 10. Click the Add Dataset button..
 11. Dataset will be created and imported in Dkube. Progress of import can be seen.
@@ -95,7 +95,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
  6. Input the unique name say mnist-serving
  7. Select CPU or GPU to deploy the model on a specific device. Unless specifically required, model can be served on CPU
  8. Click on Test inference button
- 9. Click Test Inferences in side menu under WORKFLOW section
+ 9. Click Test Inferences in side menu.
  10. Wait till status field shows running
  11. Copy the URL shown in Endpoint field of the serving job
 

@@ -4,9 +4,9 @@
 2. Click *+Project* button.
 3. Select source as *Git*.
 4. Enter a unique name say *r-examples*
-5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/R/classification
- ](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/R/classification)* in the URL text box.
-6. Branch: 2.1.5
+5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/R/classification
+ ](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification)* in the URL text box.
+6. Branch: master
 7. Click *Add Project* button.
 8. Project will be created and imported in Dkube. Progress of import can be seen.
 9. Please wait till status turns to *ready*.
@@ -16,8 +16,8 @@
  2. Click *+Dataset* button.
  3. Select *Github* option.
  4. Enter a unique name say *r-examples*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/R/classification
- ](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/R/classification)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/R/classification
+ ](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification)* in the URL text box.
  6. Click *Add Dataset* button.
  7. Dataset will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -65,7 +65,6 @@
 ## Sonar Model Publish(experimental):
 1. Go to the model r-sonar repo and click the publish model at the latest version.
 2. Use serving image docker.io/ocdr/custom-kfserving:R as serving the image, don’t check for the transformer.
-
 
 
 
