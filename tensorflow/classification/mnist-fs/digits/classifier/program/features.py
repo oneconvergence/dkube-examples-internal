@@ -37,9 +37,11 @@ if __name__ == "__main__":
     authToken = os.getenv('DKUBE_USER_ACCESS_TOKEN')
 
     img, lbl = read_idx(path = inp_path)
-    dataset = pd.DataFrame(data = img.reshape(img.shape[0], 784))/255
+    dataset  = pd.DataFrame(data = img.reshape(img.shape[0], 784))/255
     dataset['label'] = lbl
     ####### Featureset metadata #########
+    keys   = dataset.keys()
+    schema = dataset.dtypes.to_list()
     featureset_metadata = []
     for i in range(len(keys)):
         metadata = {}
