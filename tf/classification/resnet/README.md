@@ -12,4 +12,4 @@ Following samples are provided for this network.
 
     Program trains on *catsdogs* dataset which available @ **catsdogs/classifier/data**.
 
-    For more detailed README of this example, Click the link [https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tf/classification/resnet/catsdogs/README.md](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tf/classification/resnet/catsdogs/README.md)
+    For more detailed README of this example, Click the link [https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/catsdogs/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/catsdogs/README.md)

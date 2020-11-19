@@ -24,7 +24,7 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
 3. Enter a name say resnet-catsdogs
 4. Enter tag name in Tag text-box
 5. Select Project Source as Git
-6. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tf/classification/resnet/catsdogs/classifier/program in the URL text box
+6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/catsdogs/classifier/program in the URL text box
 7. Enter branch name or version in Branch text-box
 8. Click the Add Project button.
 9. Project will be created and imported in Dkube. Progress of import can be seen.
@@ -38,9 +38,9 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
 4. Select Versioning as DVS 
 5. Select Dataset store as default
 6. Select Dataset Source as Git
-7. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tf/classification/resnet/catsdogs/classifier/data in the URL text box
+7. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/catsdogs/classifier/data in the URL text box
 8. Enter branch name or version  in Branch text-box
-9. Click the Add Dataset button..
+9. Click the Add Dataset button.
 10. Dataset will be created and imported in Dkube. Progress of import can be seen.
 11. Please wait till status turns to ready.
 
@@ -58,7 +58,7 @@ This step is to create a dvs model which will hold the trained output model.
 ## Step4: Start a training job
 1. Click Runs side menu option.
 2. Click +Run and select the Training button.
-3. Fill the fields in Job form and click the Submit button. See below for sample values to be given in the form, for advanced usage     please refer to Dkube User Guide.
+3. Fill the fields in Job form and click the Submit button. See below for sample values to be given in the form, for advanced usage please refer to Dkube User Guide.
  - Basic Tab
    - Enter Unique name say Training-catsdogs
    - Enter Description name in Description text-box

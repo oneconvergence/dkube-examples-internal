@@ -25,7 +25,7 @@ This example is derived from the [keras example](https://github.com/keras-team/k
  2. Click on *+Project* button.
  3. Select source as Git.
  4. Enter a unique name, say *keras-mnist*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/2.1.5/keras/classification/mnist/classifier/program](https://github.com/oneconvergence/dkube-examples/2.1.5/master/keras/classification/mnist/classifier/program)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/keras/classification/mnist/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/master/keras/classification/mnist/classifier/program)* in the URL text box.
  6. Click on *Add Project* button.
  7. Project will be created and imported in Dkube. The progress of import can be seen in Dkube UI.
  8. Wait till status turns to *ready*.
