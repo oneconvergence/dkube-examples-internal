@@ -24,7 +24,7 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
 3. Enter a name say resnet-catsdogs
 4. Enter tag name in Tag text-box
 5. Select Project Source as Git
-6. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tf/classification/resnet/catsdogs/classifier/program in the URL text box
+6. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/classification/resnet/catsdogs/classifier/program in the URL text box
 7. Enter branch name or version in Branch text-box
 8. Click the Add Project button.
 9. Project will be created and imported in Dkube. Progress of import can be seen.
@@ -38,7 +38,7 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
 4. Select Versioning as DVS 
 5. Select Dataset store as default
 6. Select Dataset Source as Git
-7. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tf/classification/resnet/catsdogs/classifier/data in the URL text box
+7. Paste link https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/classification/resnet/catsdogs/classifier/data in the URL text box
 8. Enter branch name or version  in Branch text-box
 9. Click the Add Dataset button..
 10. Dataset will be created and imported in Dkube. Progress of import can be seen.
@@ -101,7 +101,7 @@ After the job is complete from above step. The trained model will get generated 
 1. Serving image:  (use default one)
 2. Transformer image: (use default one)
 3. Transformer Project : (use default one)
-4. Transformer code: tf/classification/resnet/catsdogs/transformer/transformer.py
+4. Transformer code: tensorflow/classification/resnet/catsdogs/transformer/transformer.py
 
 ## How to test Inference
 1. To test inference open a new tab with link < DKUBE_URL:port/inference >

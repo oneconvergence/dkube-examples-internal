@@ -10,5 +10,5 @@ Following samples are provided for this network.
 
     Program trains on *digits* dataset which available @ **digits/classifier/data**
 
-    For more detailed README of this example, Click the link [https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tf/classification/mnist/digits/README.md](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tf/classification/mnist/digits/README.md)
+    For more detailed README of this example, Click the link [https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/classification/mnist/digits/README.md](https://github.com/oneconvergence/dkube-examples/tree/2.1.5/tensorflow/classification/mnist/digits/README.md)
 
