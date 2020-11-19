@@ -30,5 +30,16 @@ def read_idx(dataset = "training", path = "../data"):
 img, lbl = read_idx(path = inp_path)
 dataset = pd.DataFrame(data = img.reshape(img.shape[0], 784))/255
 dataset['label'] = lbl
+keys   = dataset.keys()
+schema = dataset.dtypes.to_list()
+####### Featureset metadata #########
+featureset_metadata = []
+for i in range(len(keys)):
+    metadata = {}
+    metadata["name"] = str(keys[i])
+    metadata["description"] = None
+    metadata["schema"] = str(schema[i])
+    featureset_metadata.append(metadata)
+
 table = pa.Table.from_pandas(dataset)
 pq.write_table(table, os.path.join(out_path, filename))

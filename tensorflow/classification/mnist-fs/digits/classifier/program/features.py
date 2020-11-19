@@ -39,6 +39,15 @@ if __name__ == "__main__":
     img, lbl = read_idx(path = inp_path)
     dataset = pd.DataFrame(data = img.reshape(img.shape[0], 784))/255
     dataset['label'] = lbl
+    ####### Featureset metadata #########
+    featureset_metadata = []
+    for i in range(len(keys)):
+        metadata = {}
+        metadata["name"] = str(keys[i])
+        metadata["description"] = None
+        metadata["schema"] = str(schema[i])
+        featureset_metadata.append(metadata)
+        
     featureset = DkubeFeatureSet()
     featureset.update_features_path(path=out_path)
     featureset.write(dataset)
