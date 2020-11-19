@@ -18,13 +18,13 @@ Following examples are provided,
 
 - Gray scale digits classification using MNIST network.
 
-  [https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/README.md)
+  [https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/README.md)
 
   Supports samples for GPU based training, distributed training, hyperparameter tuning & pipeline.
 
 - CatsDogs binary classification using RESNETV2 network.
 
-  [https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/README.md)
+  [https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/catsdogs/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/catsdogs/README.md)
 
   Supports samples for GPU based training, distributed training, hyperparameter tuning & pipeline.
 

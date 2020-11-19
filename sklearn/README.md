@@ -69,7 +69,7 @@
 3. Transformer project (use default)
 4. Transformer code : sklearn/model/transformer.py 
 
-## Test Inference(only for release 2.1.3.1 and later)
+## Test Inference
 1. Go to the model version and click test inference.
 2. Give a name and check the transformer.
 3. Select project stock-prediction.
