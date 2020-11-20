@@ -39,8 +39,8 @@
  3. Fill the fields in Run form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
 	- Enter a unique name say *r-examples*
 	- **Container** section
-		- Framework - custom
-		- Image - docker.io/ocdr/dkube-datascience-rs-tf-cpu:v2.0
+		- Framework - Tensorflow
+		- Framework version - r-2.0.0
 		- Start-up script - `Rscript sonar/sonar.R`
 	- **Project** section - Please select the workspace *r-examples* created in **Step1**.	
 	- **Dataset** section - Please select the dataset *r-examples* created in **Step2**. Mount point: /opt/dkube/input .
@@ -53,8 +53,8 @@
 1. Type:  Training
 2. Script: Rscript sonar/sonar-eval.R
 3. Project: r-examples
-4. Framework: custom
-5. Image: docker.io/ocdr/dkube-datascience-rs-tf-cpu:v2.0
+4. Framework: Tensorflow
+5. Framework Version : r-2.0.0
 6. Input Model: r-sonar
 7. Mount-Point: /opt/dkube/model
 

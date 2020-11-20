@@ -49,3 +49,7 @@ Following examples are provided,
 
   [https://github.com/oneconvergence/dkube-examples/tree/master/R/classification/sonar/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification/sonar/README.md)
 
+- MNIST Example.
+ 
+ [https://github.com/oneconvergence/dkube-examples/tree/master/R/classification/mnist/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification/mnist/README.md)
+

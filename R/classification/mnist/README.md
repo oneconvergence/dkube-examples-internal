@@ -1,3 +1,4 @@
+# **R-MNIST Digit Classification**
 ## Step 1: Project
 1. Click *Repos* side menu option.
 2. Click *+Project* button.
@@ -28,7 +29,7 @@
 	- Enter a unique name say *r-mnist*
 	- **Container** section
 		- Framework - Tensorflow
-		- Image - docker.io/ocdr/dkube-datascience-rs-tf-cpu:v2.0
+		- Framework Version - r-2.0.0
 		- Start-up script - Rscript mnist/mnist.R
 	- **Project** section - Please select the workspace *r-examples* created in **Step1**.	
 	- **Model** section - Please select the output model *r-mnist* created in **Step2**. Mount point: /opt/dkube/model.
