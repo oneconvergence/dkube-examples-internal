@@ -8,11 +8,12 @@ from tensorflow.keras.layers import Dense, Dropout, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
 import requests
 import argparse
+from dkube.sdk import *
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--url", dest = 'url', type = str, help="setup URL", required=True)
 parser.add_argument("--epochs", dest = 'epochs', type = int, default = 5, help="no. of epochs")
 parser.add_argument("--batch_size", dest = 'batch_size', type = int, default = 128, help="no. of epochs")
-
 
 def log_metrics(key, value, epoch, step):
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
@@ -41,10 +42,15 @@ global FLAGS
 FLAGS,unparsed=parser.parse_known_args()
 epochs = FLAGS.epochs
 batch_size = FLAGS.batch_size
+dkubeURL = FLAGS.url
+authToken = os.getenv('DKUBE_USER_ACCESS_TOKEN')
 
-table = pq.read_table(os.path.join(inp_path, filename))
+api = DkubeApi(URL=dkubeURL, token=authToken)
+featureset = DkubeFeatureSet()
+featureset.update_features_path(path=in_path)
+data  = featureset.read()
 
-feature_df = table.to_pandas()
+feature_df = data["data"]
 
 y = feature_df['label'].values
 x = feature_df.drop('label', 1).values

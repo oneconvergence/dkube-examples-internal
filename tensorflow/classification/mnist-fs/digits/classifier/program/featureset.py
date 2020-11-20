@@ -2,8 +2,8 @@ import numpy as np
 import struct
 import os
 import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
+from dkube.sdk import *
+import argparse
 
 inp_path = '/opt/dkube/input/'
 out_path = '/opt/dkube/output/'
@@ -27,20 +27,32 @@ def read_idx(dataset = "training", path = "../data"):
         img = np.fromfile(fimg, dtype=np.uint8).reshape(len(lbl), rows, cols)
     return img, lbl
 
-img, lbl = read_idx(path = inp_path)
-dataset = pd.DataFrame(data = img.reshape(img.shape[0], 784))/255
-dataset['label'] = lbl
+if __name__ == "__main__":
 
-####### Featureset metadata #########
-keys   = dataset.keys()
-schema = dataset.dtypes.to_list()
-featureset_metadata = []
-for i in range(len(keys)):
-    metadata = {}
-    metadata["name"] = str(keys[i])
-    metadata["description"] = None
-    metadata["schema"] = str(schema[i])
-    featureset_metadata.append(metadata)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--url", dest = 'url', type = str, help="setup URL", required=True)
+    global FLAGS
+    FLAGS, unparsed = parser.parse_known_args()
+    dkubeURL = FLAGS.url
+    authToken = os.getenv('DKUBE_USER_ACCESS_TOKEN')
 
-table = pa.Table.from_pandas(dataset)
-pq.write_table(table, os.path.join(out_path, filename))
+    img, lbl = read_idx(path = inp_path)
+    dataset  = pd.DataFrame(data = img.reshape(img.shape[0], 784))/255
+    dataset['label'] = lbl
+    ####### Featureset metadata #########
+    keys   = dataset.keys()
+    schema = dataset.dtypes.to_list()
+    featureset_metadata = []
+    for i in range(len(keys)):
+        metadata = {}
+        metadata["name"] = str(keys[i])
+        metadata["description"] = None
+        metadata["schema"] = str(schema[i])
+        featureset_metadata.append(metadata)
+    
+    featureset = DkubeFeatureSet()
+    featureset.update_features_path(path=out_path)
+    featureset.write(dataset)
+
+    api = DkubeApi(URL=dkubeURL, token=authToken)
+    api.commit_features()
