@@ -4,7 +4,7 @@ import os
 import pandas as pd
 from dkube.sdk import *
 import argparse
-import json
+import yaml
 
 inp_path = '/opt/dkube/input/'
 out_path = '/opt/dkube/output/'
