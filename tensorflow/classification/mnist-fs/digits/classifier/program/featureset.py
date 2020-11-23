@@ -4,6 +4,7 @@ import os
 import pandas as pd
 from dkube.sdk import *
 import argparse
+import json
 
 inp_path = '/opt/dkube/input/'
 out_path = '/opt/dkube/output/'
@@ -50,9 +51,12 @@ if __name__ == "__main__":
         metadata["schema"] = str(schema[i])
         featureset_metadata.append(metadata)
     
+    with open('data.json', 'w') as f:
+        json.dump(json.dumps(featureset_metadata), f)
     featureset = DkubeFeatureSet()
     featureset.update_features_path(path=out_path)
     featureset.write(dataset)
-
+    
     api = DkubeApi(URL=dkubeURL, token=authToken)
+    api.upload_featurespec(featureset = 'mnist-fs',filepath = "./data.json")
     api.commit_features()
