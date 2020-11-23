@@ -1,5 +1,5 @@
 # MNIST network classifier
-This example is derived from [tensorflow example](https://github.com/tensorflow/models/tree/master/official/mnist) and modified to run on Dkube Platform.
+This example is derived from [tensorflow example](https://github.com/tensorflow/models/tree/r1.4.0/official/mnist) and modified to run on Dkube Platform.
 
  - This program trains MNIST network on Gray scale Digits data.
  - Modified program is configurable and takes Hyperparameters like steps, batchsize, learning rate etc from ENV vars or from a JSON file. User can input these parameters from Dkube UI or upload a file which will then be provided for the running instance of program.
@@ -63,10 +63,8 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
  3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
 - Basic Tab
   - Enter Unique name say Training-mnist
-  - Enter Description name in Description text-box
-  - Enter Tags name in Tags text-box
-  - Select Container as Dkube
-  - Select Framework as v1.14
+  - Select Framework as tensorflow
+  - Select Framework version 1.14 or 2.0 depending on your choice.
   - Start-up command : python model.py
   - Click Next
 - Repos Tab
@@ -172,7 +170,7 @@ parameterconfigs:
 4. Click *Create an experiment* button and input a unique *experiment* name.
 5. Click *next* button it will auto display form to create a new *run*.
 6. Select the *pipeline* which was uploaded in *step 1*
-7. Fill in the *Run Parameters* fields. Meaning of each of the field is explained here -> [Dkube Components](https://github.com/oneconvergence/gpuaas/tree/dkube_1.4.1_release/dkube/pipeline/components).
+7. Fill in the *Run Parameters* fields.
 
 ## How to use digits.py
 1. This DSL definition needs to be compiled first. Following prereqs must be installed.

@@ -34,7 +34,8 @@ Following examples are provided,
 
 ## Pytorch Examples
 
-- MNIST Example.
+- MNIST Digit Classification.
+
   [https://github.com/oneconvergence/dkube-examples/tree/master/pytorch/classification/mnist/digits/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/pytorch/classification/mnist/digits/README.md)
 
 ## Sklearn Example
@@ -45,11 +46,11 @@ Following examples are provided,
 
 ## R Examples
 
-- Sonar Example.
+- Sonar Mines Vs Rocks Classification.
 
   [https://github.com/oneconvergence/dkube-examples/tree/master/R/classification/sonar/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification/sonar/README.md)
 
-- MNIST Example.
+- MNIST Digits Classification.
  
  [https://github.com/oneconvergence/dkube-examples/tree/master/R/classification/mnist/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification/mnist/README.md)
 
