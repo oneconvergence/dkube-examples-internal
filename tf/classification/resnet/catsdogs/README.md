@@ -64,8 +64,8 @@ This step is to create a dvs model which will hold the trained output model.
    - Enter Description name in Description text-box
    - Enter Tags name in Tags text-box
    - Project: Click on + button and select catsdogs project
-   - Select Container as Dkube
-   - Select Framework as v1.14
+   - Select Framework as Tensorflow.
+   - Select Framework version as v1.14 or 2.0 depending on your choice.
    - Start-up command : python model.py
    - Click Next
 - Repos Tab
@@ -163,7 +163,7 @@ parameterconfigs:
 4. Click Create an experiment button and input a unique experiment name.
 5. Click the next button and it will auto display form to create a new run.
 6. Select the pipeline which was uploaded in step 1
-7. Fill in the *Run Parameters* fields. Meaning of each of the field is explained here -> [Dkube Components](https://github.com/oneconvergence/gpuaas/tree/dkube_1.4.1_release/dkube/pipeline/components)
+7. Fill in the *Run Parameters* fields. 
 
 ## How to use catsdogs.py
 1. This DSL definition needs to be compiled first. Following prereqs must be installed.
