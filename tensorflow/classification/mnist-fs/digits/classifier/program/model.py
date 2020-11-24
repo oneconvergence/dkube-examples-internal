@@ -47,7 +47,7 @@ authToken = os.getenv('DKUBE_USER_ACCESS_TOKEN')
 
 api = DkubeApi(URL=dkubeURL, token=authToken)
 featureset = DkubeFeatureSet()
-featureset.update_features_path(path=in_path)
+featureset.update_features_path(path=inp_path)
 data  = featureset.read()
 
 feature_df = data["data"]
