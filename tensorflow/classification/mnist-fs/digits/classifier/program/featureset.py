@@ -40,6 +40,9 @@ if __name__ == "__main__":
     img, lbl = read_idx(path = inp_path)
     dataset  = pd.DataFrame(data = img.reshape(img.shape[0], 784))/255
     dataset['label'] = lbl
+    featureset = DkubeFeatureSet()	
+    featureset.update_features_path(path=out_path)	
+    featureset.write(dataset)
     ####### Featureset metadata #########
     keys   = dataset.keys()
     schema = dataset.dtypes.to_list()
@@ -50,7 +53,7 @@ if __name__ == "__main__":
         metadata["description"] = None
         metadata["schema"] = str(schema[i])
         featureset_metadata.append(metadata)
-    
+        
     api = DkubeApi(URL=dkubeURL, token=authToken)
     featureset_metadata = yaml.dump(featureset_metadata, default_flow_style=False)
     with open("fspec.yaml", 'w') as f:
