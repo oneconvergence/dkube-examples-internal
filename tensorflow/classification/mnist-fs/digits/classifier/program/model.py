@@ -8,6 +8,9 @@ from tensorflow.keras.layers import Dense, Dropout, Flatten
 from tensorflow.keras.layers import Conv2D, MaxPooling2D
 import requests
 import argparse
+
+import sys
+sys.path.insert(0,)
 from dkube.sdk import *
 
 parser = argparse.ArgumentParser()

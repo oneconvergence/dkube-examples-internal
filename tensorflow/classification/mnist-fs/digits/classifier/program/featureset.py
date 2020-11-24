@@ -2,9 +2,12 @@ import numpy as np
 import struct
 import os
 import pandas as pd
-from dkube.sdk import *
+import sys
 import argparse
 import yaml
+
+sys.path.insert(0,)
+from dkube.sdk import *
 
 inp_path = '/opt/dkube/input/'
 out_path = '/opt/dkube/output/'
