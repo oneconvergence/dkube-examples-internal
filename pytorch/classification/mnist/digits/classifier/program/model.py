@@ -16,7 +16,7 @@ MODEL_DIR = "/opt/dkube/output"
 DATA_DIR = "/opt/dkube/input"
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 64))
 EPOCHS = int(os.getenv('EPOCHS', 5))
-MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "False")
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
 print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
 # Tensorboard config
 # Writer will output to ./runs/ directory by default

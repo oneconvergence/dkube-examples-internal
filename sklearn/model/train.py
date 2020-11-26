@@ -10,7 +10,7 @@ import joblib
 import requests
 import argparse
 
-MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "False")
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
 
 dates = []
 prices = []
