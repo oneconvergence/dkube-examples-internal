@@ -10,6 +10,8 @@ import joblib
 import requests
 import argparse
 
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "False")
+
 dates = []
 prices = []
 
@@ -74,10 +76,11 @@ if __name__ == "__main__":
 
     predictions = svm.predict(dates)
     (rmse, mae, r2) = eval_metrics(prices, predictions)
-    
-    log_metrics('RMSE', rmse)
-    log_metrics('MAE', mae)
-    log_metrics('R2', r2)
+
+    if MLFLOW_METRIC_REPORTING == "True":
+        log_metrics('RMSE', rmse)
+        log_metrics('MAE', mae)
+        log_metrics('R2', r2)
 
     plt.plot(dates, prices, color= 'black', label = "Data", marker = '*')
     plt.plot(dates,predictions, color= 'red', label = "Predictions", marker = 'o')
