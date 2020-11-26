@@ -14,6 +14,8 @@ from tensorflow.keras.layers import Flatten
 from tensorflow.keras.optimizers import SGD
 import requests
 
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--epochs", dest = 'epochs', type = int, default = 10, help="no. of epochs")
 parser.add_argument("--learning_rate", dest = 'lr', type = float, default = 0.001, help="no. of epochs")
@@ -72,14 +74,16 @@ history = model.fit_generator(train_it, steps_per_epoch=len(train_it), epochs=ep
 
 if 'acc' in history.history.keys():
     for i in range(1, epochs + 1):
-        log_metrics('accuracy', float(history.history['acc'][i-1]), i, i)
-        log_metrics('loss', float(history.history['loss'][i-1]), i, i)
+        if MLFLOW_METRIC_REPORTING == "True":
+            log_metrics('accuracy', float(history.history['acc'][i-1]), i, i)
+            log_metrics('loss', float(history.history['loss'][i-1]), i, i)
         print("accuracy=",float(history.history['acc'][i-1]))
         print("loss=",float(history.history['loss'][i-1]))
 else:
     for i in range(1, epochs + 1):
-        log_metrics('accuracy', float(history.history['accuracy'][i-1]), i, i)
-        log_metrics('loss', float(history.history['loss'][i-1]), i, i)
+        if MLFLOW_METRIC_REPORTING == "True":
+            log_metrics('accuracy', float(history.history['accuracy'][i-1]), i, i)
+            log_metrics('loss', float(history.history['loss'][i-1]), i, i)
         print("accuracy=",float(history.history['accuracy'][i-1]))
         print("loss=",float(history.history['loss'][i-1]))
 
