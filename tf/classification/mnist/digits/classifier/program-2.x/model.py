@@ -16,6 +16,10 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
+import warnings
+warnings.filterwarnings("ignore")
+
 from dkube import dkubeLoggerHook as logger_hook
 import argparse
 import os
@@ -33,7 +37,6 @@ MODEL_DIR = "/opt/dkube/output"
 DATA_DIR = "/opt/dkube/input"
 BATCH_SIZE = int(os.getenv('BATCHSIZE', 10))
 EPOCHS = int(os.getenv('EPOCHS', 1))
-TF_MODEL_DIR = MODEL_DIR
 steps_epoch = 0
 summary_interval = 100
 print ("ENV, EXPORT_DIR:{}, DATA_DIR:{}".format(MODEL_DIR, DATA_DIR))
@@ -184,7 +187,7 @@ def main(unused_argv):
   if DATA_DIR is None:
         print("No input dataset specified. Exiting...")
         return 1
-  training_config = tf.estimator.RunConfig(model_dir=TF_MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
+  training_config = tf.estimator.RunConfig(model_dir=MODEL_DIR, save_summary_steps=summary_interval, save_checkpoints_steps=summary_interval)
   mnist_classifier = tf.estimator.Estimator(
       model_fn=model_fn,
       model_dir=MODEL_DIR,
@@ -258,12 +261,15 @@ def main(unused_argv):
 def run():
   global summary_interval
   summary_interval = 100
+  if os.getenv("STEPS") is None:
+    os.environ['STEPS'] = str(TF_TRAIN_STEPS)
   if TF_TRAIN_STEPS%100 < 10 and TF_TRAIN_STEPS < 1000:
     summary_interval = TF_TRAIN_STEPS/10
-  tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
-  tf.compat.v1.app.run(main=main)
+  tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+  try:
+    tf.compat.v1.app.run(main=main)
+  except SystemExit:
+    print("SavedModel written to: {}".format(MODEL_DIR))
 
 if __name__ == '__main__':
-    if os.getenv("STEPS") is None:
-        os.environ['STEPS'] = str(TF_TRAIN_STEPS)
     run()
