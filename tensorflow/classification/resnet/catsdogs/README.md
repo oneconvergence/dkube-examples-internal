@@ -95,6 +95,9 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
   6. Upload an image for inference, images in **inference** folder can be used.
   7. Click *predict* button and a chart is displayed with probabilities returned by the model.
 
+4. Incase no transformer is selected use the below curl command to test resnet:
+        curl -kv  -X POST -H "Content-Type: application/json" -H "Authorization: OAuth Bearer <Token>" -d @serving/example/data.json https://<pub ip:port>/dkube/inf/v1/models/<model uuid>:classify
+
 # Hyperparameter tuning
 1. Hyperparameter tuning is useful to find the appropriate parameter space for DL training. Dkube will auto generate all the possible combinations of parameters specified and runs training for each of the combination till the goal specified or max count is reached.
 2. Dkube plots the graphs for comparision and suggests a best run with hyperparameters used for the run.
