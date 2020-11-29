@@ -107,7 +107,7 @@ After the job is complete from above step. The trained model will get generated 
 1. To test inference open a new tab with link < DKUBE_URL:port/inference >
 2. Copy and Paste Dkube OAuth token from Developer Settings present in menu on top right to Authorization
 3. Select Model type as Catsdogs
-4. Upload an image for inference, images in the inference folder can be used.
+4. Upload an image for inference, images in the inp_samples folder can be used
 5. Click predict button and a chart is displayed with probabilities returned by the model
 
 # Hyperparameter tuning
