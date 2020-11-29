@@ -19,10 +19,10 @@ To run this example, the user requires to set-up some initials into the Dkube.
  - Name: google-stock
  - Versioning: None
  - Source: RedShift
- - Endpoint: http://18.220.237.15:5439
+ - Endpoint: http://IP:PORT
  - Database: dkube
- - Username: type the username here
- - Password: and the password
+ - Username: *
+ - Password: *
 
 ## Step3: Create a model
  1. Click *Models* side menu option.
