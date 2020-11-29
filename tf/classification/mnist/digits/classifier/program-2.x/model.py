@@ -20,7 +20,7 @@ from __future__ import print_function
 import warnings
 warnings.filterwarnings("ignore")
 
-from dkube import dkubeLoggerHook as logger_hook
+from dkubehook import dkubeLoggerHook as logger_hook
 import argparse
 import os
 import sys
