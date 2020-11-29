@@ -11,18 +11,7 @@
 8. Project will be created and imported in Dkube. Progress of import can be seen.
 9. Please wait till status turns to *ready*.
 
-## Step2: Create a dataset
- 1. Click *Datasets* side menu option.
- 2. Click *+Dataset* button.
- 3. Select *Github* option.
- 4. Enter a unique name say *r-examples*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/R/classification
- ](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification)* in the URL text box.
- 6. Click *Add Dataset* button.
- 7. Dataset will be created and imported in Dkube. Progress of import can be seen.
- 8. Please wait till status turns to *ready*.
-
-## Step3: Create a model
+## Step2: Create a model
  1. Click *Models* side menu option.
  2. Click *+Model* button.
  3. Enter a unique name say *r-sonar*.
@@ -33,7 +22,7 @@
  8. Model will be created on Dkube.
  9. Please wait till status turns to ready.
 
-## Step4: Start a training job
+## Step3: Start a training job
  1. Click *Runs* side menu option.
  2. Click *+Runs* and select Training button.
  3. Fill the fields in Run form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
@@ -42,12 +31,11 @@
 		- Framework - Tensorflow
 		- Framework version - r-2.0.0
 		- Start-up script - `Rscript sonar/sonar.R`
-	- **Project** section - Please select the workspace *r-examples* created in **Step1**.	
-	- **Dataset** section - Please select the dataset *r-examples* created in **Step2**. Mount point: /opt/dkube/input .
-	- **Model** section - Please select the output model *r-sonar* created in **Step3**. Mount point: /opt/dkube/model .
+	- **Project** section - Please select the workspace *r-examples* created in **Step1**
+	- **Model** section - Please select the output model *r-sonar* created in **Step3**. Mount point: /opt/dkube/model
 4. Click *Submit* button.
-5. A new entry with name *r-examples* will be created in *Runs* table.
-6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
+5. A new entry with name *r-examples* will be created in *Runs* table
+6. Check the *Status* field for lifecycle of job, wait till it shows *complete*
 
 ## Evaluation job:
 1. Type:  Training
