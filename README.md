@@ -32,6 +32,10 @@ Following examples are provided,
 
   [https://github.com/oneconvergence/dkube-examples/tree/master/tf/object-detection/pets/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/tf/object-detection/pets/README.md)
 
+- Clinical Regression pipeline demo.
+  
+  [https://github.com/oneconvergence/dkube-examples/tree/master/tf/clinical_reg/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/tf/clinical_reg/README.md)
+
 ## Pytorch Examples
 
 - MNIST Digit Classification.
@@ -53,4 +57,5 @@ Following examples are provided,
 - MNIST Digits Classification.
  
  [https://github.com/oneconvergence/dkube-examples/tree/master/R/classification/mnist/README.md](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification/mnist/README.md)
+
 
