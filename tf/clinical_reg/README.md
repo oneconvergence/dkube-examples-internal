@@ -16,26 +16,27 @@
 6. Click on Create Run
 7. A test inference will be created by the pl,
 8. Model Publish 
-   - a. Click publish model 
-   - b. Serving image: default 
-   - c. Transformer Image: default 
-   - d. Transformer code: reg_demo/transformer.py 
-   - e. Choose CPU and submit 
-   - f. Published Model will be available in Model Catalog.
+   -  Click publish model 
+   -  Serving image: default 
+   -  Transformer Image: default 
+   -  Transformer code: reg_demo/transformer.py 
+   -  Choose CPU and submit 
+   -  Published Model will be available in Model Catalog.
 9. Deploy Model 
-   - a. Go to Model Catalog and Click on the Published model.
-   - b. Click on the Deploy Model button. 
-   - c. Give name. 
-   - d. Serving image: default 
-   - e. Deploy using: CPU and Submit. 
-   - f. Deployed Model will be available in Model Serving.
+   -  Go to Model Catalog and Click on the Published model.
+   -  Click on the Deploy Model button. 
+   -  Give name. 
+   -  Serving image: default 
+   -  Deploy using: CPU and Submit. 
+   -  Deployed Model will be available in Model Serving.
 
 ## Test Inference.
 
 1. Download the data files cli_inp.csv and any sample image from images folder from https://github.com/oneconvergence/dkubeio-examples/tree/master/tf/clinical_reg/inference/data
 2. In DKube UI, once the pipeline run has completed, navigate to ‘Test Inferences’ on the left pane
 3. Copy the ‘Endpoint’ URL in the row using the clipboard icon
-4. Duplicate DKube UI on a new tab and change the URL using the domain name and replacing the remaining path with inference after the domain name. a. For e.g, https://dkube.sb.us.phcaa.science.reg.com/inference OR b. https://1.2.3.4:32222/#/dsinference
+4. Duplicate DKube UI on a new tab and change the URL using the domain name and replacing the remaining path with inference after the domain name. 
+   - For e.g, https://URL/inference or  https://1.2.3.4:32222/#/dsinference
 5. Enter the following URL into the Model Serving URL box https://dkube-proxy.dkube
 6. Copy the token from ‘Developer Settings’ and paste into ‘Authorization Token’ box
 7. Select Model Type as ‘Regression’ on the next dropdown selection
@@ -46,32 +47,32 @@
 
 1. Go to IDE section
 2. Create Notebook 
-   - a. Give a name 
-   - b. Project: regression
-   - c. Datasets: 
+   - Give a name 
+   - Project: regression
+   - Datasets: 
          - i.   clinical Mount point: /opt/dkube/input/clinical 
          - ii.  images Mount point: /opt/dkube/input/images 
          - iii. rna Mount Point: /opt/dkube/input/rna
 3. Submit
 4. Open workflow.ipynb from location workspace/regression/reg_demo/ 
-   - a. Run cells and wait for output (In case of running the notebook second time, restart the kernel)
+   - Run cells and wait for output (In case of running the notebook second time, restart the kernel)
 5. Delete if workflow.py is already there and export the workflow notebook as executable. 
-   - a. Upload it into Juyterlab. 
-   - b. Make changes in py file, comment/remove the following line numbers: 
+   - Upload it into Juyterlab. 
+   - Make changes in py file, comment/remove the following line numbers: 
         -i. 239-240
         ii. 268 
         iii. 435-end 
-  - c. save and commit the workflow.py
+  -  Save and commit the workflow.py
 6. Create a model named workflow with source none.
 7. Create training run using workflow.py 
-   - a. Give a name 
-   - b. Project: regression 
-   - c. Startup command: python workflow.py 
-   - d. Datasets: 
+   - Give a name 
+   - Project: regression 
+   - Startup command: python workflow.py 
+   - Datasets: 
         - i.   clinical Mount point: /opt/dkube/input/clinical 
         - ii.  images Mount point: /opt/dkube/input/images 
         - iii. rna Mount Point: /opt/dkube/input/rna 
-  - e. Output model: workflow, Mount point : /opt/dkube/output
+   - Output model: workflow, Mount point : /opt/dkube/output
 
 ## Compile file manually
 
