@@ -117,30 +117,27 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
 3. Create a job same as explained in section  *[\[How to Train\]](#How%20to%20Train)* except that now a tuning file also needs to be uploaded in the *Parameters Tuning* section of the *Training Job*  form.
 4. For this example, sample tuning file is present in the *github* as explained in section [Directories](#%20Directories). Alternately, showing the content below - copy-paste and create a new file for upload.
 ```
-studyName: tfjob-example
-owner: crd
-optimizationtype: maximize
-objectivevaluename: train_accuracy_1
-optimizationgoal: 0.99
-requestcount: 1
-metricsnames:
- - train_accuracy_1
-parameterconfigs:
- - name: --learning_rate
-   parametertype: double
-   feasible:
-     min: "0.01"
-     max: "0.05"
- - name: --batch_size
-   parametertype: int
-   feasible:
-     min: "100"
-     max: "200"
- - name: --num_epochs
-   parametertype: int
-   feasible:
-     min: "1"
-     max: "10"
+parallelTrialCount: 3
+maxTrialCount: 6
+maxFailedTrialCount: 3
+objective:
+  type: maximize
+  goal: 0.99
+  objectiveMetricName: accuracy
+algorithm:
+  algorithmName: random
+parameters:
+  - name: --learning_rate
+    parameterType: double
+    feasibleSpace:
+      min: "0.01"
+      max: "0.05"
+  - name: --batch_size
+    parameterType: int
+    feasibleSpace:
+      min: "100"
+      max: "200"
+
 
 ```
 5. Upload this file and click *Submit* button.
@@ -149,7 +146,7 @@ parameterconfigs:
 1. Start the default dkube notebook from the IDE tab.
 2. Once running, click the jupyterlab icon to launch jupyterlab.
 3. Go to pipeline/ipynbs.
-4. Double click on dkube-mnist-pipeline.ipynb.
+4. Double click on digits.ipynb.
 5. Run the notebook and create the tar file.
 6. Download the tar file by right clicking on it.
 7. Upload the tar file into the DKube pipeline UI.
@@ -159,8 +156,8 @@ parameterconfigs:
 2. Create Dataset with name mnist.
 3. Create model with name mnist.
 4. Go to Default Dkube notebook.
-5. Then, click the Jupyter icon which will open a UI. Select the catsdogs.ipynb and double click it to open.
-6. Run all the cells of catsdogs.ipynb. This will create a pipeline, creates an experiment and a run.
+5. Then, click the Jupyter icon which will open a UI. Select the digits.ipynb and double click it to open.
+6. Run all the cells of digits.ipynb. This will create a pipeline, creates an experiment and a run.
 7. Links are displayed in the output cells wherever applicable.
 
 ## How to use digits.tar.gz
@@ -169,7 +166,7 @@ parameterconfigs:
 3. Click *Experiments* sidemenu option.
 4. Click *Create an experiment* button and input a unique *experiment* name.
 5. Click *next* button it will auto display form to create a new *run*.
-6. Select the *pipeline* which was uploaded in *step 1*
+6. Select the *pipeline* which was uploaded in *step 2*
 7. Fill in the *Run Parameters* fields.
 
 ## How to use digits.py
