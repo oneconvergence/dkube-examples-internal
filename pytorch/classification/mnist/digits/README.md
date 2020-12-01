@@ -37,13 +37,15 @@
  1. Click *Runs* side menu option.
  2. Click *+Runs* and select Training button.
  3. Fill the fields in Run form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
-	- Enter a unique name say *digits-classifier*
-	- **Container** section
+    - **Basic Tab** :
+	  - Enter a unique name say *digits-classifier*
+ 	  - **Container** section
 		- Framework - pytorch.
+		- Project section - Please select the workspace *mnist-pt* created in **Step1**.
 		- Start-up script -`python model.py`
-	- **Project** section - Please select the workspace *mnist-pt* created in **Step1**.	
-	- **Dataset** section - Please select the dataset *mnist-pt* created in **Step2**. Mount point: /opt/dkube/input .
-	- **Model** section - Please select the model *mnist-pt* created in **Step3**. Mount point: /opt/dkube/output .
+    - **Repos Tab**
+	    - Dataset section - Under Inputs section,select the dataset *mnist-pt* created in **Step2**. Mount point: /opt/dkube/input .
+	    - Model section   - Under Outputs section,select the model *mnist-pt* under Outputs created in **Step3**. Mount point: /opt/dkube/output .
 4. Click *Submit* button.
 5. A new entry with name *digits-classifier* will be created in *Runs* table.
 6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.

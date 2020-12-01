@@ -37,16 +37,18 @@ To run this example, the user requires to set-up some initials into the Dkube.
 
 ## Step4: Start a training job
 The job must run in the given sequence, training then evaluation. Tensorboard can be launch after the training job.
-1. Click *Runs* side menu option.
+ 1. Click *Runs* side menu option.
  2. Click *+Runs* and select Training button.
  3. Fill the fields in Run form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
-    - Enter a unique name say *stock-pred*
-    - **Container** section
+    - **Basic Tab**
+      - Enter a unique name say *stock-pred*
+      - Project section - Please select the workspace *stock-prediction* created in **Step1**.
+      - Container section
         - Framework - sklearn
         - Start-up script -`python train.py`
-    - **Project** section - Please select the workspace *stock-prediction* created in **Step1**.
-    - **Dataset** section - Please select the dataset *google-stock* created in **Step2**. Mount point: /opt/dkube/input.Select pg_internal version
-    - **Model** section - Please select the output model *stock-pred* created in **Step3**. Mount-Point: /opt/dkube/model
+    - **Repos Tab**
+      - Dataset section - Under Inputs section,select the dataset *google-stock* created in **Step2**. Mount point: /opt/dkube/input.Select pg_internal version
+      - Model section - Under Outputs section,select the output model *stock-pred* created in **Step3**. Mount-Point: /opt/dkube/model
 4. Click *Submit* button.
 
 ## Model overview: 
