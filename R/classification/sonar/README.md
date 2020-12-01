@@ -29,7 +29,7 @@
     - **Basic Tab**
 	  - Enter a unique name say *r-examples*
 	  - Project section - Please select the workspace *r-examples* created in **Step1**
-      - Containersection
+      - Container section
 		- Framework - Tensorflow
 		- Framework version - r-2.0.0
 		- Start-up script - `Rscript sonar/sonar.R`

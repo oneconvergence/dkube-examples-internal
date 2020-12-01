@@ -63,10 +63,10 @@ This step is to create a dvs model which will hold the trained output model.
       - Enter Unique name say Training-catsdogs
       - Project: Click on + button and select resnet-catsdogs project
       - Container Section
-       - Select Framework as tensorflow
-       - Select Framework version 1.14
-       - Start-up command : python model.py
-       - Click Next
+        - Select Framework as tensorflow
+        - Select Framework version 1.14
+        - Start-up command : python model.py
+        - Click Next
    - **Repos Tab**
       - Dataset: Under Inputs section, click on + button and select catsdogs dataset and enter mount path say /opt/dkube/input
       - Models: Under Outputs section,click on + button and select catsdogs model and enter mount path: Enter path say /opt/dkube/output

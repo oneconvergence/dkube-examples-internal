@@ -65,10 +65,10 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
       - Enter Unique name say Training-mnist
       - Project: Click on + button and select mnist-digits project
       - Container Section
-       - Select Framework as tensorflow
-       - Select Framework version 1.14 or 2.0 depending on your choice.
-       - Start-up command : python model.py
-       - Click Next
+        - Select Framework as tensorflow
+        - Select Framework version 1.14 or 2.0 depending on your choice.
+        - Start-up command : python model.py
+        - Click Next
     - **Repos Tab**
       - Dataset: Under Inputs section, click on + button and select mnist-digits Dataset and enter mount path say /opt/dkube/input
       - Models: Under Outputs section,click on + button and select Models and enter mount path: Enter path say /opt/dkube/output
