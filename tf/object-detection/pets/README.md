@@ -198,7 +198,7 @@ After the job is *complete* from above step. The trained model will get generate
   }
 
 4. **Inference**
-    - Copy all the images for which you want inference in /home/ocdkube/workspace/pets_detection/inference-images folder.
+    - One image is provided in the inference-images folder,if you want inference for other images too, please copy all the images in the inference-images folder inside tf-notebooks.
 
 
 
