@@ -61,5 +61,7 @@ if __name__ == "__main__":
     featureset_metadata = yaml.dump(featureset_metadata, default_flow_style=False)
     with open("fspec.yaml", 'w') as f:
          f.write(featureset_metadata)
-    api.upload_featurespec(featureset = 'mnist-fs',filepath = "./fspec.yaml")
-    api.commit_features()
+    resp = api.upload_featurespec(featureset = 'mnist-fs',filepath = "./fspec.yaml")
+    print("featurespec upload response:", resp)
+    resp = api.commit_features()
+    print("featureset commit response:", resp)
