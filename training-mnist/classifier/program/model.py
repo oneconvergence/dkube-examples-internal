@@ -33,6 +33,7 @@ import json
 import mlflow
 import mlflow.tensorflow
 
+mlflow.tensorflow.autolog()
 tf.compat.v1.disable_eager_execution()
 
 FLAGS = None
@@ -149,8 +150,8 @@ def model_fn(features, labels, mode, params):
     g_loss = loss
     g_acc = accuracy
     ## Logging mlflow metrics ##
-    mlflow.log_metric("train_accuracy", accuracy[1])
-    mlflow.log_metric("train_loss", loss)
+    #mlflow.log_metric("train_accuracy", accuracy[1])
+    #mlflow.log_metric("train_loss", loss)
     tf.identity(accuracy[1], name='train_accuracy')
     tf.compat.v1.summary.scalar('train_accuracy', accuracy[1])
     logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
@@ -166,8 +167,8 @@ def model_fn(features, labels, mode, params):
     accuracy = tf.compat.v1.metrics.accuracy(
         labels=tf.argmax(input=labels, axis=1), predictions=tf.argmax(input=logits, axis=1))
     ## Logging mlflow metrics ##
-    mlflow.log_metric("test_accuracy", accuracy[1])
-    mlflow.log_metric("test_loss", loss)
+    #mlflow.log_metric("test_accuracy", accuracy[1])
+    #mlflow.log_metric("test_loss", loss)
     logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
         "step" : tf.compat.v1.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"eval"}, every_n_iter=summary_interval)
     return tf.estimator.EstimatorSpec(
