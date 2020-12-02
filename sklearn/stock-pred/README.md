@@ -67,13 +67,13 @@
 1. Serving image : (use default one)
 2. Transformer image : (use default)
 3. Transformer project (use default)
-4. Transformer code : sklearn/model/transformer.py 
+4. Transformer code : sklearn/stock-pred/model/transformer.py 
 
 ## Test Inference
 1. Go to the model version and click test inference.
 2. Give a name and check the transformer.
 3. Select project stock-prediction.
-4. Edit transformer code field and replace the default test with sklearn/model/transformer.py
+4. Edit transformer code field and replace the default test with sklearn/stock-pred/model/transformer.py
 5. Choose CPU and Submit. 
 6. Open the Inference UI page https://<IP>:32222/inference .
 7. Fill serving URL and auth token values.
@@ -95,7 +95,7 @@ stock-inp.json https://raw.githubusercontent.com/oneconvergence/dkube-examples/m
 1. A model can be published directly from the repo or can be first released and then published.
 2. Go to the model version and click Publish Model icon.
 3. Give a name and check the transformer.
-4. Edit transformer code field and replace the default test with sklearn/model/transformer.py
+4. Edit transformer code field and replace the default test with sklearn/stock-pred/model/transformer.py
 5. Click Submit. 
 6. Once a model is published, it will be available in the Model Catalog.
 
