@@ -188,7 +188,7 @@ def main(unused_argv):
           mlflow.log_param("EPOCHS",int(hyperparams['num_epochs']))
       except:
           hyperparams = { "learning_rate":1e-4, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
-          mlflow.log_param("BATCH_SIZE",int(os.getenv('BATCHSIZE', 10))
+          mlflow.log_param("BATCH_SIZE",int(os.getenv('BATCHSIZE', 10)))
           mlflow.log_param("LEARNING_RATE",float(1e-4))
           mlflow.log_param("EPOCHS",int(os.getenv('EPOCHS', 1)))
 
