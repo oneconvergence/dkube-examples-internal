@@ -3,7 +3,7 @@ from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import csv, sys
 import matplotlib.pyplot as plt
-from tensorboard_logger import configure, log_value, log_histogram, log_images,  Logger
+from tensorboard_logger import unconfigure, configure, log_value, log_histogram, log_images,  Logger
 from PIL import Image
 import cv2, os, json
 import joblib
@@ -12,6 +12,7 @@ import argparse
 
 dates = []
 prices = []
+unconfigure()
 
 def eval_metrics(actual, pred):
     rmse = np.sqrt(mean_squared_error(actual, pred))
