@@ -50,6 +50,7 @@ summary_interval = 100
 g_loss = 0
 g_acc = 0
 
+mlflow.log_param("TF_TRAIN_STEPS",int(os.getenv('STEPS',1000)))
 def count_epochs(iterator):
     sess = tf.compat.v1.Session()
     if os.getenv('TF_CONFIG') is not None:
@@ -149,9 +150,6 @@ def model_fn(features, labels, mode, params):
     # LoggingTensorHook.
     g_loss = loss
     g_acc = accuracy
-    ## Logging mlflow metrics ##
-    #mlflow.log_metric("train_accuracy", accuracy[1])
-    #mlflow.log_metric("train_loss", loss)
     tf.identity(accuracy[1], name='train_accuracy')
     tf.compat.v1.summary.scalar('train_accuracy', accuracy[1])
     logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
@@ -166,9 +164,6 @@ def model_fn(features, labels, mode, params):
     loss = tf.compat.v1.losses.softmax_cross_entropy(onehot_labels=labels, logits=logits)
     accuracy = tf.compat.v1.metrics.accuracy(
         labels=tf.argmax(input=labels, axis=1), predictions=tf.argmax(input=logits, axis=1))
-    ## Logging mlflow metrics ##
-    #mlflow.log_metric("test_accuracy", accuracy[1])
-    #mlflow.log_metric("test_loss", loss)
     logging_hook = logger_hook({"loss": loss, "accuracy":accuracy[1] ,
         "step" : tf.compat.v1.train.get_or_create_global_step(), "steps_epoch": steps_epoch, "mode":"eval"}, every_n_iter=summary_interval)
     return tf.estimator.EstimatorSpec(
@@ -188,8 +183,15 @@ def main(unused_argv):
           fp = open(os.getenv('DKUBE_JOB_HP_TUNING_INFO_FILE', 'None'),'r')
           hyperparams = json.loads(fp.read())
           hyperparams['num_epochs'] = EPOCHS
+          mlflow.log_param("BATCH_SIZE",int(hyperparams['batch_size']))
+          mlflow.log_param("LEARNING_RATE",float(hyperparams['learning_rate']))
+          mlflow.log_param("EPOCHS",int(hyperparams['num_epochs']))
       except:
           hyperparams = { "learning_rate":1e-4, "batch_size":BATCH_SIZE, "num_epochs":EPOCHS }
+          mlflow.log_param("BATCH_SIZE",int(os.getenv('BATCHSIZE', 10))
+          mlflow.log_param("LEARNING_RATE",float(1e-4))
+          mlflow.log_param("EPOCHS",int(os.getenv('EPOCHS', 1)))
+
           pass
       parser = argparse.ArgumentParser()
       parser.add_argument('--learning_rate', type=float, default=float(hyperparams['learning_rate']), help='Learning rate for training.')
