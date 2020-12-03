@@ -155,6 +155,15 @@ parameters:
 7. Run all the cells of catsdogs.ipynb. This will create a pipeline, creates an experiment and a run.
 8. Links are displayed in the output cells wherever applicable.
 
+## How to use digits.tar.gz
+1. Click *Pipelines* sidemenu option.
+2. Click *+Upload pipeline* and upload this file.
+3. Click *Experiments* sidemenu option.
+4. Click *Create an experiment* button and input a unique *experiment* name.
+5. Click *next* button it will auto display form to create a new *run*.
+6. Select the *pipeline* which was uploaded in *step 2*
+7. Fill in the *Run Parameters* fields.
+
 ## How to use catsdogs.py
 1. This DSL definition needs to be compiled first. Following prereqs must be installed.
 ```
