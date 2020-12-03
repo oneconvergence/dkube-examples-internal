@@ -151,17 +151,9 @@ parameters:
 3. Create model with name catsdogs
 4. Go to Default Dkube notebook
 5. Then, click the Jupyter icon which will open a UI. Select the catsdogs.ipynb and double click it to open
-6. Run all the cells of catsdogs.ipynb. This will create a pipeline, creates an experiment and a run.
-7. Links are displayed in the output cells wherever applicable.
-
-## How to use catsdogs.tar.gz
-1. Click the Pipelines side menu option.
-2. Click +Upload pipeline and upload this file.
-3. Click Experiments side menu option.
-4. Click Create an experiment button and input a unique experiment name.
-5. Click the next button and it will auto display form to create a new run.
-6. Select the pipeline which was uploaded in step 2
-7. Fill in the *Run Parameters* fields. 
+6. Fill training_program, training_dataset, training_output_model with proper values
+7. Run all the cells of catsdogs.ipynb. This will create a pipeline, creates an experiment and a run.
+8. Links are displayed in the output cells wherever applicable.
 
 ## How to use catsdogs.py
 1. This DSL definition needs to be compiled first. Following prereqs must be installed.
