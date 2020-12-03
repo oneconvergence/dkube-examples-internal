@@ -24,7 +24,7 @@ def d3pipeline(
     training_output_model,
     #By default 'default' is used as the job group for runs
     job_group = 'default',
-    #Framework. One of tensorflow, pytorch, sklearn
+    #Framework. One of tensorflow, pytorch, sklearn, custom
     framework = "tensorflow",
     #Framework version
     version = "1.14",
@@ -48,9 +48,9 @@ def d3pipeline(
     #Serving image
     serving_image=json.dumps({'image':'ocdr/tensorflowserver:1.14', 'username':'', 'password': ''}),
     #Transformer image
-    transformer_image=json.dumps({'image':'docker.io/ocdr/mnist-example-preprocess:2.0.7', 'username':'', 'password': ''}),
+    transformer_image=json.dumps({'image':'docker.io/ocdr/d3-datascience-tf-cpu:v1.14', 'username':'', 'password': ''}),
     #Script to execute the transformer
-    transformer_code="tensorflow/classification/mnist/digits/transformer/transformer.py"):
+    transformer_code="tf/classification/mnist/digits/transformer/transformer.py"):
 
     train       = dkube_training_op(auth_token, training_container,
                                     program=training_program, run_script=training_script,
@@ -71,4 +71,3 @@ def d3pipeline(
 if __name__ == '__main__':
   import kfp.compiler as compiler
   compiler.Compiler().compile(d3pipeline, __file__ + '.tar.gz')
-

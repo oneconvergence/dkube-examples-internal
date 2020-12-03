@@ -13,7 +13,6 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
  - **inference**: This directory has compatible test data images which can be used for inference.
  - **hptuning/tuning.yaml**: Sample YAML showing the configuration format and parameters for tuning.
  - **pipeline/digits.py**: Python DSL defining a sample Dkube pipeline. Pipeline uses Dkube components for all stages.
- - **pipeline/digits.tar.gz**: Compiled python DSL which can be directly uploaded on to Dkube platform.
  - **pipeline/digits.ipynb**: Ipython notebook with the code. Upload the file in Dkube notebook and run all the cells. This notebook will generate and trigger the run of pipeline.
 
 # How to Train
@@ -157,8 +156,9 @@ parameters:
 3. Create model with name mnist.
 4. Go to Default Dkube notebook.
 5. Then, click the Jupyter icon which will open a UI. Select the digits.ipynb and double click it to open.
-6. Run all the cells of digits.ipynb. This will create a pipeline, creates an experiment and a run.
-7. Links are displayed in the output cells wherever applicable.
+6. Fill training_program, training_dataset, training_output_model with proper values
+7. Run all the cells of digits.ipynb. This will create a pipeline, creates an experiment and a run.
+8. Links are displayed in the output cells wherever applicable.
 
 ## How to use digits.tar.gz
 1. Click *Pipelines* sidemenu option.
