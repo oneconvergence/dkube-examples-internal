@@ -50,7 +50,6 @@ summary_interval = 100
 g_loss = 0
 g_acc = 0
 
-mlflow.log_param("TF_TRAIN_STEPS",int(os.getenv('STEPS',1000)))
 def count_epochs(iterator):
     sess = tf.compat.v1.Session()
     if os.getenv('TF_CONFIG') is not None:
