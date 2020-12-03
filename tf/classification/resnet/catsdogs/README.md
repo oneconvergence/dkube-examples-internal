@@ -13,7 +13,6 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
  - **inference**: This directory has compatible test data images which can be used for inference.
  - **hptuning/tuning.yaml**: Sample YAML showing the configuration format and parameters for tuning.
  - **pipeline/catsdogs.py**: Python DSL defining a sample Dkube pipeline. Pipeline uses Dkube components for all stages.
- - **pipeline/catsdogs.tar.gz**: Compiled python DSL which can be directly uploaded on to Dkube platform.
  - **pipeline/catsdogs.ipynb**: Ipython notebook with the code. Upload the file in Dkube notebook and run all the cells. This notebook will generate and trigger the run of pipeline.
 
 # How to Train
