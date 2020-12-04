@@ -4,8 +4,8 @@
 2. Click *+Project* button under the Projects section.
 3. Select source as *Git*.
 4. Enter a unique name say *stock-prediction*
-5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/model
- ](https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/model)* in the URL text box.
+5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred/model
+ ](https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred/model)* in the URL text box.
 6. Branch: master
 7. Click *Add Project* button.
 8. Project will be created and imported in Dkube. Progress of import can be seen.
@@ -16,8 +16,8 @@
  2. Click *+Dataset* button.
  3. Select *Github* option.
  4. Enter a unique name say *google-stock*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/dataset
- ](https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/dataset)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred/dataset
+ ](https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred/dataset)* in the URL text box.
  6. Click *Add Dataset* button.
  7. Dataset will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -80,14 +80,14 @@
 6. Open the Inference UI page https://<IP>:32222/inference .
 7. Fill serving URL and auth token values.
 8. Choose model sk-stock.
-9. Save the text from the URL in a CSV file*[https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/dataset/goog.csv](https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/dataset/goog.csv)*
+9. Save the text from the URL in a CSV file*[https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/stock-pred/dataset/goog.csv](https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/stock-pred/dataset/goog.csv)*
 10. Upload the CSV file.
 11. Click Predict. 
 
 ## CURL Example for test inference
 curl -kv -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" https://<IP>:32222/dkube/inf/v1/models/d3-inf-3d133119-ec8d-47ce-851f-a7608f4cadd4:predict -d @stock-inp.json
 
-stock-inp.json https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/input_sample/stock-input.json
+stock-inp.json https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/stock-pred/input_sample/stock-input.json
 
 ## Release model
 1. Go to the model version and click Release Model icon.
@@ -109,7 +109,7 @@ stock-inp.json https://raw.githubusercontent.com/oneconvergence/dkube-examples/m
 5. Open the Inference UI page https://<IP>:32222/inference
 6. Fill serving URL and auth token values.
 7. Choose model sk-stock.
-8. Save the text from the URL in a CSV file *[https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/dataset/goog.csv](https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/dataset/goog.csv)*
+8. Save the text from the URL in a CSV file *[https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/stock-pred/dataset/goog.csv](https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/stock-pred/dataset/goog.csv)*
 9. Upload the CSV file
 10. Click Predict.
 
