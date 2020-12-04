@@ -58,25 +58,20 @@ This step is to create a dvs model which will hold the trained output model.
 1. Click Runs side menu option.
 2. Click +Run and select the Training button.
 3. Fill the fields in Job form and click the Submit button. See below for sample values to be given in the form, for advanced usage please refer to Dkube User Guide.
- - Basic Tab
-   - Enter Unique name say Training-catsdogs
-   - Enter Description name in Description text-box
-   - Enter Tags name in Tags text-box
-   - Project: Click on + button and select catsdogs project
-   - Select Framework as Tensorflow.
-   - Select Framework version as v1.14 or 2.0 depending on your choice.
-   - Start-up command : python model.py
-   - Click Next
-- Repos Tab
-  - Dataset: Click on + button and select catsdogs Dataset and 
-  - Enter mount path say /opt/dkube/input
-
-- Output Tab
-  - Models: Click on + button and select Models.
-  - Enter mount path: Enter path say /opt/dkube/output.
-  - Click Next.
-- Configuration Tab
-  - Enter GPUs in GPUs to allocate  text-box.
+   - **Basic Tab**
+      - Enter Unique name say Training-catsdogs
+      - Project: Click on + button and select resnet-catsdogs project
+      - Container Section
+        - Select Framework as tensorflow
+        - Select Framework version 1.14
+        - Start-up command : python model.py
+        - Click Next
+   - **Repos Tab**
+      - Dataset: Under Inputs section, click on + button and select catsdogs dataset and enter mount path say /opt/dkube/input
+      - Models: Under Outputs section,click on + button and select catsdogs model and enter mount path: Enter path say /opt/dkube/output
+      - Click Next
+   - **Configuration Tab**
+      - Enter GPUs in GPUs to allocate text-box
 4. Click on Submit Button
 5. A new entry with name catsdogs-classifier will be created in Jobs table
 6. Check the Status field for the lifecycle of the job, wait till it shows complete.
@@ -173,4 +168,30 @@ pip install https://storage.googleapis.com/ml-pipeline/release/1.0.0/kfp.tar.gz 
 2. Use the command below to compile the DSL,
 ```dsl-compile --py [path/to/python/file] --output [path/to/output/tar.gz]```
 3. Once the tar ball is generated. Follow the procedure mentioned in [section](##%20How%20to%20use%20catsdogs.tar.gz). 
+
+## Release Model
+1. Go to the model version and click the ?~@~XRelease Model?~@~Y icon.
+2. Once the model is released, it will be available in the Released view of the Models.
+
+## Publish Model
+1. A model can be published directly from the repo or can be first released and then published.
+2. Go to the model version and click ?~@~XPublish Model?~@~Y icon.
+3. Give a name and check the transformer.
+   - Edit transformer code field and replace the default test with tf/classification/resnet/catsdogs/transformer/transformer.py
+   - Click Submit.
+4. Once a model is published, it will be available in the Model Catalog.
+
+
+## Model Serving
+1.  A published model can be staged or deployed from the Model Catalog.
+2.  Go to Model Catalog and click on the published model.
+3.  Go to the model version and click stage/deploy.
+4.  Give a name and choose CPU and submit.
+5.  Open the Inference UI page https://<IP>:32222/inference
+6.  Fill serving URL and auth token values.
+7.  Choose model catsdogs
+8.  Download test images from https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/catsdogs/inference/
+9.  Upload the any downloaded file
+10. Click Predict.
+
 

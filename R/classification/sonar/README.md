@@ -26,13 +26,15 @@
  1. Click *Runs* side menu option.
  2. Click *+Runs* and select Training button.
  3. Fill the fields in Run form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
-	- Enter a unique name say *r-examples*
-	- **Container** section
+    - **Basic Tab**
+	  - Enter a unique name say *r-examples*
+	  - Project section - Please select the workspace *r-examples* created in **Step1**
+      - Container section
 		- Framework - Tensorflow
 		- Framework version - r-2.0.0
 		- Start-up script - `Rscript sonar/sonar.R`
-	- **Project** section - Please select the workspace *r-examples* created in **Step1**
-	- **Model** section - Please select the output model *r-sonar* created in **Step3**. Mount point: /opt/dkube/model
+	- **Repos** Tab
+	  - Model section - Under the Outputs section,select the model *r-sonar* created in **Step3**. Mount point: /opt/dkube/model
 4. Click *Submit* button.
 5. A new entry with name *r-examples* will be created in *Runs* table
 6. Check the *Status* field for lifecycle of job, wait till it shows *complete*
