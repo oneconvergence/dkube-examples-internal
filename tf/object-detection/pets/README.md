@@ -180,9 +180,9 @@ After the job is *complete* from above step. The trained model will get generate
    - Project: PETS-TF2 
    - Image Name: ocdr/d3-object-detection-gpu-tf:v2.2-2.1.6 .
 
-3. Change the following paths in **pipeline.config** file present in tf-notebooks in your Jupyter Lab IDE, by replacing all instances of /home/ocdkube to your home dir.
+3. Change the following paths in **pipeline.config** file present in tf-notebooks in your Jupyter Lab IDE, to your path. Eg : replace /home/ocdkube/workspace with /home/ocdkube/workspace/PETS-TF2/tf/object-detection/pets/tf-notebooks
 
-   1. fine_tune_checkpoint:"/home/ocdkube/workspace/pets_detection/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0" .
+   1. fine_tune_checkpoint:"/home/ocdkube/workspace/pets_detection/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8/checkpoint/ckpt-0" 
 
    2. train_input_reader { label_map_path:"/home/ocdkube/workspace/pets_detection/annotations/label_map.pbtxt" 
    tf_record_input_reader {
