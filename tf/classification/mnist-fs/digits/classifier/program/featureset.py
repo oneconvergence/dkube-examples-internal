@@ -36,9 +36,11 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", dest = 'url', default=None, type = str, help="setup URL")
+    parser.add_argument("--fs", dest = 'fs', required=True, type = str, help="featureset")
     global FLAGS
     FLAGS, unparsed = parser.parse_known_args()
     dkubeURL = FLAGS.url
+    fs = FLAGS.fs
     authToken = os.getenv('DKUBE_USER_ACCESS_TOKEN') # Dkube access token
 
     # Converting data from ubyte to numpy arrays
@@ -68,7 +70,7 @@ if __name__ == "__main__":
     with open("fspec.yaml", 'w') as f:
          f.write(featureset_metadata)
     # Uploading featureset metadata
-    resp = api.upload_featurespec(featureset = 'mnist-fs',filepath = "fspec.yaml")
+    resp = api.upload_featurespec(featureset = fs,filepath = "fspec.yaml")
     print("featurespec upload response:", resp)
     # Commiting featureset before exiting the program.
     resp = api.commit_features()
