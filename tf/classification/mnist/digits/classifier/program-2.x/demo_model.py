@@ -11,33 +11,17 @@ from tensorflow.keras import Model
 
 inp_path = '/opt/dkube/input/'
 out_path = '/opt/dkube/output/'
-filename = 'featureset.parquet'
 batch_size = 32
 
 steps_per_epoch = int(60000/batch_size)
-epochs = 2
+epochs = 5
 
-def read_idx(dataset = "training", path = "../data"):
-    # Fucntion to convert ubyte files to numpy arrays
-    if dataset == "training":
-        fname_img = os.path.join(path, 'train-images-idx3-ubyte')
-        fname_lbl = os.path.join(path, 'train-labels-idx1-ubyte')
-    elif dataset == "testing":
-        fname_img = os.path.join(path, 't10k-images-idx3-ubyte')
-        fname_lbl = os.path.join(path, 't10k-labels-idx1-ubyte')
-
-    # Load everything in some numpy arrays
-    with open(fname_lbl, 'rb') as flbl:
-        magic, num = struct.unpack(">II", flbl.read(8))
-        lbl = np.fromfile(flbl, dtype=np.int8)
-
-    with open(fname_img, 'rb') as fimg:
-        magic, num, rows, cols = struct.unpack(">IIII", fimg.read(16))
-        img = np.fromfile(fimg, dtype=np.uint8).reshape(len(lbl), rows, cols)
-    return img, lbl
+path = os.path.join(inp_path, 'mnist.npz')
 
 def train_dataset():
-    x_train, y_train = read_idx(path = inp_path)
+    with np.load(path, allow_pickle=True) as f:
+        x_train, y_train = f['x_train'], f['y_train']
+        x_test, y_test = f['x_test'], f['y_test']
     x_train = x_train[..., tf.newaxis].astype("float32")
     return (
         tf.data.Dataset.from_tensor_slices(dict(x=x_train, y=y_train)).repeat().batch(batch_size)
