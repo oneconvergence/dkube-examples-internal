@@ -12,6 +12,10 @@ from tensorflow.keras import Model
 inp_path = '/opt/dkube/input/'
 out_path = '/opt/dkube/output/'
 filename = 'featureset.parquet'
+batch_size = 32
+
+steps_per_epoch = int(60000/batch_size)
+epochs = 2
 
 def read_idx(dataset = "training", path = "../data"):
     # Fucntion to convert ubyte files to numpy arrays
@@ -32,43 +36,28 @@ def read_idx(dataset = "training", path = "../data"):
         img = np.fromfile(fimg, dtype=np.uint8).reshape(len(lbl), rows, cols)
     return img, lbl
 
+def train_dataset():
+    x_train, y_train = read_idx(path = inp_path)
+    x_train = x_train[..., tf.newaxis].astype("float32")
+    return (
+        tf.data.Dataset.from_tensor_slices(dict(x=x_train, y=y_train)).repeat().batch(batch_size)
+    )
+
+
 @tf.function
-def train_step(images, labels):
-  with tf.GradientTape() as tape:
-    # training=True is only needed if there are layers with different
-    # behavior during training versus inference (e.g. Dropout).
-    predictions = model(images, training=True)
-    loss = loss_object(labels, predictions)
-  gradients = tape.gradient(loss, model.trainable_variables)
-  optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+def train_step(net, example, optimizer):
+    """Trains `net` on `example` using `optimizer`."""
+    images, labels = example['x'], example['y']
+    with tf.GradientTape() as tape:
+        output = net(images, training=True)
+        loss = loss_object(labels, output)
+    variables = net.trainable_variables
+    gradients = tape.gradient(loss, variables)
+    optimizer.apply_gradients(zip(gradients, variables))
+    train_loss(loss)
+    train_accuracy(labels, output)
+    return loss
 
-  train_loss(loss)
-  train_accuracy(labels, predictions)
-    
-@tf.function
-def test_step(images, labels):
-  # training=False is only needed if there are layers with different
-  # behavior during training versus inference (e.g. Dropout).
-  predictions = model(images, training=False)
-  t_loss = loss_object(labels, predictions)
-
-  test_loss(t_loss)
-  test_accuracy(labels, predictions)
-    
-
-x_train, y_train = read_idx(path = inp_path)
-
-x_test, y_test = read_idx(dataset = "testing", path = inp_path)
-
-print(x_test.shape)
-
-x_train = x_train[..., tf.newaxis].astype("float32")
-x_test = x_test[..., tf.newaxis].astype("float32")
-
-train_ds = tf.data.Dataset.from_tensor_slices(
-    (x_train, y_train)).shuffle(10000).batch(32)
-
-test_ds = tf.data.Dataset.from_tensor_slices((x_test, y_test)).batch(32)
 
 class MyModel(Model):
   def __init__(self):
@@ -89,7 +78,7 @@ model = MyModel()
 
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
-optimizer = tf.keras.optimizers.Adam()
+opt = tf.keras.optimizers.Adam()
 
 train_loss = tf.keras.metrics.Mean(name='train_loss')
 train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy')
@@ -97,37 +86,23 @@ train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy
 test_loss = tf.keras.metrics.Mean(name='test_loss')
 test_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='test_accuracy')
 
+dataset = train_dataset()
+iterator = iter(dataset)
 ckpt = tf.train.Checkpoint(
-    step=tf.Variable(1), optimizer=optimizer, net=model
+    step=tf.Variable(1), optimizer=opt, net=model, iterator=iterator
 )
 manager = tf.train.CheckpointManager(ckpt, os.path.join(out_path, 'run-1'), max_to_keep=3)
-
 ckpt.restore(manager.latest_checkpoint)
 
-EPOCHS = 1
+steps = steps_per_epoch * epochs
 
-for epoch in range(EPOCHS):
-  # Reset the metrics at the start of the next epoch
-  train_loss.reset_states()
-  train_accuracy.reset_states()
-  test_loss.reset_states()
-  test_accuracy.reset_states()
-
-  for images, labels in train_ds:
-    train_step(images, labels)
-    
-  ckpt.step.assign_add(1)
-  #if int(ckpt.step) % 10 == 0:
-  save_path = manager.save()
-  print("Saved checkpoint for epoch {}: {}".format(int(ckpt.step), save_path))
-
-  for test_images, test_labels in test_ds:
-    test_step(test_images, test_labels)
-
-  print(
-    f'Epoch {epoch + 1}, '
-    f'Loss: {train_loss.result()}, '
-    f'Accuracy: {train_accuracy.result() * 100}, '
-    f'Test Loss: {test_loss.result()}, '
-    f'Test Accuracy: {test_accuracy.result() * 100}'
-  )
+for _ in range(steps):
+    example = next(iterator)
+    loss = train_step(model, example, opt)
+    ckpt.step.assign_add(1)
+    if int(ckpt.step) % 100 == 0:
+        save_path = manager.save()
+        print("Saved checkpoint for step {}: {}".format(int(ckpt.step), save_path))
+        print("loss {:1.2f}".format(loss.numpy()))
+        
+model.save(out_path)
