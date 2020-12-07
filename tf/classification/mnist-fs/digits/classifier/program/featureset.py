@@ -14,6 +14,7 @@ out_path = '/opt/dkube/output/'
 filename = 'featureset.parquet'
 
 def read_idx(dataset = "training", path = "../data"):
+    # Fucntion to convert ubyte files to numpy arrays
     if dataset == "training":
         fname_img = os.path.join(path, 'train-images-idx3-ubyte')
         fname_lbl = os.path.join(path, 'train-labels-idx1-ubyte')
@@ -38,13 +39,17 @@ if __name__ == "__main__":
     global FLAGS
     FLAGS, unparsed = parser.parse_known_args()
     dkubeURL = FLAGS.url
-    authToken = os.getenv('DKUBE_USER_ACCESS_TOKEN')
+    authToken = os.getenv('DKUBE_USER_ACCESS_TOKEN') # Dkube access token
 
+    # Converting data from ubyte to numpy arrays
     img, lbl = read_idx(path = inp_path)
     dataset  = pd.DataFrame(data = img.reshape(img.shape[0], 784))/255
     dataset['label'] = lbl
+    # Featureset API call
     featureset = DkubeFeatureSet()	
+    #updating featureset path for output
     featureset.update_features_path(path=out_path)	
+    # writing featureset, input:dataframe
     featureset.write(dataset)
     ####### Featureset metadata #########
     keys   = dataset.keys()
@@ -56,12 +61,15 @@ if __name__ == "__main__":
         metadata["description"] = None
         metadata["schema"] = str(schema[i])
         featureset_metadata.append(metadata)
-        
+    # DkubeApi calling
     api = DkubeApi(URL=dkubeURL, token=authToken)
+    # Writing featureset metadata to yaml file
     featureset_metadata = yaml.dump(featureset_metadata, default_flow_style=False)
     with open("fspec.yaml", 'w') as f:
          f.write(featureset_metadata)
-    resp = api.upload_featurespec(featureset = 'mnist-fs',filepath = "./fspec.yaml")
+    # Uploading featureset metadata
+    resp = api.upload_featurespec(featureset = 'mnist-fs',filepath = "fspec.yaml")
     print("featurespec upload response:", resp)
+    # Commiting featureset before exiting the program.
     resp = api.commit_features()
     print("featureset commit response:", resp)

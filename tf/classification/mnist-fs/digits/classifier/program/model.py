@@ -47,12 +47,16 @@ epochs = FLAGS.epochs
 batch_size = FLAGS.batch_size
 dkubeURL = FLAGS.url
 authToken = os.getenv('DKUBE_USER_ACCESS_TOKEN')
-
+# Dkube API calling
 api = DkubeApi(URL=dkubeURL, token=authToken)
+# Featureset API call
 featureset = DkubeFeatureSet()
+# Featureset input path update
 featureset.update_features_path(path=inp_path)
+# Reading featureset, output: response json with data
 data  = featureset.read()
 
+# Fetching data from response
 feature_df = data["data"]
 
 y = feature_df['label'].values
@@ -62,6 +66,7 @@ x = x.reshape(x.shape[0], 28, 28, 1)
 
 y = get_one_hot(y, 10)
 
+# Defining model
 model = Sequential()
 model.add(Conv2D(32, kernel_size=(3, 3),
                  activation='relu',
@@ -76,11 +81,13 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
               optimizer='adam',
               metrics=['accuracy'])
 
+# Model training
 history = model.fit(x, y,
               batch_size=batch_size,
               epochs=epochs,
               verbose=1)
 
+# logging metrics into Dkube
 if 'acc' in history.history.keys():
     for i in range(1, epochs + 1):
         log_metrics('accuracy', float(history.history['acc'][i-1]), i, i)
@@ -93,7 +100,8 @@ else:
         log_metrics('loss', float(history.history['loss'][i-1]), i, i)
         print("accuracy=",float(history.history['accuracy'][i-1]))
         print("loss=",float(history.history['loss'][i-1]))
-        
+
+# Exporting model        
 export_path = out_path
 version = 0
 if not tf.io.gfile.exists(export_path):

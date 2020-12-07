@@ -47,11 +47,11 @@
 
 
 
-1. Go to the model and click test inference,
-2. Check transformer option, and replace the transformer script with **tf/classification/mnist-fs/digits/transformer/transformer.py**
-3. Choose CPU, and submit.
-4. Go to https://&lt;URL>:32222/inference
-&nbsp;&nbsp;1. Copy the model serving URL from the test inference tab.
-&nbsp;&nbsp;2. Copy the auth token from developer settings, 
-&nbsp;&nbsp;3. Download any .png image from, [https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/inference](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/inference) and upload.
+1. Go to the model and click test inference, 
+2. Check transformer option, and replace the transformer script with **tf/classification/mnist-fs/digits/transformer/transformer.py** 
+3. Choose CPU, and submit. 
+4. Go to https://&lt;URL>:32222/inference \
+&nbsp;&nbsp;1. Copy the model serving URL from the test inference tab. \
+&nbsp;&nbsp;2. Copy the auth token from developer settings, \
+&nbsp;&nbsp;3. Download any .png image from, [https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/inference](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/inference) and upload. \
 &nbsp;&nbsp;4. Click predict.
