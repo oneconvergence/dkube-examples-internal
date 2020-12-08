@@ -37,11 +37,11 @@
 6. **Pipeline run: **
     21. Download pipeline: [https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/titanic/pipeline/dkube_titanic_pl.tar.gz](https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/titanic/pipeline/dkube_titanic_pl.tar.gz) 
     22. Upload and create a run, 
-        8. Fill auth token from developer settings
-        9. **training_program: **titanic (This is the project name and should exist)
-        10. **preprocessing_dataset: **titanic (This is the dataset name and should exist)
-        11. **training_featureset: **titanic-fs  (This is the feature set name and should exist)
-        12. **training_output_model: **RFC (This is the model name and should exist)
+    8. Fill auth token from developer settings
+    9. **training_program: **titanic (This is the project name and should exist)
+    10. **preprocessing_dataset: **titanic (This is the dataset name and should exist)
+    11. **training_featureset: **titanic-fs  (This is the feature set name and should exist)
+    12. **training_output_model: **RFC (This is the model name and should exist)
 
 
 ## **Test Inference:**
