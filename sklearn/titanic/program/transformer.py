@@ -49,7 +49,7 @@ class Transformer(kfserving.KFModel):
     def postprocess(self, predictions: List) -> List:
         logging.info("prep =======> %s",str(type(predictions)))
         preds = predictions["predictions"]
-        if int(preds) == 0:
+        if int(preds[0]) == 0:
             return {"result": "Dead"}
         else:
             return {"result": "Alive"}
