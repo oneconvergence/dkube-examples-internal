@@ -26,7 +26,7 @@
 5. **Training job** \
 &nbsp;1. **Type:** training \
 &nbsp;2. **Framework:** sklearn \
-&nbsp;3. **Framework Version:**0.23.2 \
+&nbsp;3. **Framework Version:** 0.23.2 \
 &nbsp;4. **Image** : docker.io/ocdr/d3-datascience-tf-cpu:fs-v1.14 \
 &nbsp;5. **Script:** python model.py \
 &nbsp;6. **Project:** titanic \
