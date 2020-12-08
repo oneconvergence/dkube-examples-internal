@@ -16,14 +16,14 @@ from dkube.sdk import *
 parser = argparse.ArgumentParser()
 parser.add_argument("--url", dest = 'url', default=None, type = str, help="setup URL")
 
-def log_metrics(key, value, epoch, step):
+def log_metrics(key, value):
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
     train_metrics = {}
     train_metrics['mode']="train"
     train_metrics['key'] = key
     train_metrics['value'] = value
-    train_metrics['epoch'] = epoch
-    train_metrics['step'] = step
+    train_metrics['epoch'] = 1
+    train_metrics['step'] = 1
     train_metrics['jobid']=os.getenv('DKUBE_JOB_ID')
     train_metrics['run_id']=os.getenv('DKUBE_JOB_UUID')
     train_metrics['username']=os.getenv('DKUBE_USER_LOGIN_NAME')
