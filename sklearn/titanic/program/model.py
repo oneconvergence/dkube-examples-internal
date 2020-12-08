@@ -56,4 +56,4 @@ accuracy = accuracy_score(y, predictions)
 filename = os.path.join(out_path, 'model.joblib')
 joblib.dump(model_RFC, filename)
 
-log_value('accuracy', accuracy)
+log_metrics('accuracy', accuracy)
