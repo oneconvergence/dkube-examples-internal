@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import argparse
 import sys
+import yaml
 sys.path.insert(0, os.path.abspath("/usr/local/lib/python3.6/dist-packages"))
 from dkube.sdk import *
 
@@ -15,9 +16,11 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", dest = 'url', default=None, type = str, help="setup URL")
+    parser.add_argument("--fs", dest = 'fs', required=True, type = str, help="featureset")
     global FLAGS
     FLAGS, unparsed = parser.parse_known_args()
     dkubeURL = FLAGS.url
+    fs = FLAGS.fs
     authToken = os.getenv('DKUBE_USER_ACCESS_TOKEN')
     
     if not os.path.exists('titanic'):
@@ -63,7 +66,9 @@ if __name__ == "__main__":
     featureset_metadata = yaml.dump(featureset_metadata, default_flow_style=False)
     with open("fspec.yaml", 'w') as f:
          f.write(featureset_metadata)
-    resp = api.upload_featurespec(featureset = 'mnist-fs',filepath = "./fspec.yaml")
+    # Uploading featureset metadata
+    resp = api.upload_featurespec(featureset = fs,filepath = "fspec.yaml")
     print("featurespec upload response:", resp)
     resp = api.commit_features()
     print("featureset commit response:", resp)
+    

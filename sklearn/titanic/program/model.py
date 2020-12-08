@@ -51,5 +51,9 @@ model_RFC = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=1
 model_RFC.fit(x, y)
 predictions = model_RFC.predict(x)
 
-filename = os.path.join(out_path, '/model.joblib')
+accuracy = accuracy_score(y, predictions)
+
+filename = os.path.join(out_path, 'model.joblib')
 joblib.dump(model_RFC, filename)
+
+log_value('accuracy', accuracy)
