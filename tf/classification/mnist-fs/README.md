@@ -16,7 +16,7 @@
 4. **Preprocessing job** \
 &nbsp;&nbsp;7. **Type:** pre-procesing \
 &nbsp;&nbsp;8. **Docker-image:** docker.io/ocdr/d3-datascience-tf-cpu:fs-v1.14 \
-&nbsp;&nbsp;9. **Script:** python featureset.py \
+&nbsp;&nbsp;9. **Script:** python featureset.py --fs mnist-fs \
 &nbsp;&nbsp;10. **Code:** mnist-fs \
 &nbsp;&nbsp;11. **Input dataset:** mnist \
 &nbsp;&nbsp;&nbsp;&nbsp;3. **Mount-point:** /opt/dkube/input \

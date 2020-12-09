@@ -46,8 +46,6 @@
 
 ## **Test Inference:**
 
-
-
 1. Go to the model and click test inference,
 2. Check transformer option, and replace the transformer script with **sklearn/titanic/program/transformer.py**
 3. Choose CPU, and submit.
