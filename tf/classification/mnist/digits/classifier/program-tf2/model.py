@@ -31,14 +31,15 @@ import argparse
 
 
 if os.getenv('DKUBE_JOB_CLASS',None) == 'notebook':
-  MODEL_DIR = "model"
-  DATA_DIR = "/opt/dkube/input"
-  if not os.path.exists('model'):
-    os.makedirs('model')
+  if not os.path.exists('/opt/dkube/output'):
+    os.makedirs('/opt/dkube/output')
+  DATA_DIR = '/opt/dkube/input'
+  MODEL_DIR = '/opt/dkube/output'
 
-MODEL_DIR="/opt/dkube/model"
-DATA_DIR="/opt/dkube/input"
-BATCH_SIZE=1024
+MODEL_DIR = "/opt/dkube/output"
+DATA_DIR = "/opt/dkube/input"
+BATCH_SIZE = int(os.getenv('BATCHSIZE',1024))
+EPOCHS = int(os.getenv('EPOCHS', 4))
 num_train_examples = 60000
 num_eval_examples = 10000
 
@@ -94,7 +95,7 @@ def start_mnist(flags_obj):
   model = build_model()
   model.compile(optimizer='adam',loss='sparse_categorical_crossentropy',metrics=['sparse_categorical_accuracy'])
   train_steps = num_train_examples // flags_obj.batch_size
-  train_epochs = flags_obj.train_epochs
+  train_epochs = flags_obj.num_epochs
   ckpt_full_path = os.path.join(MODEL_DIR, 'model.ckpt-{epoch:04d}')
   callbacks = [
       tf.keras.callbacks.ModelCheckpoint(
@@ -120,21 +121,25 @@ def start_mnist(flags_obj):
   eval_output = model.evaluate(eval_input_dataset, steps=num_eval_steps, verbose=2)
   
   step=1
-  for epoch in range(0,flags_obj.train_epochs):
+  for epoch in range(0,flags_obj.num_epochs):
     logging_metrics('loss',history.history["loss"][epoch].item(),step,epoch+1)
     logging_metrics('accuracy',history.history["sparse_categorical_accuracy"][epoch].item(),step,epoch+1)
     step=step+1
 
 
-
-
 def main():
-    # Argument parsing
+    try:
+      fp = open(os.getenv('DKUBE_JOB_HP_TUNING_INFO_FILE', 'None'),'r')
+      hyperparams = json.loads(fp.read())
+      hyperparams['num_epochs'] = EPOCHS
+    except:
+      hyperparams = {"batch_size": BATCH_SIZE, "num_epochs": EPOCHS }
+      pass
     parser = argparse.ArgumentParser(description='Tensorflow MNIST Example')
-    parser.add_argument('--batch_size', type=int, default=BATCH_SIZE, metavar='N',
+    parser.add_argument('--batch_size', type=int, default=int(hyperparams['batch_size']),
                         help='input batch size for training (default: 1024)')
-    parser.add_argument('--train_epochs', type=int, default=4, metavar='N',
-                        help='number of epochs to train (default: 5)')
+    parser.add_argument('--num_epochs', type=int, default=int(hyperparams['num_epochs']),
+                        help='number of epochs to train (default: 4)')
     
     flags_obj,unparsed=parser.parse_known_args()
     start_mnist(flags_obj)
@@ -142,4 +147,3 @@ def main():
 if __name__ == '__main__':
   logging.set_verbosity(logging.INFO)
   main()
-
