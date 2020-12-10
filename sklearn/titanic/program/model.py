@@ -35,25 +35,35 @@ filename = 'featureset.parquet'
 global FLAGS
 FLAGS,unparsed=parser.parse_known_args()
 dkubeURL = FLAGS.url
-authToken = os.getenv('DKUBE_USER_ACCESS_TOKEN')
+authToken = os.getenv('DKUBE_USER_ACCESS_TOKEN') # Dkube user access token for API authentication
 
+# Dkube API calling
 api = DkubeApi(URL=dkubeURL, token=authToken)
+
+# Featureset API
 featureset = DkubeFeatureSet()
+# featureset path update
 featureset.update_features_path(path=inp_path)
-data  = featureset.read()
+
+# Reading featureset
+data  = featureset.read() # output: response json with data
 
 feature_df = data["data"]
 
+# preparing input output pairs
 y = feature_df['Survived'].values
 x = feature_df.drop('Survived', 1).values
 
+# Training random forest classifier
 model_RFC = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=1)
 model_RFC.fit(x, y)
 predictions = model_RFC.predict(x)
 
+# Calculating accuracy
 accuracy = accuracy_score(y, predictions)
+# logging acuracy to DKube
+log_metrics('accuracy', accuracy)
 
+# Exporting model
 filename = os.path.join(out_path, 'model.joblib')
 joblib.dump(model_RFC, filename)
-
-log_metrics('accuracy', accuracy)
