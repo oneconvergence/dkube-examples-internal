@@ -10,13 +10,13 @@ These examples are derived from [mlflow examples](https://github.com/mlflow/mlfl
 ## Step1: Create a Project
 
 1. Click Repos side menu option.
-2. Click +Project button under Projects section.
+2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
 3. Enter a name say metrics-example
 4. Enter tag name in Tag text-box
 5. Select Project Source as Git
 6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/metrics in the URL text box
 7. Enter branch name or version in Branch text-box.
-8. Click the Add Project button.
+8. Click the *Add Project* button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
 9. Project will be created and imported in Dkube. Progress of import can be seen.
 10. Please wait till status turns to ready.
 
@@ -36,20 +36,20 @@ These examples are derived from [mlflow examples](https://github.com/mlflow/mlfl
  1. Click *Runs* side menu option. 
  2. Click *+Run* and then select Training button.
  3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
-- Basic Tab
+- **Basic Tab**
   - Enter Unique name say metrics-example-skl
   - Enter Description name in Description text-box
   - Enter Tags name in Tags text-box
-  - Select Frameworks as sklearn
-  - Select Version as 0.23.2
-  - Start-up command : cd sklearn && python train_diabetes.py
-  - Click Next
-- Repos Tab
   - Project: Click on + button and select metrics-example project
-- Output Tab
-  - Models: Click on + button and select Models.
-  - Select metrics-example-skl
-  - Enter mount path: Enter path say /opt/dkube/output
+  - Container Section
+    - Select Framework as sklearn
+    - Select Version as 0.23.2
+    - Start-up command : cd sklearn && python train_diabetes.py
+    - Click Next
+- **Repos Tab**
+    - Models: Under *Outputs* section, Click on + button and select Models.
+    - Select metrics-example-skl
+    - Enter mount path: Enter path say /opt/dkube/output
 4. Click on Submit Button
 5. A new entry with name metrics-example-skl will be created in Jobs table
 6. Check the Status field for the lifecycle of the job, wait till it shows complete.
@@ -58,18 +58,18 @@ These examples are derived from [mlflow examples](https://github.com/mlflow/mlfl
  1. Click *Runs* side menu option. 
  2. Click *+Run* and then select Training button.
  3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
-- Basic Tab
+- **Basic Tab**
   - Enter Unique name say metrics-example-tf2
   - Enter Description name in Description text-box
   - Enter Tags name in Tags text-box
-  - Select Frameworks as tensorflow
-  - Select Version as 2.0.0
-  - Start-up command : cd tf2 && python train_predict_2.py
-  - Click Next
-- Repos Tab
-  - Project: Click on + button and select metrics-example project
-- Output Tab
-  - Models: Click on + button and select Models.
+  - Project: Click on + button and select metrics-example project.
+  - Container Section
+    - Select Framework as tensorflow
+    - Select Version as 2.0.0
+    - Start-up command : cd tf2 && python train_predict_2.py
+    - Click Next
+- **Repos Tab**
+  - Models: Under Outputs section, Click on + button and select Models.
   - Select metrics-example-skl
   - Enter mount path: Enter path say /opt/dkube/output
 4. Click on Submit Button

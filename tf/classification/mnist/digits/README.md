@@ -19,13 +19,13 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
 ## Step1: Create a Project
 
 1. Click Repos side menu option.
-2. Click +Project button under Projects section.
+2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
 3. Enter a name say mnist-digits
 4. Enter tag name in Tag text-box
 5. Select Project Source as Git
 6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program in the URL text box for tensorflow version 1.14 or https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program-2.x for tensorflow version 2.0.
 7. Enter branch name or version in Branch text-box.
-8. Click the Add Project button.
+8. Click the *Add Project* button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
 9. Project will be created and imported in Dkube. Progress of import can be seen.
 10. Please wait till status turns to ready.
 
@@ -34,7 +34,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
 1. Click Repos side menu option.
 2. Click +Datasets button under Datasets section.
 3. Enter a unique name say mnist-digits
-4. Enter tag name in Tag text-box and field is optional
+4. Enter tag name in Tag text-box and this field is optional
 5. Select Versioning as DVS 
 6. Select Dataset store as default
 7. Select Dataset Source as Git
