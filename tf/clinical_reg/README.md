@@ -13,14 +13,15 @@
       - i. Login user, Eg: ocdkube 
       - ii.Git user , (github ID) in case of gitauth 
     - Auth token: Copy the auth token from developer settings and fill into the auth-token field
-6. Click on Create Run
+6. Click on start.
 7. A test inference will be created by the pl,
-8. Model Publish 
+8. Click Repos, Go to that model
    -  Click publish model 
-   -  Serving image: default 
+   -  Serving image: default
+   -  Click on Transformer
    -  Transformer Image: default 
    -  Transformer code: reg_demo/transformer.py 
-   -  Choose CPU and submit 
+   -  Click on submit button
    -  Published Model will be available in Model Catalog.
 9. Deploy Model 
    -  Go to Model Catalog and Click on the Published model.

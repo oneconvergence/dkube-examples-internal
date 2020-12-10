@@ -1,15 +1,15 @@
 ## Stock Prediction using SKlearn and Redshift
 To run this example, the user requires to set-up some initials into the Dkube.
 
-## Step1: Workspace/Project
+## Step1: Create a Project
 1. Click *Repos* side menu option.
-2. Click *+Project* button under the Projects section.
+2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
 3. Select source as *Git*.
 4. Enter a unique name say *stock-prediction*
 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred-redshift/model 
  ](https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred-redshift/model)* in the URL text box.
 6. Branch: master
-7. Click *Add Project* button.
+7. Click *Add Project* button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
 8. Project will be created and imported in Dkube. Progress of import can be seen.
 9. Please wait till status turns to *ready*.
 

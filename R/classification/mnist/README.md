@@ -1,13 +1,13 @@
 # **R-MNIST Digit Classification**
-## Step 1: Project
+## Step 1: Create a Project
 1. Click *Repos* side menu option.
-2. Click *+Project* button.
+2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* button for version 2.2.x.x.
 3. Select source as *Git*.
 4. Enter a unique name say *r-examples*
 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/R/classification
  ](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification)* in the URL text box.
 6. Branch: master
-7. Click *Add Project* button.
+7. Click *Add Project* button for Dkube version 2.1.x.x or *Add Code* button for version 2.2.x.x.
 8. Project will be created and imported in Dkube. Progress of import can be seen.
 9. Please wait till status turns to *ready*
 
@@ -29,10 +29,10 @@
     - **Basic Tab**
 	   - Enter a unique name say *r-mnist*
 	   - Project section - Please select the workspace *r-examples* created in **Step1**.
-	- **Container** section
-		- Framework - Tensorflow
-		- Framework Version - r-2.0.0
-		- Start-up script - Rscript mnist/mnist.R
+       - Container section
+		 - Framework - Tensorflow
+		 - Framework Version - r-2.0.0
+		 - Start-up script - Rscript mnist/mnist.R
     -  **Repos Tab**
 	    - Model section - Under Outputs section, select the model *r-mnist* created in **Step2**. Mount point: /opt/dkube/model.
 4. Click *Submit* button.

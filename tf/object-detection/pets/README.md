@@ -15,12 +15,12 @@ This example is derived from [tensorflow object detection example](https://githu
 Tensorflow object detection API expects the input dataset to be in TFRecord format. But the pet dataset available is in .jpg and .xml format. We need some preprocessing to convert this into TFRecord format.
 ## Step 1: Create a Project
  1. Click *Repos* in side menu option.
- 2. Click *+Project* button under *Projects* section.
+ 2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
  3. Enter a unique name say *pets-detector-preprocessing* .
  4. Select *Project Source* as *Git*.
  5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tf/object-detection/pets/program/preprocessing
  ](https://github.com/oneconvergence/dkube-examples/tree/master/tf/object-detection/pets/program/preprocessing)* in the URL text box.
- 6. Click *Add Project* button.
+ 6. Click *Add Project* button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
  7. Enter branch name in *Branch* text-box.
  8. Project will be created and imported in Dkube. Progress of import can be seen.
  9. Please wait till status turns to *ready*.
@@ -40,13 +40,12 @@ This step will download the images.tar.gz and annotations.tar.gz for Oxford IIT 
  3. Fill the fields in Job form and click *Submit* button. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
     - **Basic** tab
 	  - Enter a unique name say *download-pets-dataset* 
+	  - Project: Click on **+** button and select *pets-detector-preprocessing* project.
 	  - Docker Image URL : docker.io/ocdr/dkube-datascience-preprocess:1.2
 	  - Private : If image is private, select private and provide dockerhub username and password
 	  - Start-up script : `python download.py`
 	  - Click *Next*.
 	- **Repos** tab
-	  - *Inputs* section
-	    - Project: Click on **+** button and select *pets-detector-preprocessing* project.
 	  - *Outputs* section
 	    - Dataset: Click on **+** button and select *pets-download-dataset*.
 	    - Mount path: Enter path say */opt/dkube/output*.
@@ -71,13 +70,12 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
  3. Fill the fields in Run form and click *Submit* button. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
     - **Basic** tab
 	  - Enter a unique name say *preprocess-pets-dataset* 
+	  - Project: Click on **+** button and select *pets-detector-preprocessing* project.
 	  - Docker Image URL :  docker.io/ocdr/dkube-datascience-preprocess:1.2
 	  - Private : If image is private, select private and provide dockerhub username and password
 	  - Start-up script : `python extract.py; python create_pet_tf_record.py --label_map_path=pet_label_map.pbtxt`
 	  - Click *Next*.
 	- **Repos** tab
-	  - *Inputs* section
-	    - Project: Click on **+** button and select *pets-detector-preprocessing* project.
 	    - Dataset: Click on **+** button and select *pets-download-dataset*.
 	    - Mount path: Enter mount path say */opt/dkube/input*
 	  - *Outputs* section
@@ -90,12 +88,12 @@ This step converts the downloaded dataset to TFRecords, the format expected by t
 # How to Train
 ## Step 1: Create a Project
 
-1. Click *Repos* in side menu option.
- 2. Click *+Project* button under *Projects* section.
+ 1. Click *Repos* in side menu option.
+ 2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
  3. Enter a unique name say *pets-detector-training* .
  4. Select *Project Source* as *Git*.
  5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/tf/object-detection/pets/program/training](https://github.com/oneconvergence/dkube-examples/tree/master/tf/object-detection/pets/program/training)* in the URL text box.
- 6. Click *Add Project* button.
+ 6. Click *Add Project* button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
  7. Enter branch name in *Branch* text-box.
  8. Project will be created and imported in Dkube. Progress of import can be seen.
  9. Please wait till status turns to *ready*.
@@ -127,11 +125,14 @@ This step is to create a dvs model which will hold the trained output model.
  3. Fill the fields in Run form and click *Submit* button. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
     - **Basic** tab
 	  - Enter a unique name say *training-pets-detector* 
-	  - Start-up script : `bash process.sh; pip install --user --force-reinstall tf-slim enum34; python model_main.py`
-	  - Click *Next*.
+	  - Project: Click on **+** button and select *pets-detector-training* project.
+	  - Container Section
+	    - Framework : tensorflow
+	    - Framework version : 1.14
+	    - Start-up script : `bash process.sh; pip install --user --force-reinstall tf-slim enum34; python model_main.py`
+	    - Click *Next*.
 	- **Repos** tab
 	  - *Inputs* section
-	    - Project: Click on **+** button and select *pets-detector-training* project.
 	    - Dataset: Click on **+** button and select *preprocess-pets-dataset*.
 	    - Mount path: Enter mount path say */opt/dkube/input/dataset*
 	    - Models: Click on **+** button and select *faster-rcnn*.
