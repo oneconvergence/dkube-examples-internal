@@ -113,4 +113,13 @@ stock-inp.json https://raw.githubusercontent.com/oneconvergence/dkube-examples/m
 9. Upload the CSV file
 10. Click Predict.
 
+## Steps for running the program in IDE
+1. Create a IDE with sklearn framework and version 0.23.2.
+2. Select the project stock-prediction.
+3. Under Inputs section, in Repos Tab select dataset google stock and enter mount path /opt/dkube/input.
+4. Create a new notebook inside workspace/stock-pred/stock-pred/model
+   - In first cell type:
+     %mkdir -p /opt/dkube/output
+     %rm -rf /opt/dkube/output/*
+   - In 2nd cell type %load train.py in a notebook cell and then run.
 

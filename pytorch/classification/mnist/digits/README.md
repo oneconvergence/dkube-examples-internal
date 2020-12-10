@@ -104,3 +104,12 @@
 - Select model mnist from the dropdown.
 - Upload the downloaded image and click predict.
 
+## Steps for running the program in IDE
+1. Create a IDE with pytorch framework and version 1.6.
+2. Select the project mnist-pt.
+3. Under Inputs section, in Repos Tab select dataset mnist-pt and enter mount path /opt/dkube/input.
+4. Create a new notebook inside workspace/mnist-pt/pytorch/classification/mnist/digits/classifier/program
+   - In first cell type:
+     %mkdir -p /opt/dkube/output
+     %rm -rf /opt/dkube/output/*
+   - In 2nd cell type %load model.py in a notebook cell and then run.
