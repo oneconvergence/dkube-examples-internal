@@ -194,4 +194,13 @@ pip install https://storage.googleapis.com/ml-pipeline/release/1.0.0/kfp.tar.gz 
 9.  Upload the any downloaded file
 10. Click Predict.
 
-
+## Steps for running the program in IDE
+1. Create a IDE with tensorflow framework and version 1.14.
+2. Select the project resnet-catsdogs.
+3. Under Inputs section, in Repos Tab select the dataset resnet-catsdogs and enter mount path /opt/dkube/input.
+4. Create a new notebook inside workspace/resnet-catsdogs/tf/classification/resnet/catsdogs/classifier/program
+   - In first cell type:
+     %mkdir -p /opt/dkube/output
+     %rm -rf /opt/dkube/output/*
+   - In 2nd cell type %load model.py in a notebook cell and then run.
+5. Note for running the training more than once please run the 1st cell and then run the 2nd cell.

@@ -202,3 +202,23 @@ pip install https://storage.googleapis.com/ml-pipeline/release/1.0.0/kfp.tar.gz 
 9. Upload the any downloaded file
 10.Click Predict.
 
+## Steps for running the tensorflow 1.14 program in IDE
+1. Create a IDE with tensorflow framework and version 1.14.
+2. Select the project mnist-digits.
+3. Select the dataset mnist-digits and enter mount path /opt/dkube/input
+4. Create a new notebook inside workspace/mnist-digits/tf/classification/mnist/digits/classifier/program
+   - In first cell type:
+     %mkdir -p /opt/dkube/output
+     %rm -rf /opt/dkube/output/*
+   - In 2nd cell type %load model.py in a notebook cell and then run.
+5. Note for running the training more than 1 time,please run the cell 1 again.
+## Steps for running the tensorflow 2.0 program in IDE
+1. Create a IDE with tensorflow framework and version 2.0
+2. Select the project mnist-digits.
+3. Select the dataset mnist-digits and enter mount path /opt/dkube/input
+4. Create a new notebook inside workspace/mnist-digits/tf/classification/mnist/digits/classifier/program-2.x
+   - In first cell type:
+     %mkdir -p /opt/dkube/output
+     %rm -rf /opt/dkube/output/*
+   - In 2nd cell type %load model.py in a notebook cell and then run.
+5. Note for running the training more than 1 time, please run the cell 1 again.
