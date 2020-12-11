@@ -61,15 +61,31 @@
 5. A new entry with name mnist-digits will be created in Jobs table
 6. Check the Status field for the lifecycle of the job, wait till it shows complete.
 
-## Step 5: Inference is yet to be added.
+## Step 5: Inference Details
+1. Serving image : (use default one)
+2. Transformer image : (use default one)
+3. Transformer Project : (use default one)
+4. Transformer code : tf/classification/mnist/digits/classifier/program-tf2/transformer/transformer.py
+
+## How to test inference
+1. To test inference open a new tab with link https://< DKUBE_URL:port/inference >
+2. Copy and Paste Dkube OAuth token from Developer Settings present in menu on top right to Authorization
+3. Select Model type as mnist-digits.
+4. Upload an image for inference, images in the inference folder can be used.
+5. Click predict button and a chart is displayed with probabilities returned by the model.
+
+## Hyperparameter Tuning
+1. Hyperparameter tuning is useful to find the appropriate parameter space for DL training. Dkube will auto generate all the possible combinations of parameters specified and runs training for each of the combination till the goal specified or max count is reached.
+2. Dkube plots the graphs for comparision and suggests a best run with hyperparameters used for the run.
+3. Create a job same as explained in section [How to Train] except that now a tuning file also needs to be uploaded in the configuration tab under Parameters of the Training Job form.
+4. For this example, sample tuning file is present in the github at https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/hptuning (tuning.json or tuning.yaml).These files can be modified according to the need.
 
 ## Running the example in IDE
 1. Create a IDE with tensorflow framework and version 2.0.
 2. Select the project mnist-digits.
 3. In Repos Tab, Under Inputs section select the mnist-digits dataset and enter the mount path /opt/dkube/input.
 4. Create a new notebook inside workspace/program-tf2/program/ and type %load model.py in a notebook cell and then run.
-5. Model will be trained and will be available under /opt/dkube/output, can be verified by using command !ls /opt/dkube/output.
-
+5. Model will be trained and will be available under /opt/dkube/output/1, can be verified by using command !ls /opt/dkube/output/1.
 
 
 

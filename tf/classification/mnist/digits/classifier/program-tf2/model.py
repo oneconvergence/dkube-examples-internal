@@ -60,7 +60,7 @@ def logging_metrics(key, value, step, epoch):
 def build_model():
   """Constructs the ML model used to predict handwritten digits."""
 
-  image = tf.keras.layers.Input(shape=(28, 28, 1))
+  image = tf.keras.layers.Input(shape=(28, 28, 1),name='input')
 
   y = tf.keras.layers.Conv2D(filters=32,
                              kernel_size=5,
@@ -80,9 +80,9 @@ def build_model():
   y = tf.keras.layers.Dense(1024, activation='relu')(y)
   y = tf.keras.layers.Dropout(0.4)(y)
 
-  probs = tf.keras.layers.Dense(10, activation='softmax')(y)
+  probs = tf.keras.layers.Dense(10, activation='softmax',name='output')(y)
 
-  model = tf.keras.models.Model(image, probs, name='mnist')
+  model = tf.keras.models.Model(inputs=image, outputs=probs)
 
   return model
 
@@ -115,7 +115,7 @@ def start_mnist(flags_obj):
       validation_data=eval_input_dataset,
       validation_freq=True)
 
-  export_path = MODEL_DIR
+  export_path = os.path.join(MODEL_DIR,'1')
   model.save(export_path, include_optimizer=False)
 
   eval_output = model.evaluate(eval_input_dataset, steps=num_eval_steps, verbose=2)
