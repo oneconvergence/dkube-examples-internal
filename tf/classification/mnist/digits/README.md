@@ -175,7 +175,7 @@ pip install https://storage.googleapis.com/ml-pipeline/release/1.0.0/kfp.tar.gz 
 ```
 2. Use the command below to compile the DSL,
 ```dsl-compile --py [path/to/python/file] --output [path/to/output/tar.gz]```
-3. Once the tar ball is generated. Follow the procedure mentioned in [section](https://github.com/oneconvergence/dkube-examples/blob/master/tf/classification/mnist/digits/README.md#How to use dkube_mnist_pl.tar.gz). 
+3. Once the tar ball is generated. Follow the procedure mentioned in [section](https://github.com/oneconvergence/dkube-examples/blob/master/tf/classification/mnist/digits/README.md#how-to-use-dkube_mnist_pltargz). 
 
 ## Release Model
 1. Go to the model version and click the ‘Release Model’ icon.
