@@ -144,12 +144,12 @@ parameters:
 2. Create Dataset with name catsdogs
 3. Create model with name catsdogs
 4. Go to Default Dkube notebook
-5. Then, click the Jupyter icon which will open a UI. Select the catsdogs.ipynb and double click it to open
+5. Then, click the Jupyter icon which will open a UI. Select the dkube-resnet-pipeline.ipynb under pipeline/ipynbs and double click it to open
 6. Fill training_program, training_dataset, training_output_model with proper values
-7. Run all the cells of catsdogs.ipynb. This will create a pipeline, creates an experiment and a run.
+7. Run all the cells of dkube-resnet-pipeline.ipynb This will create a pipeline, creates an experiment and a run.
 8. Links are displayed in the output cells wherever applicable.
 
-## How to use digits.tar.gz
+## How to use dkube_resnetv2_pl.tar.gz
 1. Click *Pipelines* sidemenu option.
 2. Click *+Upload pipeline* and upload this file.
 3. Click *Experiments* sidemenu option.
@@ -167,7 +167,7 @@ pip install https://storage.googleapis.com/ml-pipeline/release/1.0.0/kfp.tar.gz 
 ```
 2. Use the command below to compile the DSL,
 ```dsl-compile --py [path/to/python/file] --output [path/to/output/tar.gz]```
-3. Once the tar ball is generated. Follow the procedure mentioned in [section](##%20How%20to%20use%20catsdogs.tar.gz). 
+3. Once the tar ball is generated. Follow the procedure mentioned in [section](https://github.com/oneconvergence/dkube-examples/blob/master/tf/classification/resnet/catsdogs/README.md#how-to-use-dkube_resnetv2_pltargz). 
 
 ## Release Model
 1. Go to the model version and click the ?~@~XRelease Model?~@~Y icon.

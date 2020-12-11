@@ -129,7 +129,7 @@ This step is to create a dvs model which will hold the trained output model.
 	  - Container Section
 	    - Framework : tensorflow
 	    - Framework version : 1.14
-	    - Start-up script : `bash process.sh; pip install --user --force-reinstall tf-slim enum34; python model_main.py`
+	    - Start-up script : `bash process.sh; pip install --user --force-reinstall lvis tf-slim enum34; python model_main.py`
 	    - Click *Next*.
 	- **Repos** tab
 	  - *Inputs* section
@@ -143,6 +143,7 @@ This step is to create a dvs model which will hold the trained output model.
 	    - Click *Next*.
 	  - *Configuration* section
 	    - Parameters upload configuration: Select the pipeline.config file which is stored locally(Download from [https://github.com/oneconvergence/dkube-examples/tree/master/tf/object-detection/pets/program/training/pipeline.config](https://github.com/oneconvergence/dkube-examples/tree/master/tf/object-detection/pets/program/training/pipeline.config))
+	    - **Note** : For good inference please change the num_steps to 10000 in pipeline.config file above. This example is configured to run for num_steps=1 currently for demo purpose.
 4. Click *Submit* button.
 5. Check the *Status* field for lifecycle of Training run under *All Runs* section, wait till it shows *complete*.
 

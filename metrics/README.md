@@ -80,3 +80,13 @@ These examples are derived from [mlflow examples](https://github.com/mlflow/mlfl
  1. Metrics are visible from each of the Run or the Models
  2. Goto either the metrics-example-sklearn or metrics-example-tf2 Run and click on the Metrics tab
  3. Goto either the metrics-example-sklearn or metrics-example-tf2 Model, select the latest version of the Model and click on the Metics tab
+
+## Steps for running the sklearn metric example in IDE:
+1. Create a IDE with sklearn framework and version 0.23.2.
+2. Select the project metrics-example.
+3. Create a new notebook inside workspace/metrics-example/metrics/sklearn
+   - In first cell type:
+     %mkdir -p /opt/dkube/output
+     %rm -rf /opt/dkube/output/*
+   - In 2nd cell type !python train_diabetes.py 0.01 0.01 in a notebook cell and then run.
+4. Note for running the training more than once, please run the cell 1 again.
