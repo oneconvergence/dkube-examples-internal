@@ -12,8 +12,7 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
  - **classifier/data**: This directory has processed training data. Program trains on this data.
  - **inference**: This directory has compatible test data images which can be used for inference.
  - **hptuning/tuning.yaml**: Sample YAML showing the configuration format and parameters for tuning.
- - **pipeline/catsdogs.py**: Python DSL defining a sample Dkube pipeline. Pipeline uses Dkube components for all stages.
- - **pipeline/catsdogs.ipynb**: Ipython notebook with the code. Upload the file in Dkube notebook and run all the cells. This notebook will generate and trigger the run of pipeline.
+ - **pipeline/dkube-resnet-pipeline.ipynb**: Ipython notebook with the code. Upload the file in Dkube notebook and run all the cells. This notebook will generate and trigger the run of pipeline.
 
 # How to Train
 ## Step1: Create a Project
@@ -139,7 +138,7 @@ parameters:
 1. Training, Serving & Inference stages explained in above sections can be automated using Dkube pipeline.
 2. Sample pipeline for this example is available under `pipeline/` mentioned in section [directories](#%20Directories).
 
-## How to use catsdogs.ipynb
+## How to use dkube-resnet-pipeline.ipynb
 1. Create project with name catsdogs
 2. Create Dataset with name catsdogs
 3. Create model with name catsdogs
@@ -158,24 +157,13 @@ parameters:
 6. Select the *pipeline* which was uploaded in *step 2*
 7. Fill in the *Run Parameters* fields.
 
-## How to use catsdogs.py
-1. This DSL definition needs to be compiled first. Following prereqs must be installed.
-```
-python3.5 or greater
-pip install --upgrade "urllib3==1.22" 
-pip install https://storage.googleapis.com/ml-pipeline/release/1.0.0/kfp.tar.gz --upgrade
-```
-2. Use the command below to compile the DSL,
-```dsl-compile --py [path/to/python/file] --output [path/to/output/tar.gz]```
-3. Once the tar ball is generated. Follow the procedure mentioned in [section](https://github.com/oneconvergence/dkube-examples/blob/master/tf/classification/resnet/catsdogs/README.md#how-to-use-dkube_resnetv2_pltargz). 
-
 ## Release Model
-1. Go to the model version and click the ?~@~XRelease Model?~@~Y icon.
+1. Go to the model version and click the Release Model icon.
 2. Once the model is released, it will be available in the Released view of the Models.
 
 ## Publish Model
 1. A model can be published directly from the repo or can be first released and then published.
-2. Go to the model version and click ?~@~XPublish Model?~@~Y icon.
+2. Go to the model version and click Publish Model icon.
 3. Give a name and check the transformer.
    - Edit transformer code field and replace the default test with tf/classification/resnet/catsdogs/transformer/transformer.py
    - Click Submit.

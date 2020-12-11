@@ -12,8 +12,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
  - **classifier/data**: This directory has processed training data. Program trains on this data.
  - **inference**: This directory has compatible test data images which can be used for inference.
  - **hptuning/tuning.yaml**: Sample YAML showing the configuration format and parameters for tuning.
- - **pipeline/digits.py**: Python DSL defining a sample Dkube pipeline. Pipeline uses Dkube components for all stages.
- - **pipeline/digits.ipynb**: Ipython notebook with the code. Upload the file in Dkube notebook and run all the cells. This notebook will generate and trigger the run of pipeline.
+ - **pipeline/dkube-mnist-pipeline.ipynb**: Ipython notebook with the code. Upload the file in Dkube notebook and run all the cells. This notebook will generate and trigger the run of pipeline.
 
 # How to Train
 ## Step1: Create a Project
@@ -142,12 +141,12 @@ parameters:
 1. Start the default dkube notebook from the IDE tab.
 2. Once running, click the jupyterlab icon to launch jupyterlab.
 3. Go to pipeline/ipynbs.
-4. Double click on digits.ipynb.
+4. Double click on dkube-mnist-pipeline.ipynb.
 5. Run the notebook and create the tar file.
 6. Download the tar file by right clicking on it.
 7. Upload the tar file into the DKube pipeline UI.
 
-## How to use digits.ipynb
+## How to use dkube-mnist-pipeline.ipynb
 1. Create project with name mnist.
 2. Create Dataset with name mnist.
 3. Create model with name mnist.
@@ -166,24 +165,13 @@ parameters:
 6. Select the *pipeline* which was uploaded in *step 2*
 7. Fill in the *Run Parameters* fields.
 
-## How to use digits.py
-1. This DSL definition needs to be compiled first. Following prereqs must be installed.
-```
-python3.5 or greater
-pip install --upgrade "urllib3==1.22" 
-pip install https://storage.googleapis.com/ml-pipeline/release/1.0.0/kfp.tar.gz --upgrade
-```
-2. Use the command below to compile the DSL,
-```dsl-compile --py [path/to/python/file] --output [path/to/output/tar.gz]```
-3. Once the tar ball is generated. Follow the procedure mentioned in [section](https://github.com/oneconvergence/dkube-examples/blob/master/tf/classification/mnist/digits/README.md#how-to-use-dkube_mnist_pltargz). 
-
 ## Release Model
-1. Go to the model version and click the ‘Release Model’ icon.
+1. Go to the model version and click the Release Model icon.
 2. Once the model is released, it will be available in the Released view of the Models.
 
 ## Publish Model
 1. A model can be published directly from the repo or can be first released and then published.
-2. Go to the model version and click ‘Publish Model’ icon.
+2. Go to the model version and click Publish Model icon.
 3. Give a name and check the transformer.
    - Edit transformer code field and replace the default test with tf/classification/mnist/digits/transformer/transformer.py
    - Click Submit.
