@@ -35,7 +35,7 @@
 &nbsp;8. **Output model:** titanic \
 &nbsp;&nbsp;8.1. **Mount-Point:** /opt/dkube/output
 6. **Pipeline run:** \
-Download [https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/titanic/pipeline/titanic-pl.ipynb] into DKube Notebook IDE and all the cells. This auto fills values for pipeline parameters as follows and creates a run under "DKube - Titanic" experiment.\
+Download [https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/titanic/pipeline/titanic-pl.ipynb] into DKube Notebook IDE and run all the cells. This auto fills values for pipeline parameters as follows and creates a run under "DKube - Titanic" experiment.\
 &nbsp;&nbsp; 6.1 Fills auth token from DKUBE_USER_ACCESS_TOKEN environment variable in Notebook \
 &nbsp;&nbsp; 6.2 **training_program:** titanic (This is the code name and should exist) \
 &nbsp;&nbsp; 6.3 **preprocessing_dataset:** titanic (This is the dataset name and should exist) \
