@@ -11,7 +11,7 @@
 &nbsp;2. Featureset Name: titanic-fs \
 &nbsp;&nbsp;2.2 Featurespec upload: none 
 3. **Create Model:** \
-&nbsp;1. Name: RFC \
+&nbsp;1. Name: titanic \
 &nbsp;2. Source: None
 4. **Preprocessing job** \
 &nbsp;1. **Type:** pre-processing \
@@ -32,16 +32,15 @@
 &nbsp;6. **Project:** titanic \
 &nbsp;7. **Input featureset:** titanic-fs \
 &nbsp;&nbsp;7.1. **Mount-point:** /opt/dkube/input \
-&nbsp;8. **Output model:** RFC \
+&nbsp;8. **Output model:** titanic \
 &nbsp;&nbsp;8.1. **Mount-Point:** /opt/dkube/output
 6. **Pipeline run:** \
-&nbsp;1. Download pipeline: [https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/titanic/pipeline/dkube_titanic_pl.tar.gz](https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/titanic/pipeline/dkube_titanic_pl.tar.gz) \
-&nbsp;2. Upload and create a run, \
-&nbsp;3. Fill auth token from developer settings \
-&nbsp;4. **training_program:** titanic (This is the project name and should exist) \
-&nbsp;5. **preprocessing_dataset:** titanic (This is the dataset name and should exist) \
-&nbsp;6. **training_featureset:** titanic-fs  (This is the feature set name and should exist) \
-&nbsp;7. **training_output_model:** RFC (This is the model name and should exist)
+Download [https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/titanic/pipeline/titanic-pl.ipynb] into DKube Notebook IDE and run all the cells. This auto fills values for pipeline parameters as follows and creates a run under "DKube - Titanic" experiment.\
+&nbsp;&nbsp; 6.1 Fills auth token from DKUBE_USER_ACCESS_TOKEN environment variable in Notebook \
+&nbsp;&nbsp; 6.2 **training_program:** titanic (This is the code name and should exist) \
+&nbsp;&nbsp; 6.3 **preprocessing_dataset:** titanic (This is the dataset name and should exist) \
+&nbsp;&nbsp; 6.4 **training_featureset:** titanic-fs  (This is the feature set name and should exist) \
+&nbsp;&nbsp; 6.5 **training_output_model:** titanic (This is the model name and should exist)
 
 
 ## **Test Inference:**
