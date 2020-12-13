@@ -68,10 +68,12 @@ if __name__ == "__main__":
 
     # featureset to use
     fs = FLAGS.fs
-
+    # Features
+    df = train_df
     # Prepare featurespec - Name, Description, Schema for each feature
-    keys = dataset.keys()
-    schema = dataset.dtypes.to_list()
+    
+    keys = df.keys()
+    schema = df.dtypes.to_list()
     featureset_metadata = []
     for i in range(len(keys)):
         metadata = {}
@@ -91,14 +93,13 @@ if __name__ == "__main__":
 
     ########--- Commit features ---########
 
-    # Features
-    df = train_df
+ 
     # Featureset
     featureset = DkubeFeatureSet()
     # Specify features path - mounted as output
     featureset.update_features_path(path=train_out_path)
     # Write features - Dataframe
-    featureset.write(dataset)
+    featureset.write(df)
     # Commit featuresset
     resp = api.commit_features()
     print("featureset commit response:", resp)
