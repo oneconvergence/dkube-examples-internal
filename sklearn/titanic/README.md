@@ -35,13 +35,12 @@
 &nbsp;8. **Output model:** titanic \
 &nbsp;&nbsp;8.1. **Mount-Point:** /opt/dkube/output
 6. **Pipeline run:** \
-&nbsp;1. Download [https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/titanic/pipeline/titanic-pl.ipynb](titanic-pl.ipynb) into DKube Notebook IDE and all the cells. This auto fills values for pipeline parameters as follows and creates a run under "DKube - Titanic" experiment.
-
-&nbsp;&nbsp; 1.1 Fills auth token from DKUBE_USER_ACCESS_TOKEN environment variable in Notebook \
-&nbsp;&nbsp; 1.2 **training_program:** titanic (This is the code name and should exist) \
-&nbsp;&nbsp; 1.3 **preprocessing_dataset:** titanic (This is the dataset name and should exist) \
-&nbsp;&nbsp; 1.4 **training_featureset:** titanic-fs  (This is the feature set name and should exist) \
-&nbsp;&nbsp; 1.5 **training_output_model:** titanic (This is the model name and should exist)
+Download [https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/titanic/pipeline/titanic-pl.ipynb] into DKube Notebook IDE and all the cells. This auto fills values for pipeline parameters as follows and creates a run under "DKube - Titanic" experiment.\
+&nbsp;&nbsp; 6.1 Fills auth token from DKUBE_USER_ACCESS_TOKEN environment variable in Notebook \
+&nbsp;&nbsp; 6.2 **training_program:** titanic (This is the code name and should exist) \
+&nbsp;&nbsp; 6.3 **preprocessing_dataset:** titanic (This is the dataset name and should exist) \
+&nbsp;&nbsp; 6.4 **training_featureset:** titanic-fs  (This is the feature set name and should exist) \
+&nbsp;&nbsp; 6.5 **training_output_model:** titanic (This is the model name and should exist)
 
 
 ## **Test Inference:**
