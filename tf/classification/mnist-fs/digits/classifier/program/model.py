@@ -9,8 +9,6 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D
 import requests
 import argparse
 
-# import sys
-# sys.path.insert(0, os.path.abspath("/usr/local/lib/python3.6/dist-packages"))
 from dkube.sdk import *
 
 inp_path = "/opt/dkube/input/"

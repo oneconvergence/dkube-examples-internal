@@ -3,16 +3,13 @@ import struct
 import os
 import pandas as pd
 
-# import sys
 import argparse
 import yaml
 
-# sys.path.insert(0, os.path.abspath("/usr/local/lib/python3.6/dist-packages"))
 from dkube.sdk import *
 
 inp_path = "/opt/dkube/input/"
 out_path = "/opt/dkube/output/"
-# filename = 'featureset.parquet'
 
 # Read dataset
 def read_idx(dataset="training", path="../data"):
