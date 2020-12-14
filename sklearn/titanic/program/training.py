@@ -8,14 +8,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
 import mlflow
-
-# import sys
-# sys.path.insert(0, os.path.abspath("/usr/local/lib/python3.6/dist-packages"))
 from dkube.sdk import *
 
-inp_path = "/opt/dkube/input/"
-out_path = "/opt/dkube/output/"
-test_path = "/opt/dkube/test"
+inp_path = "/titanic-train"
+out_path = "/model"
+test_path = "/titanic-testt"
 
 
 if __name__ == "__main__":

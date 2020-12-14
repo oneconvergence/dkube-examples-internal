@@ -1,4 +1,3 @@
-import zipfile
 import os
 import numpy as np
 import pandas as pd
@@ -8,7 +7,6 @@ import argparse
 import yaml
 from dkube.sdk import *
 
-inp_path = "/opt/dkube/input/"
 out_path = ["/opt/dkube/output/train", "/opt/dkube/output/test"]
 
 if __name__ == "__main__":
@@ -33,13 +31,8 @@ if __name__ == "__main__":
 
     ########--- Extract and load data  ---########
 
-    if not os.path.exists("titanic"):
-        os.makedirs("titanic")
-    with zipfile.ZipFile(os.path.join(inp_path, "titanic.zip"), "r") as zip_ref:
-        zip_ref.extractall("titanic")
-
-    train_data = pd.read_csv("titanic/train.csv")
-    test_data = pd.read_csv("titanic/test.csv")
+    train_data = pd.read_csv("/titanic-train/train.csv")
+    test_data = pd.read_csv("/titanic-test/test.csv")
     print(train_data.describe())
 
     ########--- Process raw data  ---########
