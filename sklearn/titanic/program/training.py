@@ -12,7 +12,7 @@ from dkube.sdk import *
 
 inp_path = "/titanic-train"
 out_path = "/model"
-test_path = "/titanic-testt"
+test_path = "/titanic-test"
 
 
 if __name__ == "__main__":
