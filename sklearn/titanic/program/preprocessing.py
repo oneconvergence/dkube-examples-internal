@@ -94,6 +94,6 @@ if __name__ == "__main__":
         # Write features - Dataframe
         featureset.write(df)
         # Commit featuresset
-        resp = api.commit_features()
-        print("featureset commit response:", resp)
         k =+1
+resp = api.commit_features()
+print("featureset commit response:", resp)
