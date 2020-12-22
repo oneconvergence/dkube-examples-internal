@@ -12,6 +12,7 @@ from sklearn.preprocessing import StandardScaler
 import mlflow
 from sklearn import metrics
 from dkube.sdk import *
+import joblib
 
 inp_path = "/opt/dkube/input"
 out_path = "/opt/dkube/output"
@@ -62,3 +63,7 @@ if __name__ == "__main__":
     mlflow.log_metric("MAE", mae)
     mlflow.log_metric("MSE", mse)
     mlflow.log_metric("intercept", intersept)
+
+    # Exporting model
+    filename = os.path.join(out_path, "model.joblib")
+    joblib.dump(linReg_model, filename)
