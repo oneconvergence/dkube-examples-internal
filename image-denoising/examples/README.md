@@ -73,7 +73,7 @@
 1. Create a IDE with pytorch framework and version 1.6.
 2. Select the project Img-DN.
 3. Under Inputs section, in Repos Tab select dataset Img-DN and enter mount path /opt/dkube/input.
-4. Create a new notebook inside workspace/Img-DN/examples/
+4. Create a new notebook inside workspace/Img-DN/image-denoising/examples/
    - In first cell type:
      - %mkdir -p /opt/dkube/output
      - %rm -rf /opt/dkube/output/*
@@ -84,13 +84,13 @@
 1. Create a IDE with pytorch framework and version 1.6.
 2. Select the project Img-DN.
 3. Under Inputs section, in Repos Tab select dataset Img-DN and enter mount path /opt/dkube/input.
-4. Inside the directory workspace/Img-DN/examples/, Run all the cells of 1_CareTraining.ipynb and then 
+4. Inside the directory workspace/Img-DN/image-denoising/examples/ ,Run all the cells of 1_CareTraining.ipynb and then 
 run 2_CarePrediction.ipynb for predictions.
 
 ## How to run Pipeline
 1. Create project with name Img-DN as explained in Step1 above.
 2. Create Dataset with name Img-DN as explained in Step2 above.
 3. Create model with name Img-DN as explained in Step3 above.
-4. Download the notebook from https://github.com/pallavi-pannu-oc/Image-DN/blob/test/examples/Convallaria/Care/pipeline/dkube-denoising-pipeline.ipynb and upload this in default DKube IDE under pipelines folder.
+4. Download the notebook from https://github.com/oneconvergence/dkube-examples/blob/citiustech/image-denoising/examples/dkube-denoising-pipeline.ipynb and upload this in default DKube IDE under pipelines folder.
 5. Run all the cells of dkube-denoising-pipeline.ipynb. This will create a pipeline, creates an experiment and a run.
 6. Links are displayed in the output cells wherever applicable.
