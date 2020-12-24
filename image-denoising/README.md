@@ -1,4 +1,11 @@
 # IMAGE DENOISING EXAMPLE
+### Directory Structure:
+1. examples directory contains all the notebooks,training code,transformer code and pipeline.ipynb files.
+2. pn2v contains the utility functions.
+3. unet contains the network which we are using to train the model.
+
+## How to Train the Example in DKube.
+
 ## Step1: Create a Project
  1. Click *Repos* side menu option.
  2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
