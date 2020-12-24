@@ -1,0 +1,57 @@
+name: dkube-serving
+description: |
+    Component which can be used to deploy a trained model on Dkube platform.
+    Dkube serving provides,
+    * Option to deploy with CPU/GPU.
+    * A web server in the front and all the required infra to access the server.
+    * Deployed as microserice. Serving URL is provided for any other application logic to consume the model.
+    * Attempts to decode and present some abstract information about the model.
+metadata:
+  annotations: {platform: 'Dkube'}
+  labels: {platform: 'Dkube', logger: 'dkubepl', wfid: '{{workflow.uid}}', runid: '{{pod.name}}', stage: 'serving', dkube.garbagecollect: 'true', dkube.garbagecollect.policy: 'all'}
+inputs:
+  - {name: auth_token,      type: String,   optional: false,
+     description: 'Required. Dkube authentication token.'}
+  - {name: model,           type: String,   optional: false,
+     description: 'Required. Trained model in Dkube which is to be deployed for serving.'}
+  - {name: model_version,           type: String,   optional: true,
+     description: 'Optional. Trained model version.'}
+  - {name: device,          type: String,   optional: true,     default: 'cpu',
+     description: 'Optional. Device to use for serving - allowed values, gpu/cpu/auto.'}
+  - {name: access_url,      type: String,   optional: true,     default: '',
+     description: 'Optional. URL at which dkube is accessible, copy paste from the browser of this window. Required for cloud deployments.'}
+  - {name: serving_image, type: Dict,     optional: false,
+     description: 'Required. Container to use for serving. Format: {"image":<url>, "username":<>, "password":<>}'}
+  - {name: transformer_image, type: Dict,     optional: true,
+     description: 'Required. Container to use as transformer. Format: {"image":<url>, "username":<>, "password":<>}'}
+  - {name: transformer_project,      type: String,   optional: true,
+     description: 'Required. Transformer project.'}
+  - {name: transformer_code,      type: String,   optional: true,
+     description: 'Required. Transformer script.'}
+  - {name: transformer_commit_id,      type: String,   optional: true,
+     description: 'Optional. Transformer project commit ID.'}
+outputs:
+  - {name: rundetails,       description: 'Details of the dkube run'}
+  - {name: servingurl,       description: 'URL at which the serving web server is accessible.'}
+implementation:
+  container:
+    image: ocdr/dkubepl:2.2.1.4
+    command: ['dkubepl']
+    args: [
+      serving,
+      --accessurl, {inputValue: access_url},
+      --token, {inputValue: auth_token},
+      --model, {inputValue: model},
+      --model_version, {inputValue: model_version},
+      --device, {inputValue: device},
+      --serving_image, {inputValue: serving_image},
+      --transformer_image, {inputValue: transformer_image},
+      --transformer_project, {inputValue: transformer_project},
+      --transformer_code, {inputValue: transformer_code},
+      --transformer_commit_id, {inputValue: transformer_commit_id},
+      --runid, '{{pod.name}}',
+      --wfid, '{{workflow.uid}}'
+    ]
+    fileOutputs:
+      rundetails: /tmp/rundetails
+      servingurl: /tmp/servingurl

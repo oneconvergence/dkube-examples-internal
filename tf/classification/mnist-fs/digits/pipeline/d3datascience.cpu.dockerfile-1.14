@@ -1,3 +1,0 @@
-FROM ocdr/d3-datascience-tf-cpu:v1.14
-
-RUN sudo pip3 install git+https://github.com/oneconvergence/dkube.git@2.2-dev
