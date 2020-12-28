@@ -98,7 +98,7 @@ run 2_CarePrediction.ipynb for predictions.
 3. Transformer project (use default)
 4. Transformer code : image-denoising/examples/transformer.py
 
-### How to Test Inference
+### How to Test Inference in DKube Webapp
 1. Download data sample from https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/img1.png
 2. Open the URL https://:32222/inference.
 3. Copy the serving endpoint from the test inference tab and paste it into the serving the URL field.
@@ -106,3 +106,7 @@ run 2_CarePrediction.ipynb for predictions.
 5. Select model steel from the dropdown.
 6. Upload the downloaded image and click predict.
 
+### Custom Webapp
+1. Go to webapp directory, and build a docker image with given **Dockerfile** by typing docker build .
+2. Run command docker run -p 8501:8501 <docker-build-id>
+3. Open http://localhost:8501/ in your browser and fill serving URL, authentication token and upload image and click predict.
