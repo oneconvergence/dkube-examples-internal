@@ -1,4 +1,4 @@
-# # Insurance Example
+# Insurance Example
 
 ## Dataset 
 Add dataset **insurance**
@@ -32,4 +32,8 @@ From IDE section launch Jupyter lab with tf framework 2.0, with project **insura
   - **serving**: The serving stage takes the generated model and serve it with a predict endpoint for inference. 
   
 ## Inference webapp
-
+  - Go to webapp directory, and build a docker image with given **Dockerfile** or pull **ocdr/streamlit-webapp:insurance**.
+  - Run command  
+  - > docker run -p 8501:8501 ocdr/streamlit-webapp:insurance 
+  - Open http://localhost:8501/ in your browser,
+  - Fill serving URL, auth token and other details and click predict.
