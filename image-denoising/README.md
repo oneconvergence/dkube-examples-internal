@@ -1,6 +1,6 @@
 # IMAGE DENOISING EXAMPLE
 ### Directory Structure:
-1. examples directory contains all the notebooks,training code,transformer code and pipeline.ipynb files.
+1. examples directory contains all the notebooks, training code,transformer code and pipeline.ipynb files.
 2. pn2v contains the utility functions.
 3. unet contains the network which we are using to train the model.
 
@@ -107,6 +107,7 @@ run 2_CarePrediction.ipynb for predictions.
 6. Upload the downloaded image and click predict.
 
 ### Custom Webapp
-1. Go to webapp directory, and build a docker image with given **Dockerfile** by typing docker build .
-2. Run command docker run -p 8501:8501 <docker-build-id>
-3. Open http://localhost:8501/ in your browser and fill serving URL, authentication token and upload image and click predict.
+1. Go to webapp directory, and build a docker image with given **Dockerfile** by typing **docker build . -t ocdr/streamlit-webapp:img-dn**
+2. Run command **docker run -p 8501:8501 ocdr/streamlit-webapp:img-dn**
+3. Open http://localhost:8501/ in your browser and copy serving endpoint from the test inference tab and paste it into Dkube serving URL field , fill authentication token and upload image from ( https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/img1.png) and click predict.
+4. Denoised image will be returned as an output and will be displayed in the UI.
