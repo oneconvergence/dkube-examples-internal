@@ -56,27 +56,8 @@
 5. A new entry with name *Img-DN* will be created in *Runs* table.
 6. Check the *Status* field for lifecycle of job, wait till it shows *complete*.
 
-## Hyperparameter Tuning
-1. Hyperparameter tuning is useful to find the appropriate parameter space for DL training. Dkube will auto generate all the possible combinations of parameters specified and runs training for each of the combination till the goal specified or max count is reached.
-2. Dkube plots the graphs for comparision and suggests a best run with hyperparameters used for the run.
-3. Create a run same as explained above except that now a tuning file also needs to be uploaded in the configuration tab under Parameters of the Training Job form.
-4. For this example, sample tuning file is present in the github at https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/tuning.json. This file can be modified according to the need.
-
-## Test-Inference Details
-1. Serving image : (use default one)
-2. Transformer image : (use default)
-3. Transformer project (use default)
-4. Transformer code : image-denoising/examples/transformer.py
-
-## How to Test Inference
-1. Download data sample from https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/img1.png
-2. Open the URL https://:32222/inference.
-3. Copy the serving endpoint from the test inference tab and paste it into the serving the URL field.
-4. Copy token from developer settings and paste into token field.
-5. Select model steel from the dropdown.
-6. Upload the downloaded image and click predict.
-
-## Steps for running the training program in IDE
+## Data Scientist Workflow :
+### Steps for running the training program in IDE
 1. Create a IDE with pytorch framework and version 1.6.
 2. Select the project Img-DN.
 3. Under Inputs section, in Repos Tab select dataset Img-DN and enter mount path /opt/dkube/input.
@@ -87,17 +68,41 @@
    - In 2nd cell type %load model-care.py in a notebook cell and then run.
 5. Note for running the training more than once, please run the cell 1 again.
 
-## How to Run Notebooks
+### How to Run Notebooks
 1. Create a IDE with pytorch framework and version 1.6.
 2. Select the project Img-DN.
 3. Under Inputs section, in Repos Tab select dataset Img-DN and enter mount path /opt/dkube/input.
 4. Inside the directory workspace/Img-DN/image-denoising/examples/ ,Run all the cells of 1_CareTraining.ipynb and then 
 run 2_CarePrediction.ipynb for predictions.
 
-## How to run Pipeline
+
+## MLE Workflow:
+### Hyperparameter Tuning - Optimization of the metrics
+1. Hyperparameter tuning is useful to find the appropriate parameter space for DL training. Dkube will auto generate all the possible combinations of parameters specified and runs training for each of the combination till the goal specified or max count is reached.
+2. Dkube plots the graphs for comparision and suggests a best run with hyperparameters used for the run.
+3. Create a run same as explained above except that now a tuning file also needs to be uploaded in the configuration tab under Parameters of the Training Job form.
+4. For this example, sample tuning file is present in the github at https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/tuning.json. This file can be modified according to the need.
+
+### How to run Pipeline
 1. Create project with name Img-DN as explained in Step1 above.
 2. Create Dataset with name Img-DN as explained in Step2 above.
 3. Create model with name Img-DN as explained in Step3 above.
 4. Download the notebook from https://github.com/oneconvergence/dkube-examples/blob/citiustech/image-denoising/examples/dkube-denoising-pipeline.ipynb and upload this in default DKube IDE under pipelines folder.
 5. Run all the cells of dkube-denoising-pipeline.ipynb. This will create a pipeline, creates an experiment and a run.
 6. Links are displayed in the output cells wherever applicable.
+
+## Production Workflow
+### Test-Inference Details
+1. Serving image : (use default one)
+2. Transformer image : (use default)
+3. Transformer project (use default)
+4. Transformer code : image-denoising/examples/transformer.py
+
+### How to Test Inference
+1. Download data sample from https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/img1.png
+2. Open the URL https://:32222/inference.
+3. Copy the serving endpoint from the test inference tab and paste it into the serving the URL field.
+4. Copy token from developer settings and paste into token field.
+5. Select model steel from the dropdown.
+6. Upload the downloaded image and click predict.
+
