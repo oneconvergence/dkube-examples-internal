@@ -83,12 +83,17 @@ run 2_CarePrediction.ipynb for predictions.
 3. Create a run same as explained above except that now a tuning file also needs to be uploaded in the configuration tab under Parameters of the Training Job form.
 4. For this example, sample tuning file is present in the github at https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/tuning.json. This file can be modified according to the need.
 
+## Pipeline
+1. The pipeline for this example includes training and serving stages.
+2. Training: The training stage takes the image dataset as  input, train the model using UNet and outputs the model.
+3. Serving: The serving stage takes the generated model and serve it with a predict endpoint for inference.
+
 ### How to run Pipeline
 1. Create project with name Img-DN as explained in Step1 above.
 2. Create Dataset with name Img-DN as explained in Step2 above.
 3. Create model with name Img-DN as explained in Step3 above.
 4. Download the notebook from https://github.com/oneconvergence/dkube-examples/blob/citiustech/image-denoising/examples/dkube-denoising-pipeline.ipynb and upload this in default DKube IDE under pipelines folder.
-5. Run all the cells of dkube-denoising-pipeline.ipynb. This will create a pipeline, creates an experiment and a run.
+5. Run all the cells of dkube-denoising-pipeline.ipynb. This will create a pipeline,and  a run.
 6. Links are displayed in the output cells wherever applicable.
 
 ## Production Workflow
