@@ -5,13 +5,16 @@ Add dataset **insurance**
   - Source: pub_url
   - URL: https://storage.googleapis.com/insurance-data/insurance/insurance.csv
 
+## Project
 Add project **insurance**
   - Source: Git
   - URL: https://github.com/oneconvergence/dkube-examples/tree/citiustech/insurance 
 
+## Model
 Add Model **insurance**
   - Source: None
 
+## Featureset
 Add featuresret **insurance-fs**
   - Spec upload: None
 
@@ -26,7 +29,7 @@ From IDE section launch Jupyter lab with tf framework 2.0, with project **insura
 
 ## MLE Workflow
 
-  - From **workspace/insurance/insurance** run **pipeline.ipynb** to build the pipeline, the pipeline includes preprocessing, training and sering stages. 
+  - From **workspace/insurance/insurance** run **pipeline.ipynb** to build the pipeline, the pipeline includes preprocessing, training and serving stages. 
   - **preprocessing**: the preproceessing state takes insurance data as input, and after the feature engineering on data it generates a feetureset. 
   - **training**: the training stage takes the generated featureset as input, train a linear regression model and outputs the model.
   - **serving**: The serving stage takes the generated model and serve it with a predict endpoint for inference. 
