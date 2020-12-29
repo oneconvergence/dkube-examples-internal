@@ -13,6 +13,7 @@ import requests
 r_endpoint = os.getenv('DKUBE_DATASET_REDSHIFT_ENDPOINT', None)
 r_database = os.getenv('DKUBE_DATASET_REDSHIFT_DATABASE', None)
 r_user = os.getenv('DKUBE_DATASET_REDSHIFT_USER', None)
+dkube_url = os.getenv('DKUBE_CONTROLLER_NODEIP_ACCESS_URL', "http://dkube-controller-worker.dkube:5000")
 
 
 if 'https:' in r_endpoint:
@@ -39,7 +40,7 @@ def eval_metrics(actual, pred):
 
 def rs_fetch_datasets():
     user = os.getenv("DKUBE_USER_LOGIN_NAME")
-    url = "http://dkube-controller-worker.dkube:5000/dkube/v2/controller/users/%s/datums/class/dataset/datum/%s"
+    url = dkube_url + "/dkube/v2/controller/users/%s/datums/class/dataset/datum/%s"
     headers={"authorization": "Bearer "+os.getenv("DKUBE_USER_ACCESS_TOKEN")}
     datasets = []
     for ds in json.load(open('/etc/dkube/redshift.json')):
@@ -58,6 +59,9 @@ def get_password(user, db):
 MODEL_DIR = '/opt/dkube/model'
 
 def log_metrics(key, value):
+    #TODO - reporting has to be changed to mlflow api or expose dkube-exporter via gateway
+    if MLFLOW_METRIC_REPORTING != "True":
+        return
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
     train_metrics = {}
     train_metrics['mode']="train"
