@@ -105,4 +105,5 @@ for _ in range(steps):
         print("Saved checkpoint for step {}: {}".format(int(ckpt.step), save_path))
         print("loss {:1.2f}".format(loss.numpy()))
         
-model.save(out_path)
+export_path = os.path.join(out_path,'1')
+model.save(export_path, include_optimizer=False)
