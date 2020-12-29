@@ -1,13 +1,15 @@
+install.packages("dotenv")
 library(jsonlite)
 library(httr)
 
 ds <- fromJSON("/etc/dkube/redshift.json")
+dotenv::load_dot_env("/etc/dkube/dkube.env")
 
 user <- Sys.getenv("LOGNAME")
 
 url <- "http://dkube-controller-worker.dkube:5000/dkube/v2/controller/users/%s/datums/class/dataset/datum/%s"
 
-token <- strsplit(Sys.getenv("RSTUDIO_HTTP_REFERER"), "=")[[1]][2]
+token <- Sys.getenv("DKUBE_USER_ACCESS_TOKEN")
 
 header_data <- sprintf("Bearer %s", token)
 
