@@ -108,10 +108,5 @@ if '1.1' in tf.__version__:
             inputs={'input': model.input},
             outputs={'output': model.output})
 elif '2.' in tf.__version__:
-    with tf.compat.v1.keras.backend.get_session() as sess:
-        tf.compat.v1.saved_model.simple_save(
-            sess,
-            export_path + str(version),
-            inputs={'input': model.input},
-            outputs={'output': model.output})
+    tf.keras.models.save_model(model,export_path + str(version))
 print("Model saved, version = ", version)
