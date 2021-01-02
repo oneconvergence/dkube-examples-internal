@@ -6,7 +6,7 @@ import io
 import numpy as np
 import base64
 import argparse
-
+import tensorflow as tf
 import sys,json
 import requests
 import os
@@ -55,7 +55,10 @@ class ImageTransformer(kfserving.KFModel):
         x = cv2.resize(x, (img_w, img_h))
         x = np.array(x, dtype=np.float64)
         x = x.reshape(1,img_h,img_w,3)
-        payload = {"inputs": {'input': x.tolist()}, 'token':inputs['token']}
+        if '1.1' in tf.__version__:
+            payload = {"inputs": {'input': x.tolist()}, 'token':inputs['token']}
+        else:
+            payload = {"inputs": {'input_1': x.tolist()}, 'token':inputs['token']}
         return payload
 
     def postprocess(self, inputs: List) -> List:
