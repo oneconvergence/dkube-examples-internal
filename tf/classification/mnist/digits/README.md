@@ -5,6 +5,8 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
  - Modified program is configurable and takes Hyperparameters like steps, batchsize, learning rate etc from ENV vars or from a JSON file. User can input these parameters from Dkube UI or upload a file which will then be provided for the running instance of program.
  - Program is modified to be able to run in distributed training mode. User can select this mode while training in Dkube.
  - Program is modified to write TF summaries and use custom Dkube session hook to emit out some critical information about the training which is then displayed on Dkube UI Dashboard.
+### Tensorflow 2 Example (without compat mode) and Tensorflow 2.3 Advanced Example is added in classifier/program-tf2.
+- Follow the README https://github.com/oneconvergence/dkube-examples/blob/master/tf/classification/mnist/digits/classifier/program-tf2/README.md
 
 # Directories
 
