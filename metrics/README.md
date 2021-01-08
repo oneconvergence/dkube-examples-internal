@@ -7,17 +7,17 @@ These examples are derived from [mlflow examples](https://github.com/mlflow/mlfl
  - **tf2**: tensorflow 2.0 example with autolog API
 
 # How to Train
-## Step1: Create a Project
+## Step1: Create a Code
 
 1. Click Repos side menu option.
-2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
+2. Click *+Code* button.
 3. Enter a name say metrics-example
 4. Enter tag name in Tag text-box
-5. Select Project Source as Git
+5. Select Code Source as Git
 6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/metrics in the URL text box
 7. Enter branch name or version in Branch text-box.
-8. Click the *Add Project* button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
-9. Project will be created and imported in Dkube. Progress of import can be seen.
+8. Click *Add Code* button.
+9. Code will be created and imported in Dkube. Progress of import can be seen.
 10. Please wait till status turns to ready.
 
 ## Step2: Create a Model
@@ -40,7 +40,7 @@ These examples are derived from [mlflow examples](https://github.com/mlflow/mlfl
   - Enter Unique name say metrics-example-skl
   - Enter Description name in Description text-box
   - Enter Tags name in Tags text-box
-  - Project: Click on + button and select metrics-example project
+  - Code: Click on + button and select metrics-example created in step 1
   - Container Section
     - Select Framework as sklearn
     - Select Version as 0.23.2
@@ -62,7 +62,7 @@ These examples are derived from [mlflow examples](https://github.com/mlflow/mlfl
   - Enter Unique name say metrics-example-tf2
   - Enter Description name in Description text-box
   - Enter Tags name in Tags text-box
-  - Project: Click on + button and select metrics-example project.
+  - Code: Click on + button and select metrics-example created in step 1.
   - Container Section
     - Select Framework as tensorflow
     - Select Version as 2.0.0
@@ -83,7 +83,7 @@ These examples are derived from [mlflow examples](https://github.com/mlflow/mlfl
 
 ## Steps for running the sklearn metric example in IDE:
 1. Create a IDE with sklearn framework and version 0.23.2.
-2. Select the project metrics-example.
+2. Select the code  metrics-example.
 3. Create a new notebook inside workspace/metrics-example/metrics/sklearn
    - In first cell type:
      %mkdir -p /opt/dkube/output

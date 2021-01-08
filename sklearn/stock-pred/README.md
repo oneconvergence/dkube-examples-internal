@@ -1,14 +1,14 @@
 # Stock Prediction using :SKlearn
-## Step1: Create a Project
+## Step1: Create a Code
 1. Click *Repos* side menu option.
-2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
+2. Click *+Code* button.
 3. Select source as *Git*.
 4. Enter a unique name say *stock-prediction*
 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred/model
  ](https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred/model)* in the URL text box.
 6. Branch: master
-7. Click *Add Project* button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
-8. Project will be created and imported in Dkube. Progress of import can be seen.
+7. Click *Add Code* button.
+8. Code will be created and imported in Dkube. Progress of import can be seen.
 9. Please wait till status turns to *ready*.
 
 ## Step2: Create a dataset
@@ -39,7 +39,7 @@
  3. Fill the fields in Run form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
 	- **Basic Tab**
 	- Enter a unique name say *stock-pred*
-	- Project - Please select the project *stock-prediction* created in **Step1**.
+	- Code - Please select the Code *stock-prediction* created in **Step1**.
       - Container section
 		- Framework - sklearn.
 		- Start-up script -`python train.py`
@@ -57,7 +57,7 @@
 
 ## Step6: Evaluation
 - Type: Training
-- Project: stock-prediction
+- Code: stock-prediction
 - Framework : sklearn
 - Script: python evaluation.py
 - Input dataset: google-stock
@@ -74,7 +74,7 @@
 ## Test Inference
 1. Go to the model version and click test inference.
 2. Give a name and check the transformer.
-3. Select project stock-prediction.
+3. Select Code stock-prediction.
 4. Edit transformer code field and replace the default test with sklearn/stock-pred/model/transformer.py
 5. Choose CPU and Submit. 
 6. Open the Inference UI page https://<IP>:32222/inference .
@@ -115,7 +115,7 @@ stock-inp.json https://raw.githubusercontent.com/oneconvergence/dkube-examples/m
 
 ## Steps for running the program in IDE
 1. Create a IDE with sklearn framework and version 0.23.2.
-2. Select the project stock-prediction.
+2. Select the Code stock-prediction.
 3. Under Inputs section, in Repos Tab select dataset google stock and enter mount path /opt/dkube/input.
 4. Create a new notebook inside workspace/stock-pred/stock-pred/model
    - In first cell type:

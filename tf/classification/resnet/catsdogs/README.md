@@ -15,17 +15,17 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
  - **pipeline/dkube-resnet-pipeline.ipynb**: Ipython notebook with the code. Upload the file in Dkube notebook and run all the cells. This notebook will generate and trigger the run of pipeline.
 
 # How to Train
-## Step1: Create a Project
+## Step1: Create a Code
 
 1. Click Repos side menu option.
-2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
+2. Click *+Code* button.
 3. Enter a name say resnet-catsdogs
 4. Enter tag name in Tag text-box
-5. Select Project Source as Git
+5. Select Source as Git
 6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/catsdogs/classifier/program in the URL text box
 7. Enter branch name or version in Branch text-box
-8. Click the Add Project button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
-9. Project will be created and imported in Dkube. Progress of import can be seen.
+8. Click *Add Code* button.
+9. Code will be created and imported in Dkube. Progress of import can be seen.
 10. Please wait till status turns to ready.
 
 
@@ -59,7 +59,7 @@ This step is to create a dvs model which will hold the trained output model.
 3. Fill the fields in Job form and click the Submit button. See below for sample values to be given in the form, for advanced usage please refer to Dkube User Guide.
    - **Basic Tab**
       - Enter Unique name say Training-catsdogs
-      - Project: Click on + button and select resnet-catsdogs project
+      - Code: Click on + button and select resnet-catsdogs project
       - Container Section
         - Select Framework as tensorflow
         - Select Framework version 1.14
@@ -139,7 +139,7 @@ parameters:
 2. Sample pipeline for this example is available under `pipeline/` mentioned in section [directories](#%20Directories).
 
 ## How to use dkube-resnet-pipeline.ipynb
-1. Create project with name catsdogs
+1. Create Code with name catsdogs
 2. Create Dataset with name catsdogs
 3. Create model with name catsdogs
 4. Go to Default Dkube notebook
@@ -184,7 +184,7 @@ parameters:
 
 ## Steps for running the program in IDE
 1. Create a IDE with tensorflow framework and version 1.14.
-2. Select the project resnet-catsdogs.
+2. Select the Code resnet-catsdogs.
 3. Under Inputs section, in Repos Tab select the dataset resnet-catsdogs and enter mount path /opt/dkube/input.
 4. Create a new notebook inside workspace/resnet-catsdogs/tf/classification/resnet/catsdogs/classifier/program
    - In first cell type:

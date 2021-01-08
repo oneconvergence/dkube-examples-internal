@@ -1,15 +1,16 @@
+## Tensorflow 2 Example (Without Compat mode)
 # How to Train 
-## Step1: Create a Project
+## Step1: Create a Code
 
 1. Click Repos side menu option.
-2. Click +Project button under Projects section.
+2. Click +Code button.
 3. Enter a name say mnist-digits
 4. Enter tag name in Tag text-box
-5. Select Project Source as Git
+5. Select Source as Git
 6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program-tf2 in the URL text box for tensorflow version 2.0
 7. Enter branch name or version in Branch text-box.
-8. Click the Add Project button.
-9. Project will be created and imported in Dkube. Progress of import can be seen.
+8. Click the Add Code button.
+9. Code will be created and imported in Dkube. Progress of import can be seen.
 10. Please wait till status turns to ready.
 
 
@@ -45,7 +46,7 @@
  3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
     - **Basic Tab**
       - Enter Unique name say Training-mnist
-      - Project: Click on + button and select mnist-digits project
+      - Code: Click on + button and select mnist-digits code.
       - Container Section
         - Select Framework as tensorflow
         - Select Framework version 2.0.
@@ -82,23 +83,23 @@
 
 ## Running the example in IDE
 1. Create a IDE with tensorflow framework and version 2.0.
-2. Select the project mnist-digits.
+2. Select the code  mnist-digits.
 3. In Repos Tab, Under Inputs section select the mnist-digits dataset and enter the mount path /opt/dkube/input.
 4. Create a new notebook inside workspace/program-tf2/program/ and type %load model.py in a notebook cell and then run.
 5. Model will be trained and will be available under /opt/dkube/output/1, can be verified by using command !ls /opt/dkube/output/1.
 
 
 ## Tensorflow 2.3 Advanced Example
-## Step1: Create a Project
+## Step1: Create a Code
 1. Click Repos side menu option.
-2. Click +Project button under Projects section.
+2. Click +Code button.
 3. Enter a name say mnist-digits
 4. Enter tag name in Tag text-box
-5. Select Project Source as Git
+5. Select Source as Git
 6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program-tf2 in the URL text box for tensorflow version 2.0
 7. Enter branch name or version in Branch text-box.
-8. Click the Add Project button.
-9. Project will be created and imported in Dkube. Progress of import can be seen.
+8. Click the Add Code button.
+9. Code will be created and imported in Dkube. Progress of import can be seen.
 10. Please wait till status turns to ready.
 
 ## Step2 : Create a Dataset
@@ -130,7 +131,7 @@
  3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
     - **Basic Tab**
       - Enter Unique name say Training-mnist
-      - Project: Click on + button and select mnist-digits project
+      - Code: Click on + button and select mnist-digits code.
       - Container Section
         - Select Framework as tensorflow
         - Select Framework version 2.3

@@ -1,13 +1,13 @@
 # MNIST example using PyTorch
-## Step1: Create a Project
+## Step1: Create a Code
  1. Click *Repos* side menu option.
- 2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
- 3. Select Project source as Git.
+ 2. Click *+Code* button.
+ 3. Select source as Git.
  4. Enter a unique name say *mnist-pt*
  5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/pytorch/classification/mnist/digits/classifier/program 
  ](https://github.com/oneconvergence/dkube-examples/tree/master/pytorch/classification/mnist/digits/classifier/program)* in the URL text box.
- 6. Click *Add Project* button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
- 7. Project will be created and imported in Dkube. Progress of import can be seen.
+ 6. Click *Add Code* button.
+ 7. Code will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
 
 ## Step2: Create a dataset
@@ -41,7 +41,7 @@
 	  - Enter a unique name say *digits-classifier*
  	  - **Container** section
 		- Framework - pytorch.
-		- Project section - Please select the workspace *mnist-pt* created in **Step1**.
+		- Code section - Please select the *mnist-pt* created in **Step1**.
 		- Start-up script -`python model.py`
     - **Repos Tab**
 	    - Dataset section - Under Inputs section,select the dataset *mnist-pt* created in **Step2**. Mount point: /opt/dkube/input .
@@ -106,7 +106,7 @@
 
 ## Steps for running the program in IDE
 1. Create a IDE with pytorch framework and version 1.6.
-2. Select the project mnist-pt.
+2. Select the Code mnist-pt.
 3. Under Inputs section, in Repos Tab select dataset mnist-pt and enter mount path /opt/dkube/input.
 4. Create a new notebook inside workspace/mnist-pt/pytorch/classification/mnist/digits/classifier/program
    - In first cell type:
