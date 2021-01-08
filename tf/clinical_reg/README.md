@@ -49,12 +49,12 @@
 1. Go to IDE section
 2. Create Notebook 
    - Give a name 
-   - Project: regression
+   - Code: regression
    - Datasets: 
          - i.   clinical Mount point: /opt/dkube/input/clinical 
          - ii.  images Mount point: /opt/dkube/input/images 
          - iii. rna Mount Point: /opt/dkube/input/rna
-3. Submit
+i3. Submit
 4. Open workflow.ipynb from location workspace/regression/reg_demo/ 
    - Run cells and wait for output (In case of running the notebook second time, restart the kernel)
 5. Delete if workflow.py is already there and export the workflow notebook as executable. 
@@ -67,7 +67,7 @@
 6. Create a model named workflow with source none.
 7. Create training run using workflow.py 
    - Give a name 
-   - Project: regression 
+   - Code: regression 
    - Startup command: python workflow.py 
    - Datasets: 
         - i.   clinical Mount point: /opt/dkube/input/clinical 

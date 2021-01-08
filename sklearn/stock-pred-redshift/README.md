@@ -1,16 +1,16 @@
 ## Stock Prediction using SKlearn and Redshift
 To run this example, the user requires to set-up some initials into the Dkube.
 
-## Step1: Create a Project
+## Step1: Create a Code
 1. Click *Repos* side menu option.
-2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
+2. Click *+Code* button.
 3. Select source as *Git*.
 4. Enter a unique name say *stock-prediction*
 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred-redshift/model 
  ](https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred-redshift/model)* in the URL text box.
 6. Branch: master
-7. Click *Add Project* button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
-8. Project will be created and imported in Dkube. Progress of import can be seen.
+7. Click *Add Code* button.
+8. Code will be created and imported in Dkube. Progress of import can be seen.
 9. Please wait till status turns to *ready*.
 
 
@@ -42,7 +42,7 @@ The job must run in the given sequence, training then evaluation. Tensorboard ca
  3. Fill the fields in Run form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
     - **Basic Tab**
       - Enter a unique name say *stock-pred*
-      - Project section - Please select the workspace *stock-prediction* created in **Step1**.
+      - Code section - Please select the Code *stock-prediction* created in **Step1**.
       - Container section
         - Framework - sklearn
         - Start-up script -`python train.py`
@@ -59,7 +59,7 @@ In tensorboard, the regression fit of stock data can be seen in the tensorboard 
 
 ## Evaluation job
 1. Type: Training
-2. Project: stock-prediction
+2. Code: stock-prediction
 3. Framework: sklearn
 4. Script: python evaluation.py
 5. Input dataset: google-stock, version: pg_internal
@@ -73,7 +73,7 @@ In tensorboard, the regression fit of stock data can be seen in the tensorboard 
 1.  Give the Test Inference name
 2.  Click on Transformer checkbox
     - Make sure Serving and Transformer image is sklearn image. It will get filled automatically
-    - Select project stock-prediction.	
+    - Select Code stock-prediction.	
     - Edit transformer code field and replace the default test with sklearn/stock-pred-redshift/model/transformer.py
     - Choose CPU and Submit. 
 3.  Go to Test Inferences page and wait until the Test Inference changes to running state
@@ -94,7 +94,7 @@ In tensorboard, the regression fit of stock data can be seen in the tensorboard 
 5.  Give the publish model name
 6.  Click on Transformer checkbox
 7.  Make sure Serving and Transformer image is sklearn image. It will get filled automatically
-    - Select project stock-prediction.
+    - Select Code stock-prediction.
     - Edit transformer code field and replace the default test with sklearn/model/transformer.py
 8.  Click on Submit button
 9.  Once model is published, go to Model catalog and click on published model
@@ -114,7 +114,7 @@ In tensorboard, the regression fit of stock data can be seen in the tensorboard 
 ## Notebook Workflow
 1.  Launch a new Notebook
 2.  Select the default DKube data science image.
-3.  Choose the project: stock-prediction
+3.  Choose the Code: stock-prediction
 4.  Choose framework: sklearn
 5.  Choose dataset:  google-stock
     - Version: pg_internal

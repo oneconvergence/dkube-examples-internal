@@ -15,17 +15,17 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
  - **pipeline/dkube-mnist-pipeline.ipynb**: Ipython notebook with the code. Upload the file in Dkube notebook and run all the cells. This notebook will generate and trigger the run of pipeline.
 
 # How to Train
-## Step1: Create a Project
+## Step1: Create a Code
 
 1. Click Repos side menu option.
-2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
+2. Click *+Code* button.
 3. Enter a name say mnist-digits
 4. Enter tag name in Tag text-box
-5. Select Project Source as Git
+5. Select Source as Git
 6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program in the URL text box for tensorflow version 1.14 or https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program-2.x for tensorflow version 2.0.
 7. Enter branch name or version in Branch text-box.
-8. Click the *Add Project* button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
-9. Project will be created and imported in Dkube. Progress of import can be seen.
+8. Click *Add Code* button.
+9. Code will be created and imported in Dkube. Progress of import can be seen.
 10. Please wait till status turns to ready.
 
 
@@ -61,7 +61,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
  3. Fill the fields in Job form and click *Submit* button. Toggle *Expand All* button to auto expand the form. See below for sample values to be given in the form, for advanced usage please refer to **Dkube User Guide**.
     - **Basic Tab**
       - Enter Unique name say Training-mnist
-      - Project: Click on + button and select mnist-digits project
+      - Code: Click on + button and select mnist-digits code.
       - Container Section
         - Select Framework as tensorflow
         - Select Framework version 1.14 or 2.0 depending on your choice.
@@ -147,7 +147,7 @@ parameters:
 7. Upload the tar file into the DKube pipeline UI.
 
 ## How to use dkube-mnist-pipeline.ipynb
-1. Create project with name mnist.
+1. Create Code with name mnist.
 2. Create Dataset with name mnist.
 3. Create model with name mnist.
 4. Go to Default Dkube notebook.
@@ -192,7 +192,7 @@ parameters:
 
 ## Steps for running the tensorflow 1.14 program in IDE
 1. Create a IDE with tensorflow framework and version 1.14.
-2. Select the project mnist-digits.
+2. Select the Code mnist-digits.
 3. Select the dataset mnist-digits and enter mount path /opt/dkube/input
 4. Create a new notebook inside workspace/mnist-digits/tf/classification/mnist/digits/classifier/program
    - In first cell type:
@@ -203,7 +203,7 @@ parameters:
 
 ## Steps for running the tensorflow 2.0 program in IDE
 1. Create a IDE with tensorflow framework and version 2.0
-2. Select the project mnist-digits.
+2. Select the Code mnist-digits.
 3. Select the dataset mnist-digits and enter mount path /opt/dkube/input
 4. Create a new notebook inside workspace/mnist-digits/tf/classification/mnist/digits/classifier/program-2.x
    - In first cell type:
