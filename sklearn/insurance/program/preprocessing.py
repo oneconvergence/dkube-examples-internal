@@ -17,14 +17,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", dest="url", default=None, type=str, help="setup URL")
     parser.add_argument("--fs", dest="fs", required=True, type=str, help="featureset")
-
     global FLAGS
     FLAGS, unparsed = parser.parse_known_args()
     fs = FLAGS.fs
-
-    ########--- Get DKube client handle ---########
-
     dkubeURL = FLAGS.url
+    
+    ########--- Get DKube client handle ---########
     # Dkube user access token for API authentication
     authToken = os.getenv("DKUBE_USER_ACCESS_TOKEN")
     # Get client handle
@@ -57,21 +55,6 @@ if __name__ == "__main__":
         metadata["schema"] = str(schema[i])
         featureset_metadata.append(metadata)
 
-    # Convert featureset metadata (featurespec) to yaml
-    featureset_metadata = yaml.dump(featureset_metadata, default_flow_style=False)
-    with open("fspec.yaml", "w") as f:
-        f.write(featureset_metadata)
-    # Upload featureset metadata (featurespec)
-    resp = api.upload_featurespec(featureset=fs, filepath="fspec.yaml")
-    print("featurespec upload response:", resp)
-
-    ########--- Commit features ---########
-    # Featureset
-    featureset = DkubeFeatureSet()
-    # Specify features path - mounted as output
-    featureset.update_features_path(path=out_path)
-    # Write features - Dataframe
-    featureset.write(df)
-    # Commit featuresset
-    resp = api.commit_features()
+    # Commit featureset
+    resp = api.commit_featureset(name=fs, df=df, metadata=featureset_metadata)
     print("featureset commit response:", resp)

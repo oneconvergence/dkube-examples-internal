@@ -15,7 +15,7 @@
 &nbsp;2. Source: None
 4. **Preprocessing job** \
 &nbsp;1. **Type:** pre-processing \
-&nbsp;2. **Docker-image:** docker.io/ocdr/d3-datascience-tf-cpu:fs-v1.14 \
+&nbsp;2. **Docker-image:** docker.io/ocdr/d3-datascience-tf-cpu:v1.14 \
 &nbsp;3. **Script:** python featureset.py --fs titanic-fs \
 &nbsp;&nbsp;3.1. titanic is featureset name, the user can change the name. \
 &nbsp;4. **Code:** titanic \
@@ -27,13 +27,12 @@
 &nbsp;1. **Type:** training \
 &nbsp;2. **Framework:** sklearn \
 &nbsp;3. **Framework Version:** 0.23.2 \
-&nbsp;4. **Image** : docker.io/ocdr/d3-datascience-tf-cpu:fs-v1.14 \
-&nbsp;5. **Script:** python model.py \
-&nbsp;6. **Project:** titanic \
-&nbsp;7. **Input featureset:** titanic-fs \
-&nbsp;&nbsp;7.1. **Mount-point:** /opt/dkube/input \
-&nbsp;8. **Output model:** titanic \
-&nbsp;&nbsp;8.1. **Mount-Point:** /opt/dkube/output
+&nbsp;4. **Script:** python model.py --fs titanic-fs \
+&nbsp;5. **Project:** titanic \
+&nbsp;6. **Input featureset:** titanic-fs \
+&nbsp;&nbsp;6.1. **Mount-point:** /opt/dkube/input \
+&nbsp;7. **Output model:** titanic \
+&nbsp;&nbsp;7.1. **Mount-Point:** /opt/dkube/output
 6. **Pipeline run:** \
 Download [https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/titanic/pipeline/titanic-pl.ipynb] into DKube Notebook IDE and run all the cells. This auto fills values for pipeline parameters as follows and creates a run under "DKube - Titanic" experiment.\
 &nbsp;&nbsp; 6.1 Fills auth token from DKUBE_USER_ACCESS_TOKEN environment variable in Notebook \

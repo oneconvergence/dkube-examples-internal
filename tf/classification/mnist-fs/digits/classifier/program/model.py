@@ -39,12 +39,10 @@ if __name__ == "__main__":
     ########--- Parse for parameters ---########
 
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--epochs", dest="epochs", type=int, default=5, help="no. of epochs"
-    )
-    parser.add_argument(
-        "--batch_size", dest="batch_size", type=int, default=128, help="no. of epochs"
-    )
+    parser.add_argument("--epochs", dest="epochs", type=int, default=5, help="no. of epochs")
+    parser.add_argument("--batch_size", dest="batch_size", type=int, default=128, help="no. of epochs")
+    parser.add_argument("--url", dest="url", default=None, type=str, help="setup URL")
+    parser.add_argument("--fs", dest="fs", required=True, type=str, help="featureset")
 
     num_classes = 10
     input_shape = (28, 28, 1)
@@ -53,17 +51,18 @@ if __name__ == "__main__":
     FLAGS, unparsed = parser.parse_known_args()
     epochs = FLAGS.epochs
     batch_size = FLAGS.batch_size
+    dkubeURL = FLAGS.url
+    fs = FLAGS.fs
 
     ########--- Read features from input FeatureSet ---########
 
-    # Featureset object
-    featureset = DkubeFeatureSet()
-    # Specify Featurese input path. FeatureSet mount path
-    featureset.update_features_path(path=inp_path)
-    # Read features into a dataframe object
-    data = featureset.read()
-    # Fetching data from response
-    feature_df = data["data"]
+    # Featureset API
+    authToken = os.getenv("DKUBE_USER_ACCESS_TOKEN")
+    # Get client handle
+    api = DkubeApi(URL=dkubeURL, token=authToken)
+
+    # Read features
+    feature_df = api.read_featureset(name = fs)  # output: data
 
     ########--- Train ---########
 
@@ -76,9 +75,7 @@ if __name__ == "__main__":
 
     # Defining model
     model = Sequential()
-    model.add(
-        Conv2D(32, kernel_size=(3, 3), activation="relu", input_shape=input_shape)
-    )
+    model.add(Conv2D(32, kernel_size=(3, 3), activation="relu", input_shape=input_shape))
     model.add(Conv2D(64, (3, 3), activation="relu"))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Flatten())
@@ -127,23 +124,6 @@ if __name__ == "__main__":
         version = 1
     else:
         version = max(saved_models) + 1
-    model.save(export_path + "weights.h5")
     tf.keras.backend.set_learning_phase(0)  # Ignore dropout at inference
-
-    if "1.1" in tf.__version__:
-        with tf.keras.backend.get_session() as sess:
-            tf.saved_model.simple_save(
-                sess,
-                export_path + str(version),
-                inputs={"input": model.input},
-                outputs={"output": model.output},
-            )
-    elif "2." in tf.__version__:
-        with tf.compat.v1.keras.backend.get_session() as sess:
-            tf.compat.v1.saved_model.simple_save(
-                sess,
-                export_path + str(version),
-                inputs={"input": model.input},
-                outputs={"output": model.output},
-            )
+    tf.saved_model.save(model,export_path + str(version))
     print("Model saved, version = ", version)

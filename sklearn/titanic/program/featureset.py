@@ -3,16 +3,11 @@ import os
 import numpy as np
 import pandas as pd
 import argparse
-
-# import sys
 import yaml
-
-# sys.path.insert(0, os.path.abspath("/usr/local/lib/python3.6/dist-packages"))
 from dkube.sdk import *
 
 inp_path = "/opt/dkube/input/"
 train_out_path = "/opt/dkube/output/"
-# test_out_path = "./"
 
 if __name__ == "__main__":
 
@@ -82,24 +77,6 @@ if __name__ == "__main__":
         metadata["schema"] = str(schema[i])
         featureset_metadata.append(metadata)
 
-    # Convert featureset metadata (featurespec) to yaml
-    featureset_metadata = yaml.dump(featureset_metadata, default_flow_style=False)
-    with open("fspec.yaml", "w") as f:
-        f.write(featureset_metadata)
-
-    # Upload featureset metadata (featurespec)
-    resp = api.upload_featurespec(featureset=fs, filepath="fspec.yaml")
-    print("featurespec upload response:", resp)
-
-    ########--- Commit features ---########
-
- 
-    # Featureset
-    featureset = DkubeFeatureSet()
-    # Specify features path - mounted as output
-    featureset.update_features_path(path=train_out_path)
-    # Write features - Dataframe
-    featureset.write(df)
-    # Commit featuresset
-    resp = api.commit_features()
+    # Commit featureset
+    resp = api.commit_featureset(name=fs, df=df, metadata=featureset_metadata)
     print("featureset commit response:", resp)

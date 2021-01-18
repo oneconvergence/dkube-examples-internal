@@ -15,7 +15,7 @@
 &nbsp;&nbsp; Source: None 
 4. **Preprocessing job** \
 &nbsp;&nbsp; **Type:** pre-procesing \
-&nbsp;&nbsp; **Docker-image:** docker.io/ocdr/d3-datascience-tf-cpu:fs-v1.14 \
+&nbsp;&nbsp; **Docker-image:** docker.io/ocdr/d3-datascience-tf-cpu:v1.14 \
 &nbsp;&nbsp; **Script:** python featureset.py --fs mnist-fs \
 &nbsp;&nbsp; **Code:** mnist \
 &nbsp;&nbsp; **Input dataset:** mnist \
@@ -26,8 +26,7 @@
 &nbsp;&nbsp; **Type:** training \
 &nbsp;&nbsp; **Framework:** Tensorflow \
 &nbsp;&nbsp; **Framework Version:** 1.14 \
-&nbsp;&nbsp; **Image** : docker.io/ocdr/d3-datascience-tf-cpu:fs-v1.14 \
-&nbsp;&nbsp; **Script:** python model.py \
+&nbsp;&nbsp; **Script:** python model.py --fs mnist-fs \
 &nbsp;&nbsp; **Code:** mnist \
 &nbsp;&nbsp; **Input featureset:** mnist-fs \
 &nbsp;&nbsp;&nbsp;&nbsp; **Mount-point:** /opt/dkube/input \
