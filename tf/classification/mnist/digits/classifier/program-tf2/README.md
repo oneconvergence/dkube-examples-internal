@@ -151,3 +151,10 @@
 1. Click on Repos tab, navigate to models and then go to mnist-digits model and select version and create a test inference. Don't check transformer.
 2. Download the inp data from https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/tf/classification/mnist/digits/classifier/program-tf2/sample.json
 3. Go to your test inference, copy curl command and add  -kv after curl and -d @sample.json at the end.
+
+## Running the example in IDE
+1. Create a IDE with tensorflow framework and version 2.3
+2. Select the code  mnist-digits.
+3. In Repos Tab, Under Inputs section select the mnist-digits dataset and enter the mount path /opt/dkube/input.
+4. Inside workspace/program-tf2/ folder, run all the cells of tf-advanced.ipynb.
+
