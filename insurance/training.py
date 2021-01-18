@@ -19,16 +19,24 @@ out_path = "/opt/dkube/output"
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--url", dest="url", default=None, type=str, help="setup URL")
+    parser.add_argument("--fs", dest="fs", required=True, type=str, help="featureset")
+
+    global FLAGS
+    FLAGS, unparsed = parser.parse_known_args()
+    dkubeURL = FLAGS.url
+    fs = FLAGS.fs
+
     ########--- Read features from input FeatureSet ---########
 
     # Featureset API
-    featureset = DkubeFeatureSet()
-    # Specify featureset path
-    featureset.update_features_path(path=inp_path)
+    authToken = os.getenv("DKUBE_USER_ACCESS_TOKEN")
+    # Get client handle
+    api = DkubeApi(URL=dkubeURL, token=authToken)
 
     # Read features
-    data = featureset.read()  # output: response json with data
-    feature_df = data["data"]
+    feature_df = api.read_featureset(name = fs)  # output: data
 
     ########--- Train ---########
     insurance_input = feature_df.drop(['charges'],axis=1)
