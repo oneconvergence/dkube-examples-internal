@@ -13,7 +13,7 @@ set.seed(7)
 # create 80%/20% for training and validation datasets
 validation_index <- createDataPartition(Sonar$Class, p=0.80, list=FALSE)
 validation <- Sonar[-validation_index,]
-model <- readRDS(paste(IN_DIR, "model.rds"))
+model <- readRDS(sprintf("%smodel.rds", IN_DIR))
 print(model)
 # make a predictions on "new data" using the final model
 final_predictions <- predict(model, validation[,1:60])

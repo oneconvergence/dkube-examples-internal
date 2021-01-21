@@ -18,4 +18,4 @@ training <- Sonar[validation_index,]
 set.seed(7)
 model <- randomForest(Class~., training, mtry=2, ntree=2000)
 # save the model to disk
-saveRDS(model, paste(OUT_DIR,"model.rds"))
+saveRDS(model, sprintf("%smodel.rds", OUT_DIR))
