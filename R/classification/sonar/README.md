@@ -34,23 +34,23 @@
 		- Framework version - r-2.0.0
 		- Start-up script - `Rscript sonar/sonar.R`
 	- **Repos** Tab
-	  - Model section - Under the Outputs section,select the model *r-sonar* created in **Step3**. Mount point: /opt/dkube/model
+	  - Model section - Under the Outputs section,select the model *r-sonar* created in **Step3**. Mount point: **/opt/dkube/model**
 4. Click *Submit* button.
 5. A new entry with name *r-examples* will be created in *Runs* table
 6. Check the *Status* field for lifecycle of job, wait till it shows *complete*
 
 ## Evaluation job:
 1. Type:  Training
-2. Script: Rscript sonar/sonar-eval.R
+2. Script: `Rscript sonar/sonar-eval.R`
 3. Project: r-examples
 4. Framework: Tensorflow
 5. Framework Version : r-2.0.0
 6. Input Model: r-sonar
-7. Mount-Point: /opt/dkube/model
+7. Mount-Point: **/opt/dkube/model**
 
 ## Sonar Test Inference:
 1. Go to model r-sonar and create test inference.
-2. Build the custom serving image from sonar/Dockerflie or use image docker.io/ocdr/custom-kfserving:R-sonar as serving the image, don’t check for the transformer.
+2. Build the custom serving image from sonar/Dockerflie or use image `docker.io/ocdr/custom-kfserving:R-sonar` as serving the image, don’t check for the transformer.
 3. Use sample.json from serving folder and run `curl -kv --location --request POST serving_url --header "Authorization: Bearer TOKEN" --header "Content-Type: application/json"  -d @sample.json`
 4. Expected Output: `{"data":{Object":[["R"]]}}`
 
