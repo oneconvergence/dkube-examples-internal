@@ -9,6 +9,7 @@ import cv2, os, json, re
 import joblib, psycopg2
 import requests
 
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
 
 r_endpoint = os.getenv('DKUBE_DATASET_REDSHIFT_ENDPOINT', None)
 r_database = os.getenv('DKUBE_DATASET_REDSHIFT_DATABASE', None)
@@ -44,7 +45,7 @@ def rs_fetch_datasets():
     headers={"authorization": "Bearer "+os.getenv("DKUBE_USER_ACCESS_TOKEN")}
     datasets = []
     for ds in json.load(open('/etc/dkube/redshift.json')):
-        resp = requests.get(url % (user, ds.get('rs_name')), headers=headers).json()
+        resp = requests.get(url % (user, ds.get('rs_name')), headers=headers, verify=False).json()
         ds['rs_password'] = resp['data']['datum']['redshift']['password']
         datasets.append(ds)
     return datasets
