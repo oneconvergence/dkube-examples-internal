@@ -5,7 +5,11 @@ import csv, sys
 import joblib
 import requests, os
 
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
+
 def log_metrics(key, value):
+    if MLFLOW_METRIC_REPORTING == "True":
+        return
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
     train_metrics = {}
     train_metrics['mode']="train"

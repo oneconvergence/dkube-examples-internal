@@ -10,6 +10,8 @@ import joblib
 import requests
 import argparse
 
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
+
 dates = []
 prices = []
 unconfigure()
@@ -21,6 +23,8 @@ def eval_metrics(actual, pred):
     return rmse, mae, r2
 
 def log_metrics(key, value):
+    if MLFLOW_METRIC_REPORTING != "True":
+        return
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
     train_metrics = {}
     train_metrics['mode']="train"

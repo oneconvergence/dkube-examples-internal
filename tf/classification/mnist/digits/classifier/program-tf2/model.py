@@ -29,6 +29,7 @@ from absl import logging
 import tensorflow as tf
 import argparse
 
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
 
 if os.getenv('DKUBE_JOB_CLASS',None) == 'notebook':
   if not os.path.exists('/opt/dkube/output'):
@@ -44,6 +45,8 @@ num_train_examples = 60000
 num_eval_examples = 10000
 
 def logging_metrics(key, value, step, epoch):
+    if MLFLOW_METRIC_REPORTING == "True":
+        return
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
     train_metrics = {}
     train_metrics['mode']="train"

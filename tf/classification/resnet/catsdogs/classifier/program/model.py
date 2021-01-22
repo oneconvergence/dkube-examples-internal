@@ -14,6 +14,8 @@ from tensorflow.keras.layers import Flatten
 from tensorflow.keras.optimizers import SGD
 import requests
 
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--epochs", dest = 'epochs', type = int, default = 10, help="no. of epochs")
 parser.add_argument("--learning_rate", dest = 'lr', type = float, default = 0.001, help="no. of epochs")
@@ -32,6 +34,8 @@ ZIP_FILE = DATA_DIR + "data.zip"
 img_shape = (298,298)
 
 def log_metrics(key, value, epoch, step):
+    if MLFLOW_METRIC_REPORTING != "True":
+        return
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
     train_metrics = {}
     train_metrics['mode']="train"

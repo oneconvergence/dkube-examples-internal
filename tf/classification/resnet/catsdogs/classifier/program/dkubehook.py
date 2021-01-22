@@ -5,6 +5,8 @@ import json
 import os
 import logging
 
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
+
 class dkubeLoggerHook(tf.estimator.LoggingTensorHook):
         def __init__(self, tensors, every_n_iter=None, every_n_secs=None, at_end=False, formatter=None):
                 self.mode = tensors.pop('mode', "NA")
@@ -50,9 +52,10 @@ class dkubeLoggerHook(tf.estimator.LoggingTensorHook):
                     try:
                         logging.info("accuracy="+str(float(round(metrics['accuracy'], 4))))
                         logging.info("loss="+str(float(round(metrics['loss'], 4))))
-                        url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
-                        requests.post(url, json = accuracy )
-                        requests.post(url, json = loss )
-                        requests.post(url, json = step )
+                        if MLFLOW_METRIC_REPORTING == "True":
+                            url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
+                            requests.post(url, json = accuracy )
+                            requests.post(url, json = loss )
+                            requests.post(url, json = step )
                     except Exception as exc:
                         logging.error(exc)

@@ -21,7 +21,11 @@ import requests
 import cv2, json
 import os
 
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
+
 def log_metrics(key, value, epoch, step):
+    if MLFLOW_METRIC_REPORTING == "True":
+        return
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
     train_metrics = {}
     train_metrics['mode']="train"

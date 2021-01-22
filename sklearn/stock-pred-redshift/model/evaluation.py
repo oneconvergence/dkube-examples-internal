@@ -7,6 +7,7 @@ import requests
 import joblib, psycopg2
 import os, re
 
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
 
 r_endpoint = os.getenv('DKUBE_DATASET_REDSHIFT_ENDPOINT', None)
 r_database = os.getenv('DKUBE_DATASET_REDSHIFT_DATABASE', None)
@@ -28,6 +29,8 @@ gamma = float(sys.argv[4]) if len(sys.argv) > 4 else 0.1
 degree= int(sys.argv[5]) if len(sys.argv) > 5 else 2
 
 def log_metrics(key, value):
+    if MLFLOW_METRIC_REPORTING == "True":
+        return
     url = "http://dkube-exporter.dkube:9401/mlflow-exporter"
     train_metrics = {}
     train_metrics['mode']="train"

@@ -8,6 +8,8 @@ import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score , log_loss
 
+MLFLOW_METRIC_REPORTING = os.getenv('MLFLOW_METRIC_REPORTING', "True")
+
 ############# Mount Paths ############
 if os.getenv('DKUBE_JOB_CLASS',None) == 'notebook':
     MODEL_DIR = "model"
@@ -28,6 +30,8 @@ def get_metrics(actual, pred):
 	return accuracy,loss
 
 def api_calling(train_loss,train_accuracy,eval_loss,eval_accuracy):
+        if MLFLOW_METRIC_REPORTING == "True":
+            return
 	url="http://dkube-exporter.dkube:9401/export-training-info"
 	train_metrics={}
 	eval_metrics={}
