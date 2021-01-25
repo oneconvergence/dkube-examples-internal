@@ -84,7 +84,7 @@
 10. Upload the CSV file.
 11. Click Predict. 
 
-## CURL Example for test inference
+## CURL Example for test inference(works without transformer)
 curl -kv -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" https://<IP>:32222/dkube/inf/v1/models/d3-inf-3d133119-ec8d-47ce-851f-a7608f4cadd4:predict -d @stock-inp.json
 
 stock-inp.json https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/stock-pred/input_sample/stock-input.json
@@ -117,7 +117,7 @@ stock-inp.json https://raw.githubusercontent.com/oneconvergence/dkube-examples/m
 1. Create a IDE with sklearn framework and version 0.23.2.
 2. Select the Code stock-prediction.
 3. Under Inputs section, in Repos Tab select dataset google stock and enter mount path /opt/dkube/input.
-4. Create a new notebook inside workspace/stock-pred/stock-pred/model
+4. Create a new notebook inside workspace/stock-pred/sklearn/stock-pred/model
    - In first cell type:
      - %mkdir -p /opt/dkube/output
      - %rm -rf /opt/dkube/output/*

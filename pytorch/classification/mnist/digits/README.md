@@ -70,6 +70,9 @@
 5. Select model mnist from the dropdown.
 6. Upload the downloaded image and click predict. 
 
+## Inference through Curl Command (works without the transformer)
+1. Use input json path as https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/pytorch/classification/mnist/digits/classifier/input_sample/mnist-pt.json 
+
 ## Step7: Release, Publish and Stage or Deploy model
 
 1. *Release Model*
