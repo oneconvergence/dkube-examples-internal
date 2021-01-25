@@ -95,7 +95,7 @@ In tensorboard, the regression fit of stock data can be seen in the tensorboard 
 6.  Click on Transformer checkbox
 7.  Make sure Serving and Transformer image is sklearn image. It will get filled automatically
     - Select Code stock-prediction.
-    - Edit transformer code field and replace the default test with sklearn/model/transformer.py
+    - Edit transformer code field and replace the default test with sklearn/stock-pred-redshift/model/transformer.py
 8.  Click on Submit button
 9.  Once model is published, go to Model catalog and click on published model
 10. Click on the stage icon under ACTIONS column
