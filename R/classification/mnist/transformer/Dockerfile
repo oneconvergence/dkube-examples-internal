@@ -11,12 +11,9 @@ RUN apt-get install libgtk2.0-dev -y
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 RUN add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/'
 RUN apt install r-base -y
-RUN Rscript -e "install.packages('caret')"
-RUN Rscript -e "install.packages('mlbench')"
-RUN Rscript -e "install.packages('randomForest')"
-RUN Rscript -e "install.packages('doMC')"
-RUN Rscript -e "install.packages('e1071')"
 RUN Rscript -e "install.packages('png')"
+RUN Rscript -e "install.packages('base64enc')"
+RUN Rscript -e "install.packages('readr')"
 # Install production dependencies.
 RUN pip3 install rpy2
 COPY . .
