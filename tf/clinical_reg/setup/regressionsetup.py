@@ -26,8 +26,8 @@ try:
     print("Datum already exists")
 except:
     dataset = DkubeDataset(user, name='clinical')
-    dataset.update_dataset_source(source='github')
-    dataset.update_github_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/clinical', branch='reg-demo-data')
+    dataset.update_dataset_source(source='git')
+    dataset.update_git_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/clinical', branch='reg-demo-data')
     api.create_dataset(dataset)
 
 try:
@@ -35,8 +35,8 @@ try:
     print("Datum already exists")
 except:
     dataset = DkubeDataset(user, name='images')
-    dataset.update_dataset_source(source='github')
-    dataset.update_github_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/image_data', branch='reg-demo-data')
+    dataset.update_dataset_source(source='git')
+    dataset.update_git_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/image_data', branch='reg-demo-data')
     api.create_dataset(dataset)
     
 try:
@@ -44,8 +44,8 @@ try:
     print("Datum already exists")
 except:
     dataset = DkubeDataset(user, name='rna')
-    dataset.update_dataset_source(source='github')
-    dataset.update_github_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/rna', branch='reg-demo-data')
+    dataset.update_dataset_source(source='git')
+    dataset.update_git_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/rna', branch='reg-demo-data')
     api.create_dataset(dataset)
 
     
