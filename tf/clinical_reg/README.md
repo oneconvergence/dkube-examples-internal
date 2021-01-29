@@ -5,7 +5,7 @@ a. Start any of the jupyterlab notebook from the IDE tab.
 b. Once running, click the jupyterlab icon to launch jupyterlab
 c. From any folder
     i. Create a new text file
-        1. Copy the content from the link https://raw.githubusercontent.com/oneconvergence/dkubeio-examples/master/tf/clinical_reg/pipeline/regression_setup.ipynb and paste into the text file,
+        1. Copy the content from the link https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/tf/clinical_reg/pipeline/regression_setup.ipynb and paste into the text file,
         2. Save it, and rename the text file to regression.ipynb
 d. Open regression.ipynb and run cells to generate the tar file and create run.
 e. Download the tar file by right-clicking on it(optional).
