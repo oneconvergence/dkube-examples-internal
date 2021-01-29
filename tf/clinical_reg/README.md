@@ -1,29 +1,22 @@
-# Regression demo complete pipeline run instructions.
+## Compile file manually
 
-1. Download the pipeline tar file from the URL below,
-2. For Dkube 2.1.6 or later use *[https://github.com/oneconvergence/dkube-examples/blob/master/tf/clinical_reg/pipeline/dkube_regression_pl_full.tar.gz](https://github.com/oneconvergence/dkube-examples/blob/master/tf/clinical_reg/pipeline/dkube_regression_pl_full.tar.gz)*
-3. Upload the tar file into DKube from the pipeline page.
-4. Open the pipeline and click create a run.
-5. Fill the details 
-    - Run name 
-    - Access_url: URL of DKube set-up home page 
-      - i.  https://1.2.3.4:32222 
-      - ii. Note there should not be any other character after the port no 32222.
-    - User: user name 
-      - i. Login user, Eg: ocdkube 
-      - ii.Git user , (github ID) in case of gitauth 
-    - Auth token: Copy the auth token from developer settings and fill into the auth-token field
-6. Click on start.
-7. A test inference will be created by the pl,
-8. Click Repos, Go to that model
-   -  Click publish model 
-   -  Serving image: default
-   -  Click on Transformer
-   -  Transformer Image: default 
-   -  Transformer code: reg_demo/transformer.py 
-   -  Click on submit button
-   -  Published Model will be available in Model Catalog.
-9. Deploy Model 
+```
+a. Start any of the jupyterlab notebook from the IDE tab.
+b. Once running, click the jupyterlab icon to launch jupyterlab
+c. From any folder
+    i. Create a new text file
+        1. Copy the content from the link https://raw.githubusercontent.com/oneconvergence/dkubeio-examples/master/tf/clinical_reg/pipeline/regression_setup.ipynb and paste into the text file,
+        2. Save it, and rename the text file to regression.ipynb
+d. Open regression.ipynb and run cells to generate the tar file and create run.
+e. Download the tar file by right-clicking on it(optional).
+f. Upload the tar file into the DKube pipeline UI(optional).
+
+```
+
+
+
+# Deploy model.
+1. Deploy Model 
    -  Go to Model Catalog and Click on the Published model.
    -  Click on the Deploy Model button. 
    -  Give name. 
