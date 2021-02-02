@@ -6,14 +6,14 @@
 
 ## How to Train the Example in DKube.
 
-## Step1: Create a Project
+## Step1: Create a Code
  1. Click *Repos* side menu option.
- 2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* for Dkube version 2.2.x.x.
- 3. Select Project source as Git.
+ 2. Click *+Code* button.
+ 3. Select Code source as Git.
  4. Enter a unique name say *Img-DN*
  5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples
  ](https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples)* in the URL text box.
- 6. Click *Add Project* button for Dkube version 2.1.x.x or *Add Code* for Dkube version 2.2.x.x.
+ 6. Click *Add Code* button.
  7. Project will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
 

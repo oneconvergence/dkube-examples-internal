@@ -1,14 +1,14 @@
 # Insurance Example
 
+## Code
+Add Code **insurance**
+  - Source: Git
+  - URL: https://github.com/oneconvergence/dkube-examples/tree/citiustech/insurance 
+
 ## Dataset 
 Add dataset **insurance**
   - Source: pub_url
   - URL: https://storage.googleapis.com/insurance-data/insurance/insurance.csv
-
-## Project
-Add project **insurance**
-  - Source: Git
-  - URL: https://github.com/oneconvergence/dkube-examples/tree/citiustech/insurance 
 
 ## Model
 Add Model **insurance**
