@@ -42,21 +42,7 @@ if __name__ == "__main__":
             le = le.fit(insurance[col])
             insurance[col] = le.transform(insurance[col])
             print('Completed Label encoding on',col)
-    df = insurance
-    keys = df.keys()
-    schema = df.dtypes.to_list()
-    featureset_metadata = []
-    print(fs, out_path)
-
-    ########--- Creating Featureset metadata ---########
-
-    for i in range(len(keys)):
-        metadata = {}
-        metadata["name"] = str(keys[i])
-        metadata["description"] = None
-        metadata["schema"] = str(schema[i])
-        featureset_metadata.append(metadata)
 
     # Commit featureset
-    resp = api.commit_featureset(name=fs, df=df, metadata=featureset_metadata)
+    resp = api.commit_featureset(name=fs, df=insurance)
     print("featureset commit response:", resp)
