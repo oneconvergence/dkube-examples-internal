@@ -14,7 +14,7 @@
  5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples
  ](https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples)* in the URL text box.
  6. Click *Add Code* button.
- 7. Project will be created and imported in Dkube. Progress of import can be seen.
+ 7. Code will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
 
 ## Step2: Create a dataset
@@ -47,7 +47,7 @@
 	  - Enter a unique name say *Img-DN*
  	  - **Container** section
 		- Framework - pytorch.
-		- Project section - Please select the workspace *image-dn* created in **Step1**.
+		- Code section - Please select the workspace *image-dn* created in **Step1**.
 		- Start-up script -`python model-care.py`
     - **Repos Tab**
 	    - Dataset section - Under Inputs section,select the dataset *Img-DN* created in **Step2**. Mount point: /opt/dkube/input .
@@ -59,7 +59,7 @@
 ## Data Scientist Workflow :
 ### Steps for running the training program in IDE
 1. Create a IDE with pytorch framework and version 1.6.
-2. Select the project Img-DN.
+2. Select the Code Img-DN.
 3. Under Inputs section, in Repos Tab select dataset Img-DN and enter mount path /opt/dkube/input.
 4. Create a new notebook inside workspace/Img-DN/image-denoising/examples/
    - In first cell type:
@@ -70,7 +70,7 @@
 
 ### How to Run Notebooks
 1. Create a IDE with pytorch framework and version 1.6.
-2. Select the project Img-DN.
+2. Select the Code Img-DN.
 3. Under Inputs section, in Repos Tab select dataset Img-DN and enter mount path /opt/dkube/input.
 4. Inside the directory workspace/Img-DN/image-denoising/examples/ ,Run all the cells of 1_CareTraining.ipynb and then 
 run 2_CarePrediction.ipynb for predictions.
@@ -89,7 +89,7 @@ run 2_CarePrediction.ipynb for predictions.
 3. Serving: The serving stage takes the generated model and serve it with a predict endpoint for inference.
 
 ### How to run Pipeline
-1. Create project with name Img-DN as explained in Step1 above.
+1. Create Code with name Img-DN as explained in Step1 above.
 2. Create Dataset with name Img-DN as explained in Step2 above.
 3. Create model with name Img-DN as explained in Step3 above.
 4. Download the notebook from https://github.com/oneconvergence/dkube-examples/blob/citiustech/image-denoising/examples/dkube-denoising-pipeline.ipynb and upload this in default DKube IDE under pipelines folder.
@@ -100,8 +100,8 @@ run 2_CarePrediction.ipynb for predictions.
 ### Test-Inference Details
 1. Serving image : (use default one)
 2. Transformer image : (use default)
-3. Transformer project (use default)
-4. Transformer code : image-denoising/examples/transformer.py
+3. Transformer Code (use default)
+4. Transformer Script : image-denoising/examples/transformer.py
 
 ### How to Test Inference in DKube Webapp
 1. Download data sample from https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/img1.png
