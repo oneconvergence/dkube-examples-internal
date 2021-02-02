@@ -97,11 +97,17 @@ run 2_CarePrediction.ipynb for predictions.
 6. Links are displayed in the output cells wherever applicable.
 
 ## Production Workflow
+### How to create Test inference.
+1. Go to Repos, click on Models and click on the model (Img-DN).
+2. Click on test inference under actions for the model version you want.
+3. Fill the below details in test-inference form.
+
 ### Test-Inference Details
 1. Serving image : (use default one)
 2. Transformer image : (use default)
 3. Transformer Code (use default)
-4. Transformer Script : image-denoising/examples/transformer.py
+4. Check on the transformer and fill the transformer Script : image-denoising/examples/transformer.py
+5. Select CPU and click submit.
 
 ### How to Test Inference in DKube Webapp
 1. Download data sample from https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/img1.png
