@@ -14,8 +14,8 @@ from sklearn import metrics
 from dkube.sdk import *
 import joblib
 
-inp_path = "/opt/dkube/input"
-out_path = "/opt/dkube/output"
+inp_path = "/opt/dkube/in"
+out_path = "/opt/dkube/out"
 
 if __name__ == "__main__":
 

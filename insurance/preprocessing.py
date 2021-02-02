@@ -7,8 +7,8 @@ from sklearn import preprocessing as skpreprocessing
 
 from dkube.sdk import *
 
-inp_dir = "/opt/dkube/input"
-out_path = "/opt/dkube/output/"
+inp_dir = "/opt/dkube/in"
+out_path = "/opt/dkube/out"
 
 if __name__ == "__main__":
 
