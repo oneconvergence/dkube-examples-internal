@@ -10,7 +10,6 @@ import sys,json
 import requests
 import os
 import logging
-import cv2
 import rpy2.robjects as robjects
 
 DEFAULT_MODEL_NAME = "model"
@@ -50,8 +49,8 @@ class ImageTransformer(kfserving.KFModel):
             return json.dumps({ "error": "Recieved invalid json" })
         data = json_data["signatures"]["inputs"][0][0]["data"]
         ###### Loading R transformer code to convert base64 string to array ########
-        # with open('transformer.R','r') as f:
-        #     rstring = f.read()
+        with open('R/classification/mnist/transformer/transformer.R','r') as f:
+            rstring = f.read()
         rfunc=robjects.r(rstring)
         x = rfunc(data)
         x = np.asarray(x)
