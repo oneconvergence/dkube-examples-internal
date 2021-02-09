@@ -27,7 +27,7 @@ try:
 except:
     dataset = DkubeDataset(user, name='clinical')
     dataset.update_dataset_source(source='git')
-    dataset.update_git_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/clinical', branch='reg-demo-data')
+    dataset.update_git_details('https://github.com/oneconvergence/dkubeio-examples-data/tree/master/tf/clinical_reg/clinical')
     api.create_dataset(dataset)
 
 try:
@@ -36,7 +36,7 @@ try:
 except:
     dataset = DkubeDataset(user, name='images')
     dataset.update_dataset_source(source='git')
-    dataset.update_git_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/image_data', branch='reg-demo-data')
+    dataset.update_git_details('https://github.com/oneconvergence/dkubeio-examples-data/tree/master/tf/clinical_reg/image_data')
     api.create_dataset(dataset)
     
 try:
@@ -45,7 +45,7 @@ try:
 except:
     dataset = DkubeDataset(user, name='rna')
     dataset.update_dataset_source(source='git')
-    dataset.update_git_details('https://github.com/oneconvergence/dkube-examples/tree/reg-demo-data/reg_demo_data/rna', branch='reg-demo-data')
+    dataset.update_git_details('https://github.com/oneconvergence/dkubeio-examples-data/tree/master/tf/clinical_reg/rna')
     api.create_dataset(dataset)
 
     
