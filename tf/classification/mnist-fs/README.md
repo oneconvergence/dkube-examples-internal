@@ -4,10 +4,10 @@
 
 1. **Add Code** \
 &nbsp;&nbsp; Name: mnist \
-&nbsp;&nbsp; Git URL: [https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/classifier/program) 
+&nbsp;&nbsp; Git URL: [https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/classifier/program) 
 2. **Add dataset/featureset:** \
 &nbsp;&nbsp;2.1 Dataset Name: mnist \
-&nbsp;&nbsp;&nbsp;&nbsp; Git URL: [https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/classifier/data](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/classifier/data) \
+&nbsp;&nbsp;&nbsp;&nbsp; Git URL: [https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/classifier/data](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/classifier/data) \
 &nbsp;&nbsp;2.2 Featureset Name: mnist-fs \
 &nbsp;&nbsp;&nbsp;&nbsp; Featurespec upload: none 
 3. **Create Model:** \
@@ -33,7 +33,7 @@
 &nbsp;&nbsp; **Output model:** mnist \
 &nbsp;&nbsp;&nbsp;&nbsp; **Mount-Point:** /opt/dkube/output 
 6. **Pipeline run:** \
-&nbsp;&nbsp; Download [https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/tf/classification/mnist-fs/digits/pipeline/dkube-mnist-fs.ipynb] into DKube Notebook IDE and run all the cells. This auto fills values for pipeline parameters as follows and creates a run under "Dkube - Mnist Featureset" experiment. \
+&nbsp;&nbsp; Download [https://raw.githubusercontent.com/oneconvergence/dkube-examples-internal/master/tf/classification/mnist-fs/digits/pipeline/dkube-mnist-fs.ipynb] into DKube Notebook IDE and run all the cells. This auto fills values for pipeline parameters as follows and creates a run under "Dkube - Mnist Featureset" experiment. \
 &nbsp;&nbsp;&nbsp;&nbsp; Fills in auth token from DKUBE_USER_ACCESS_TOKEN environment variable in Notebook  \
 &nbsp;&nbsp;&nbsp;&nbsp; **training_program:** mnist (This is the code name and should exist) \
 &nbsp;&nbsp;&nbsp;&nbsp; **preprocessing_dataset:** mnist (This is the dataset name and should exist) \
@@ -51,5 +51,5 @@
 4. Go to https://&lt;URL>:32222/inference \
 &nbsp;&nbsp;1. Copy the model serving URL from the test inference tab. \
 &nbsp;&nbsp;2. Copy the auth token from developer settings, \
-&nbsp;&nbsp;3. Download any .png image from, [https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/inference](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/inference) and upload. \
+&nbsp;&nbsp;3. Download any .png image from, [https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/inference](https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/inference) and upload. \
 &nbsp;&nbsp;4. Click predict.

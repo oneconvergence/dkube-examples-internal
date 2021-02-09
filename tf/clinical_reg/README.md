@@ -5,7 +5,7 @@ a. Start any of the jupyterlab notebook from the IDE tab.
 b. Once running, click the jupyterlab icon to launch jupyterlab
 c. From any folder
     i. Create a new text file
-        1. Copy the content from the link https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/tf/clinical_reg/pipeline/regression_setup.ipynb and paste into the text file,
+        1. Copy the content from the link https://raw.githubusercontent.com/oneconvergence/dkube-examples-internal/master/tf/clinical_reg/pipeline/regression_setup.ipynb and paste into the text file,
         2. Save it, and rename the text file to regression.ipynb
 d. Open regression.ipynb and run cells to generate the tar file and create run.
 e. Download the tar file by right-clicking on it(optional).
@@ -26,7 +26,7 @@ f. Upload the tar file into the DKube pipeline UI(optional).
 
 ## Test Inference.
 
-1. Download the data files cli_inp.csv and any sample image from images folder from https://github.com/oneconvergence/dkubeio-examples/tree/master/tf/clinical_reg/inference/data
+1. Download the data files cli_inp.csv and any sample image from images folder from https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/clinical_reg/inference/data
 2. In DKube UI, once the pipeline run has completed, navigate to ‘Test Inferences’ on the left pane
 3. Copy the ‘Endpoint’ URL in the row using the clipboard icon
 4. Duplicate DKube UI on a new tab and change the URL using the domain name and replacing the remaining path with inference after the domain name. 
@@ -76,10 +76,10 @@ b. Once running, click the jupyterlab icon to launch jupyterlab
 c. Go to the pipeline/components folder
     i. Create a new folder name setup and go inside the folder
    ii. Create a file name component.yaml
-  iii. Copy the content from this link https://raw.githubusercontent.com/oneconvergence/dkubeio-examples/master/tf/clinical_reg/pipeline/component.yaml to the component.yaml file.
+  iii. Copy the content from this link https://raw.githubusercontent.com/oneconvergence/dkube-examples-internal/master/tf/clinical_reg/pipeline/component.yaml to the component.yaml file.
 d. Go to the pipeline/ipynbs folder
     i. Create a new text file
-        1. Copy the content from the link https://raw.githubusercontent.com/oneconvergence/dkubeio-examples/master/tf/clinical_reg/pipeline/regression_setup.ipynb and paste into the text file,
+        1. Copy the content from the link https://raw.githubusercontent.com/oneconvergence/dkube-examples-internal/master/tf/clinical_reg/pipeline/regression_setup.ipynb and paste into the text file,
         2. Save it, and rename the text file to regression.ipynb
 e. Run cells to generate the tar file.
 f. Download the tar file by right-clicking on it.
