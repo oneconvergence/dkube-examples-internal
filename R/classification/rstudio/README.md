@@ -1,14 +1,14 @@
 ## **Steps for running the Mnist Example in R-Studio**
 
-Skip steps 1 and 2, if you have already created a Project and Model based on *[https://github.com/oneconvergence/dkube-examples/blob/master/R/classification/mnist/README.md](https://github.com/oneconvergence/dkube-examples/blob/master/R/classification/mnist/README.md)*
+Skip steps 1 and 2, if you have already created a Project and Model based on *[https://github.com/oneconvergence/dkube-examples-internal/blob/master/R/classification/mnist/README.md](https://github.com/oneconvergence/dkube-examples/blob/master/R/classification/mnist/README.md)*
 
 ## Step 1: Create a Code
 1. Click *Repos* side menu option.
 2. Click *+Code* button.
 3. Select source as *Git*.
 4. Enter a unique name say *r-examples*
-5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/R/classification
- ](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification)* in the URL text box.
+5. Paste link *[https://github.com/oneconvergence/dkube-examples-internal/tree/master/R/classification
+ ](https://github.com/oneconvergence/dkube-examples-internal/tree/master/R/classification)* in the URL text box.
 6. Branch: master
 7. Click *Add Code* button.
 8. Code will be created and imported in Dkube. Progress of import can be seen.

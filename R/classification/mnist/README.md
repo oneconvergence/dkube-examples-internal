@@ -4,8 +4,8 @@
 2. Click *+Code* button.
 3. Select source as *Git*.
 4. Enter a unique name say *r-examples*
-5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/R/classification
- ](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification)* in the URL text box.
+5. Paste link *[https://github.com/oneconvergence/dkube-examples-internal/tree/master/R/classification
+ ](https://github.com/oneconvergence/dkube-examples-internal/tree/master/R/classification)* in the URL text box.
 6. Branch: master
 7. Click *Add Code* button.
 8. Code will be created and imported in Dkube. Progress of import can be seen.
@@ -52,5 +52,5 @@
  6. Go to https://SETUPURL:32222/inference
  7. Copy the model serving URL from the test inference tab.
  8. Copy the auth token from developer settings,
- 9. Download any .png image from, [https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/inference](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/inference) and upload.
+ 9. Download any .png image from, [https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/inference](https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/inference) and upload.
  10. Click predict.
