@@ -7,7 +7,7 @@
 3. Enter a name say mnist-digits
 4. Enter tag name in Tag text-box
 5. Select Source as Git
-6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program-tf2 in the URL text box for tensorflow version 2.0
+6. Paste link https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist/digits/classifier/program-tf2 in the URL text box for tensorflow version 2.0
 7. Enter branch name or version in Branch text-box.
 8. Click the Add Code button.
 9. Code will be created and imported in Dkube. Progress of import can be seen.
@@ -22,7 +22,7 @@
 5. Select Versioning as DVS 
 6. Select Dataset store as default
 7. Select Dataset Source as Git
-8. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/pytorch/classification/mnist/digits/classifier/data/MNIST/raw in the URL text box.
+8. Paste link https://github.com/oneconvergence/dkube-examples-internal/tree/master/pytorch/classification/mnist/digits/classifier/data/MNIST/raw in the URL text box.
 9. Enter branch name or version  in Branch text-box 
 10. Click the Add Dataset button..
 11. Dataset will be created and imported in Dkube. Progress of import can be seen.
@@ -79,7 +79,7 @@
 1. Hyperparameter tuning is useful to find the appropriate parameter space for DL training. Dkube will auto generate all the possible combinations of parameters specified and runs training for each of the combination till the goal specified or max count is reached.
 2. Dkube plots the graphs for comparision and suggests a best run with hyperparameters used for the run.
 3. Create a job same as explained in section [How to Train] except that now a tuning file also needs to be uploaded in the configuration tab under Parameters of the Training Job form.
-4. For this example, sample tuning file is present in the github at https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/hptuning (tuning.json or tuning.yaml).These files can be modified according to the need.
+4. For this example, sample tuning file is present in the github at https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist/digits/hptuning (tuning.json or tuning.yaml).These files can be modified according to the need.
 
 ## Running the example in IDE
 1. Create a IDE with tensorflow framework and version 2.0.
@@ -96,7 +96,7 @@
 3. Enter a name say mnist-digits
 4. Enter tag name in Tag text-box
 5. Select Source as Git
-6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program-tf2 in the URL text box for tensorflow version 2.0
+6. Paste link https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist/digits/classifier/program-tf2 in the URL text box for tensorflow version 2.0
 7. Enter branch name or version in Branch text-box.
 8. Click the Add Code button.
 9. Code will be created and imported in Dkube. Progress of import can be seen.
@@ -149,7 +149,7 @@
 
 ## Step5: Serving, inference (without a transformer, only CURL)
 1. Click on Repos tab, navigate to models and then go to mnist-digits model and select version and create a test inference. Don't check transformer.
-2. Download the inp data from https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/tf/classification/mnist/digits/classifier/program-tf2/sample.json
+2. Download the inp data from https://raw.githubusercontent.com/oneconvergence/dkube-examples-internal/master/tf/classification/mnist/digits/classifier/program-tf2/sample.json
 3. Go to your test inference, copy curl command and add  -kv after curl, remove --data-raw till the end and append -d @sample.json at the end.
 
 ## Running the example in IDE

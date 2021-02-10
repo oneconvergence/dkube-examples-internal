@@ -178,8 +178,8 @@ parameters:
 5.  Open the Inference UI page https://<IP>:32222/inference
 6.  Fill serving URL and auth token values.
 7.  Choose model catsdogs
-8.  Download test images from https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/resnet/catsdogs/inference/
-9.  Upload the any downloaded file
+8.  Download test image cat.png from https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/resnet/catsdogs/inp_samples
+9.  Upload the downloaded file
 10. Click Predict.
 
 ## Steps for running the program in IDE

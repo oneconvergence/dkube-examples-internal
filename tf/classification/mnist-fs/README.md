@@ -4,10 +4,10 @@
 
 1. **Add Code** \
 &nbsp;&nbsp; Name: mnist \
-&nbsp;&nbsp; Git URL: [https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/classifier/program](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/classifier/program) 
+&nbsp;&nbsp; Git URL: [https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/classifier/program](https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/classifier/program) 
 2. **Add dataset/featureset:** \
 &nbsp;&nbsp;2.1 Dataset Name: mnist \
-&nbsp;&nbsp;&nbsp;&nbsp; Git URL: [https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/classifier/data](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist-fs/digits/classifier/data) \
+&nbsp;&nbsp;&nbsp;&nbsp; Git URL: [https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/classifier/data](https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/classifier/data) \
 &nbsp;&nbsp;2.2 Featureset Name: mnist-fs \
 &nbsp;&nbsp;&nbsp;&nbsp; Featurespec upload: none 
 3. **Create Model:** \
