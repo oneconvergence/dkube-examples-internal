@@ -22,7 +22,7 @@ parser.add_argument('--predictor_host', help='The URL for the model predict func
 
 args, _ = parser.parse_known_args()
 
-filename = 'temp.jpg'
+filename = '/tmp/temp.jpg'
 img_w = 28
 img_h = 28
 
@@ -33,7 +33,6 @@ def b64_filewriter(filename, content):
     fp = open(filename, "wb")
     fp.write(b64_decode)
     fp.close()
-
 
 class ImageTransformer(kfserving.KFModel):
     def __init__(self, name: str, predictor_host: str):
