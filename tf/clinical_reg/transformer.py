@@ -33,16 +33,16 @@ class ImageTransformer(kfserving.KFModel):
             return json.dumps({ "error": "Recieved invalid json" })
         data = json_data["signatures"]["inputs"][0][0]["data"].encode()
         csv = json_data["file"]
-        with open("image.png", "wb") as fh:
+        with open("/tmp/image.png", "wb") as fh:
             fh.write(base64.decodebytes(data))
-        f = open("file.txt", "w")
+        f = open("/tmp/file.txt", "w")
         f.write(csv)
         f.close()
-        test_df = pd.read_csv("file.txt")
+        test_df = pd.read_csv("/tmp/file.txt")
         csv = test_df.drop(['days_to_death','bcr_patient_barcode'], axis = 1)
         csv = np.asarray(csv)
         csv = csv.reshape(csv.shape[0],csv.shape[1],1)
-        img = cv2.imread("image.png", cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread("/tmp/image.png", cv2.IMREAD_GRAYSCALE)
         img = cv2.resize(img, (28,28))
         img = img.reshape(1,img.shape[0],img.shape[1],1)
         payload = {

@@ -106,7 +106,7 @@ class ImageTransformer(kfserving.KFModel):
                 key = "image"
                 data = element["data"]
                 if data:
-                    input_file = "input_" +key
+                    input_file = "/tmp/input_" +key
                     b64_filewriter(input_file, data)
                 output, err = convert(input_file)
                 if err != "":
