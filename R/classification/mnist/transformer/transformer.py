@@ -22,20 +22,6 @@ parser.add_argument('--predictor_host', help='The URL for the model predict func
 
 args, _ = parser.parse_known_args()
 
-rstring = '''
-library(png)
-library(base64enc)
-library(readr)
-function(base64string){
-    outconn <- file("inp.png","wb")
-    base64decode(what=base64string, output=outconn)
-    close(outconn)
-    x <- readPNG("inp.png")
-    y <- array(x, c(1,784))
-    y
-}
-'''
-
 class ImageTransformer(kfserving.KFModel):
     def __init__(self, name: str, predictor_host: str):
         super().__init__(name)
@@ -50,8 +36,8 @@ class ImageTransformer(kfserving.KFModel):
             return json.dumps({ "error": "Recieved invalid json" })
         data = json_data["signatures"]["inputs"][0][0]["data"]
         ###### Loading R transformer code to convert base64 string to array ########
-        # with open('transformer.R','r') as f:
-        #     rstring = f.read()
+        with open('transformer.R','r') as f:
+            rstring = f.read()
         rfunc=robjects.r(rstring)
         x = rfunc(data)
         x = np.asarray(x)
