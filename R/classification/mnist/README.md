@@ -46,7 +46,7 @@
 ## Serving, inference
  1. Go to the model version from lineage and create inference.
  2. Check on transformer
- 3. Use transformer image `ocdr/custom-kfserving:R-mnist`.
+ 3. Use default transformer image.
  4. Transformer script `R/classification/mnist/transformer/transformer.py`.
  5. Choose CPU, and submit. 
  6. Go to https://SETUPURL:32222/inference
