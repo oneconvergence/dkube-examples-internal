@@ -12,13 +12,17 @@ e. Download the tar file by right-clicking on it(optional).
 f. Upload the tar file into the DKube pipeline UI(optional).
 
 ```
-
+# Publish model.
+1. Publish Model 
+   -  From repo go to model and it's version, and click on the Published model.
+   -  Give name. 
+   -  Transformer script: `tf/clinical_reg/transformer.py`
+   -  Submit.
 
 
 # Deploy model.
 1. Deploy Model 
-   -  Go to Model Catalog and Click on the Published model.
-   -  Click on the Deploy Model button. 
+   -  Go to Model Catalog and from model version click deploy model.
    -  Give name. 
    -  Serving image: default 
    -  Deploy using: CPU and Submit. 
@@ -37,7 +41,7 @@ f. Upload the tar file into the DKube pipeline UI(optional).
 8. Click ‘Upload Image’ to load image from [A], ‘Upload File’ to load csv from [A]
 9. Click ‘Predict’ to run Inference.
 
-## Regression Notebook Workflow.
+## Regression Notebook Workflow(Repos will be created by the pipeline above).
 
 1. Go to IDE section
 2. Create Notebook 
@@ -48,7 +52,7 @@ f. Upload the tar file into the DKube pipeline UI(optional).
          - ii.  images Mount point: /opt/dkube/input/images 
          - iii. rna Mount Point: /opt/dkube/input/rna
 i3. Submit
-4. Open workflow.ipynb from location workspace/regression/reg_demo/ 
+4. Open workflow.ipynb from location `workspace/regression/tf/clinical_reg` 
    - Run cells and wait for output (In case of running the notebook second time, restart the kernel)
 5. Delete if workflow.py is already there and export the workflow notebook as executable. 
    - Upload it into Juyterlab. 
@@ -67,22 +71,3 @@ i3. Submit
         - ii.  images Mount point: /opt/dkube/input/images 
         - iii. rna Mount Point: /opt/dkube/input/rna 
    - Output model: workflow, Mount point : /opt/dkube/output
-
-## Compile file manually
-
-```
-a. Start the default dkube notebook from the IDE tab.
-b. Once running, click the jupyterlab icon to launch jupyterlab
-c. Go to the pipeline/components folder
-    i. Create a new folder name setup and go inside the folder
-   ii. Create a file name component.yaml
-  iii. Copy the content from this link https://raw.githubusercontent.com/oneconvergence/dkube-examples-internal/master/tf/clinical_reg/pipeline/component.yaml to the component.yaml file.
-d. Go to the pipeline/ipynbs folder
-    i. Create a new text file
-        1. Copy the content from the link https://raw.githubusercontent.com/oneconvergence/dkube-examples-internal/master/tf/clinical_reg/pipeline/regression_setup.ipynb and paste into the text file,
-        2. Save it, and rename the text file to regression.ipynb
-e. Run cells to generate the tar file.
-f. Download the tar file by right-clicking on it.
-g. Upload the tar file into the DKube pipeline UI.
-
-```
