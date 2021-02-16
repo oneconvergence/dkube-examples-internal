@@ -3,7 +3,6 @@ from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import csv, sys
 import matplotlib.pyplot as plt
-from tensorboard_logger import unconfigure, configure, log_value, log_histogram, log_images,  Logger
 from PIL import Image
 import cv2, os, json
 import joblib
@@ -12,7 +11,6 @@ import argparse
 
 dates = []
 prices = []
-unconfigure()
 
 def eval_metrics(actual, pred):
     rmse = np.sqrt(mean_squared_error(actual, pred))
@@ -45,11 +43,6 @@ def get_data(filename):
 			prices.append(float(row[1]))
 	return
 
-if not os.path.exists(MODEL_DIR + "/logs/SVMrun"):
-    os.makedirs(MODEL_DIR + "/logs/SVMrun")
-
-configure(MODEL_DIR + "/logs/SVMrun", flush_secs=5)
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Argument parser')
     parser.add_argument('--name',type=str,help='name',default='SVM for stock Prediction')
@@ -79,22 +72,4 @@ if __name__ == "__main__":
     log_metrics('RMSE', rmse)
     log_metrics('MAE', mae)
     log_metrics('R2', r2)
-
-    plt.plot(dates, prices, color= 'black', label = "Data", marker = '*')
-    plt.plot(dates,predictions, color= 'red', label = "Predictions", marker = 'o')
-    plt.xlabel('Date')
-    plt.ylabel('Price')
-    plt.title('SVM predictions with '+kernel+ ' kernel')
-    plt.legend()
-    plt.savefig('svm.png')
-
-    log_value('RMSE', rmse)
-    log_value('MAE', mae)
-    log_value('R2', r2)
-    #filename = MODEL_DIR + '/model.joblib'	
-    #joblib.dump(svm, filename)
-
-    img = cv2.imread('svm.png')
-    log_histogram('Stock Prices', prices, step=1)
-    log_images('Stock Predictions Graph',[img])
-
+    print(os.listdir(MODEL_DIR))
