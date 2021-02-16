@@ -91,8 +91,8 @@ if __name__ == "__main__":
     log_value('RMSE', rmse)
     log_value('MAE', mae)
     log_value('R2', r2)
-    filename = MODEL_DIR + '/model.joblib'	
-    joblib.dump(svm, filename)
+    #filename = MODEL_DIR + '/model.joblib'	
+    #joblib.dump(svm, filename)
 
     img = cv2.imread('svm.png')
     log_histogram('Stock Prices', prices, step=1)
