@@ -4,8 +4,8 @@
 2. Click *+Project* button for Dkube version 2.1.x.x or *+Code* button for version 2.2.x.x.
 3. Select source as *Git*.
 4. Enter a unique name say *r-examples*
-5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/R/classification
- ](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification)* in the URL text box.
+5. Paste link *[https://github.com/oneconvergence/dkube-examples-internal/tree/master/R/classification
+ ](https://github.com/oneconvergence/dkube-examples-internal/tree/master/R/classification)* in the URL text box.
 6. Branch: master
 7. Click *Add Project* button for Dkube version 2.1.x.x or *Add Code* button for version 2.2.x.x.
 8. Project will be created and imported in Dkube. Progress of import can be seen.

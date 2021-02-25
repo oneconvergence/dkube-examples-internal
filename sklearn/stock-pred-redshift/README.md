@@ -6,8 +6,8 @@ To run this example, the user requires to set-up some initials into the Dkube.
 2. Click *+Code* button.
 3. Select source as *Git*.
 4. Enter a unique name say *stock-prediction*
-5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred-redshift/model 
- ](https://github.com/oneconvergence/dkube-examples/tree/master/sklearn/stock-pred-redshift/model)* in the URL text box.
+5. Paste link *[https://github.com/oneconvergence/dkube-examples-internal/tree/master/sklearn/stock-pred-redshift/model 
+ ](https://github.com/oneconvergence/dkube-examples-internal/tree/master/sklearn/stock-pred-redshift/model)* in the URL text box.
 6. Branch: master
 7. Click *Add Code* button.
 8. Code will be created and imported in Dkube. Progress of import can be seen.
@@ -81,7 +81,7 @@ In tensorboard, the regression fit of stock data can be seen in the tensorboard 
 5.  Open the Inference UI page https://<IP>:32222/inference
 6.  Fill serving URL and auth token values.
 7.  Choose model sk-stock
-8.  Save the text from URL in a CSV file *[https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/stock-pred-redshift/dataset/goog.csv](https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/sklearn/stock-pred-redshift/dataset/goog.csv)*
+8.  Save the text from URL in a CSV file *[https://raw.githubusercontent.com/oneconvergence/dkube-examples-internal/master/sklearn/stock-pred-redshift/dataset/goog.csv](https://raw.githubusercontent.com/oneconvergence/dkube-examples-internal/master/sklearn/stock-pred-redshift/dataset/goog.csv)*
 9.  Upload the CSV file
 10. Click Predict. 
 
@@ -95,7 +95,7 @@ In tensorboard, the regression fit of stock data can be seen in the tensorboard 
 6.  Click on Transformer checkbox
 7.  Make sure Serving and Transformer image is sklearn image. It will get filled automatically
     - Select Code stock-prediction.
-    - Edit transformer code field and replace the default test with sklearn/model/transformer.py
+    - Edit transformer code field and replace the default test with sklearn/stock-pred-redshift/model/transformer.py
 8.  Click on Submit button
 9.  Once model is published, go to Model catalog and click on published model
 10. Click on the stage icon under ACTIONS column

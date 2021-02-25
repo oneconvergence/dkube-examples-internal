@@ -22,7 +22,7 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
 3. Enter a name say resnet-catsdogs
 4. Enter tag name in Tag text-box
 5. Select Source as Git
-6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/catsdogs/classifier/program in the URL text box
+6. Paste link https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/resnet/catsdogs/classifier/program in the URL text box
 7. Enter branch name or version in Branch text-box
 8. Click *Add Code* button.
 9. Code will be created and imported in Dkube. Progress of import can be seen.
@@ -36,7 +36,7 @@ This example is derived from [retraining](https://www.tensorflow.org/hub/tutoria
 4. Select Versioning as DVS 
 5. Select Dataset store as default
 6. Select Dataset Source as Git
-7. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/catsdogs/classifier/data in the URL text box
+7. Paste link https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/resnet/catsdogs/classifier/data in the URL text box
 8. Enter branch name or version  in Branch text-box
 9. Click the Add Dataset button.
 10. Dataset will be created and imported in Dkube. Progress of import can be seen.
@@ -178,8 +178,8 @@ parameters:
 5.  Open the Inference UI page https://<IP>:32222/inference
 6.  Fill serving URL and auth token values.
 7.  Choose model catsdogs
-8.  Download test images from https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/resnet/catsdogs/inference/
-9.  Upload the any downloaded file
+8.  Download test image cat.png from https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/resnet/catsdogs/inp_samples
+9.  Upload the downloaded file
 10. Click Predict.
 
 ## Steps for running the program in IDE

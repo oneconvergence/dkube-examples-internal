@@ -21,7 +21,7 @@ parser.add_argument('--predictor_host', help='The URL for the model predict func
 
 args, _ = parser.parse_known_args()
 
-filename = 'temp.jpg'
+filename = '/tmp/temp.jpg'
 img_w = 298
 img_h = 298
 

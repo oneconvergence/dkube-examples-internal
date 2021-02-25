@@ -6,7 +6,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
  - Program is modified to be able to run in distributed training mode. User can select this mode while training in Dkube.
  - Program is modified to write TF summaries and use custom Dkube session hook to emit out some critical information about the training which is then displayed on Dkube UI Dashboard.
 ### Tensorflow 2 Example (without compat mode) and Tensorflow 2.3 Advanced Example is added in classifier/program-tf2.
-- Follow the README https://github.com/oneconvergence/dkube-examples/blob/master/tf/classification/mnist/digits/classifier/program-tf2/README.md
+- Follow the README https://github.com/oneconvergence/dkube-examples-internal/blob/master/tf/classification/mnist/digits/classifier/program-tf2/README.md
 
 # Directories
 
@@ -24,7 +24,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
 3. Enter a name say mnist-digits
 4. Enter tag name in Tag text-box
 5. Select Source as Git
-6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program in the URL text box for tensorflow version 1.14 or https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/program-2.x for tensorflow version 2.0.
+6. Paste link https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist/digits/classifier/program in the URL text box for tensorflow version 1.14 or https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist/digits/classifier/program-2.x for tensorflow version 2.0.
 7. Enter branch name or version in Branch text-box.
 8. Click *Add Code* button.
 9. Code will be created and imported in Dkube. Progress of import can be seen.
@@ -39,7 +39,7 @@ This example is derived from [tensorflow example](https://github.com/tensorflow/
 5. Select Versioning as DVS 
 6. Select Dataset store as default
 7. Select Dataset Source as Git
-8. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/classifier/data  in the URL text box.
+8. Paste link https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist/digits/classifier/data  in the URL text box.
 9. Enter branch name or version  in Branch text-box 
 10. Click the Add Dataset button..
 11. Dataset will be created and imported in Dkube. Progress of import can be seen.
@@ -188,7 +188,7 @@ parameters:
 5. Open the Inference UI page https://<IP>:32222/inference
 6. Fill serving URL and auth token values.
 7. Choose model mnist
-8. Download test images from https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/inference/
+8. Download test images from https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist/digits/inference/
 9. Upload the any downloaded file
 10.Click Predict.
 

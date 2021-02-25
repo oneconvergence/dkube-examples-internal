@@ -4,8 +4,8 @@
  2. Click *+Code* button.
  3. Select source as Git.
  4. Enter a unique name say *mnist-pt*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/pytorch/classification/mnist/digits/classifier/program 
- ](https://github.com/oneconvergence/dkube-examples/tree/master/pytorch/classification/mnist/digits/classifier/program)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples-internal/tree/master/pytorch/classification/mnist/digits/classifier/program 
+ ](https://github.com/oneconvergence/dkube-examples-internal/tree/master/pytorch/classification/mnist/digits/classifier/program)* in the URL text box.
  6. Click *Add Code* button.
  7. Code will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -15,8 +15,8 @@
  2. Click *+Dataset* button.
  3. Select *Github* option.
  4. Enter a unique name say *mnist-pt*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/pytorch/classification/mnist/digits/classifier/data
- ](https://github.com/oneconvergence/dkube-examples/tree/master/pytorch/classification/mnist/digits/classifier/data)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples-internal/tree/master/pytorch/classification/mnist/digits/classifier/data
+ ](https://github.com/oneconvergence/dkube-examples-internal/tree/master/pytorch/classification/mnist/digits/classifier/data)* in the URL text box.
  6. Click *Add Dataset* button.
  7. Dataset will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -63,12 +63,15 @@
 4. Check CPU and create.
 
 ## Step6: Inference
-1. Download data sample from *[https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/inference](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/inference)*
+1. Download data sample from *[https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist/digits/inference](https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist/digits/inference)*
 2. Open the URL https://<set-up-IP>:32222/inference.
 3. Copy the serving endpoint from the test inference tab and paste it into the serving the URL field.
 4. Copy token from developer settings and paste into token field.
 5. Select model mnist from the dropdown.
 6. Upload the downloaded image and click predict. 
+
+## Inference through Curl Command (works without the transformer)
+1. Use input json path as https://raw.githubusercontent.com/oneconvergence/dkube-examples-internal/master/pytorch/classification/mnist/digits/classifier/input_sample/mnist-pt.json 
 
 ## Step7: Release, Publish and Stage or Deploy model
 
@@ -97,7 +100,7 @@
 - Check in Model Serving and wait for the deployed model to change to running state.
 - Deployed Model can used to test the prediction.
 5. *Inference*
-- Download data sample from *[https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/inference](https://github.com/oneconvergence/dkube-examples/tree/master/tf/classification/mnist/digits/inference)*
+- Download data sample from *[https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist/digits/inference](https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist/digits/inference)*
 - Open the URL https://<set-up-IP>:32222/inference.
 - Copy the serving endpoint from the Model serving for Staged/Deployed model  and paste it into the serving the URL field.
 - Copy token from developer settings and paste into token field.

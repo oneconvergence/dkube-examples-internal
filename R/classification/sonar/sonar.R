@@ -3,6 +3,7 @@ library(caret)
 library(mlbench)
 library(randomForest)
 library(doMC)
+library(mlflow)
 
 OUT_DIR <- "/opt/dkube/model/"
 
@@ -17,5 +18,16 @@ training <- Sonar[validation_index,]
 # create final standalone model using all training data
 set.seed(7)
 model <- randomForest(Class~., training, mtry=2, ntree=2000)
+# Metrics
+final_predictions <- predict(model, training[,1:60])
+result=confusionMatrix(final_predictions, training$Class)
+##### Retrieving the metrics ######
+Prevalence <- result$byClass['Prevalence']    
+Sensitivity <- result$byClass['Sensitivity']
+accuracy <- result$byClass['Balanced Accuracy']
+# Logging metrics
+mlflow_log_metric("Prevalence", Prevalence)
+mlflow_log_metric("Sensitivity", Sensitivity)
+mlflow_log_metric("Accuracy", accuracy)
 # save the model to disk
 saveRDS(model, sprintf("%smodel.rds", OUT_DIR))

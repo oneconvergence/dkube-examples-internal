@@ -1,9 +1,7 @@
-install.packages("dotenv")
 library(jsonlite)
 library(httr)
 
 ds <- fromJSON("/etc/dkube/redshift.json")
-dotenv::load_dot_env("/etc/dkube/dkube.env")
 
 user <- Sys.getenv("LOGNAME")
 

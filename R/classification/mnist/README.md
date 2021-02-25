@@ -4,8 +4,8 @@
 2. Click *+Code* button.
 3. Select source as *Git*.
 4. Enter a unique name say *r-examples*
-5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/master/R/classification
- ](https://github.com/oneconvergence/dkube-examples/tree/master/R/classification)* in the URL text box.
+5. Paste link *[https://github.com/oneconvergence/dkube-examples-internal/tree/master/R/classification
+ ](https://github.com/oneconvergence/dkube-examples-internal/tree/master/R/classification)* in the URL text box.
 6. Branch: master
 7. Click *Add Code* button.
 8. Code will be created and imported in Dkube. Progress of import can be seen.
@@ -43,8 +43,14 @@
  1. Once training is complete you can start the tensorboard from the tensorboard launch icon in the Actions column of jobs. 
  2. The tensorboard will be ready in 30-60 seconds. Then the tensorboard can be launched from the launch tensorboard icon. 
 
-## Serving, inference (without a transformer, only CURL)
- 1. Go to the model version from lineage and create inference. Don’t check transformer.
- 2. Download the inp data from *[https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/R/classification/mnist/inp_sample/r-mnist-inp.json](https://raw.githubusercontent.com/oneconvergence/dkube-examples/master/R/classification/mnist/inp_sample/r-mnist-inp.json)*
- 3. curl -kv -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" MODEL_ENDPOINT -d @r-mnist.json
-
+## Serving, inference
+ 1. Go to the model version from lineage and create inference.
+ 2. Check on transformer
+ 3. Use default transformer image.
+ 4. Transformer script `R/classification/mnist/transformer/transformer.py`.
+ 5. Choose CPU, and submit. 
+ 6. Go to https://SETUPURL:32222/inference
+ 7. Copy the model serving URL from the test inference tab.
+ 8. Copy the auth token from developer settings,
+ 9. Download any .png image from, [https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/inference](https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/classification/mnist-fs/digits/inference) and upload.
+ 10. Click predict.

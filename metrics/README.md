@@ -14,7 +14,7 @@ These examples are derived from [mlflow examples](https://github.com/mlflow/mlfl
 3. Enter a name say metrics-example
 4. Enter tag name in Tag text-box
 5. Select Code Source as Git
-6. Paste link https://github.com/oneconvergence/dkube-examples/tree/master/metrics in the URL text box
+6. Paste link https://github.com/oneconvergence/dkube-examples-internal/tree/master/metrics in the URL text box
 7. Enter branch name or version in Branch text-box.
 8. Click *Add Code* button.
 9. Code will be created and imported in Dkube. Progress of import can be seen.
