@@ -8,8 +8,8 @@ import yaml
 
 from dkube.sdk import *
 
-inp_path = "/opt/dkube/input/"
-out_path = "/opt/dkube/output/"
+inp_path = "/opt/dkube/input"
+out_path = "/opt/dkube/output"
 
 # Read dataset
 def read_idx(dataset="training", path="../data"):

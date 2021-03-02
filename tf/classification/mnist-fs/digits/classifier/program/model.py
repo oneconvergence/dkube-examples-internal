@@ -11,8 +11,8 @@ import argparse
 
 from dkube.sdk import *
 
-inp_path = "/opt/dkube/input/"
-out_path = "/opt/dkube/output/"
+inp_path = "/opt/dkube/input"
+out_path = "/opt/dkube/output"
 
 # Export metrics to DKube
 def log_metrics(key, value, epoch, step):
@@ -129,7 +129,7 @@ if __name__ == "__main__":
         with tf.keras.backend.get_session() as sess:	
             tf.saved_model.simple_save(	
                 sess,	
-                export_path + str(version),	
+                os.path.join(export_path, str(version)),	
                 inputs={"input": model.input},	
                 outputs={"output": model.output},	
             )	
@@ -137,7 +137,7 @@ if __name__ == "__main__":
         with tf.compat.v1.keras.backend.get_session() as sess:	
             tf.compat.v1.saved_model.simple_save(	
                 sess,	
-                export_path + str(version),	
+                os.path.join(export_path, str(version)),	
                 inputs={"input": model.input},	
                 outputs={"output": model.output},	
             )
