@@ -4,7 +4,7 @@
 
 ### 1. Add Code Repo:
 1. Provide name: **Steel**
-2. Source URL: https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/segmentation/
+2. Source URL: https://github.com/oneconvergence/dkube-examples-internal/tree/master/tf/segmentation/steel-defect
 3. Submit
 
 ### 2. Add Dataset repo 
