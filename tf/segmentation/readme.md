@@ -37,7 +37,7 @@
 1. open {setup-IP/URL}:32222/inference
 2. Give Serving URL, and auth token from developer settings.
 3. Choose model steel
-4. Download and upload sample image https://github.com/riteshkarvaloc/steel-defect/blob/main/test_sample.jpeg
+4. Download and upload sample image https://github.com/oneconvergence/dkube-examples-internal/blob/master/tf/segmentation/test_sample.jpeg 
 5. Click Submit
 6. Expected Output
 ![](steel_output.png?raw=true)
