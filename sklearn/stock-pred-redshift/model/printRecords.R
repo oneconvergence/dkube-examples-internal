@@ -5,7 +5,8 @@ ds <- fromJSON("/etc/dkube/redshift.json")
 
 user <- Sys.getenv("LOGNAME")
 
-url <- "http://dkube-controller-worker.dkube:5000/dkube/v2/controller/users/%s/datums/class/dataset/datum/%s"
+dkube_url <- Sys.getenv("DKUBE_CONTROLLER_NODEIP_ACCESS_URL")
+url <- sprintf("%s/dkube/v2/controller/users/%s/datums/class/dataset/datum/%s",dkube_url)
 
 token <- Sys.getenv("DKUBE_USER_ACCESS_TOKEN")
 
