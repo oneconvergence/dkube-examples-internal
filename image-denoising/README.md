@@ -11,8 +11,8 @@
  2. Click *+Code* button.
  3. Select Code source as Git.
  4. Enter a unique name say *Img-DN*
- 5. Paste link *[https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples
- ](https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples)* in the URL text box.
+ 5. Paste link *[https://github.com/oneconvergence/dkube-examples-internal/tree/citiustech/image-denoising/examples
+ ](https://github.com/oneconvergence/dkube-examples-internal/tree/citiustech/image-denoising/examples)* in the URL text box.
  6. Click *Add Code* button.
  7. Code will be created and imported in Dkube. Progress of import can be seen.
  8. Please wait till status turns to *ready*.
@@ -81,7 +81,7 @@ run 2_CarePrediction.ipynb for predictions.
 1. Hyperparameter tuning is useful to find the appropriate parameter space for DL training. Dkube will auto generate all the possible combinations of parameters specified and runs training for each of the combination till the goal specified or max count is reached.
 2. Dkube plots the graphs for comparision and suggests a best run with hyperparameters used for the run.
 3. Create a run same as explained above except that now a tuning file also needs to be uploaded in the configuration tab under Parameters of the Training Job form.
-4. For this example, sample tuning file is present in the github at https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/tuning.json. This file can be modified according to the need.
+4. For this example, sample tuning file is present in the github at https://github.com/oneconvergence/dkube-examples-internal/tree/citiustech/image-denoising/examples/tuning.json. This file can be modified according to the need.
 
 ## Pipeline
 1. The pipeline for this example includes training and serving stages.
@@ -92,7 +92,7 @@ run 2_CarePrediction.ipynb for predictions.
 1. Create Code with name Img-DN as explained in Step1 above.
 2. Create Dataset with name Img-DN as explained in Step2 above.
 3. Create model with name Img-DN as explained in Step3 above.
-4. Download the notebook from https://github.com/oneconvergence/dkube-examples/blob/citiustech/image-denoising/examples/dkube-denoising-pipeline.ipynb and upload this in default DKube IDE under pipelines folder.
+4. Download the notebook from https://github.com/oneconvergence/dkube-examples-internal/blob/citiustech/image-denoising/examples/dkube-denoising-pipeline.ipynb and upload this in default DKube IDE under pipelines folder.
 5. Run all the cells of dkube-denoising-pipeline.ipynb. This will create a pipeline,and  a run.
 6. Links are displayed in the output cells wherever applicable.
 
@@ -110,7 +110,7 @@ run 2_CarePrediction.ipynb for predictions.
 5. Select CPU and click submit.
 
 ### How to Test Inference in DKube Webapp
-1. Download data sample from https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/img1.png
+1. Download data sample from https://github.com/oneconvergence/dkube-examples-internal/tree/citiustech/image-denoising/examples/img1.png
 2. Open the URL https://:32222/inference.
 3. Copy the serving endpoint from the test inference tab and paste it into the serving the URL field.
 4. Copy token from developer settings and paste into token field.
@@ -120,5 +120,5 @@ run 2_CarePrediction.ipynb for predictions.
 ### Custom Webapp
 1. Go to webapp directory, and build a docker image with given **Dockerfile** by typing **docker build . -t ocdr/streamlit-webapp:img-dn**
 2. Run command **docker run -p 8501:8501 ocdr/streamlit-webapp:img-dn**
-3. Open http://localhost:8501/ in your browser and copy serving endpoint from the test inference tab and paste it into Dkube serving URL field , fill authentication token and upload image from ( https://github.com/oneconvergence/dkube-examples/tree/citiustech/image-denoising/examples/img1.png) and click predict.
+3. Open http://localhost:8501/ in your browser and copy serving endpoint from the test inference tab and paste it into Dkube serving URL field , fill authentication token and upload image from ( https://github.com/oneconvergence/dkube-examples-internal/tree/citiustech/image-denoising/examples/img1.png) and click predict.
 4. Denoised image will be returned as an output and will be displayed in the UI.

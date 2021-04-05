@@ -3,7 +3,7 @@
 ## Code
 Add Code **insurance**
   - Source: Git
-  - URL: https://github.com/oneconvergence/dkube-examples/tree/citiustech/insurance 
+  - URL: https://github.com/oneconvergence/dkube-examples-internal/tree/citiustech/insurance 
 
 ## Dataset 
 Add dataset **insurance**
