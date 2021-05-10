@@ -24,9 +24,15 @@ FLAGS,unparsed=parser.parse_known_args()
 epochs = FLAGS.epochs
 lr = FLAGS.lr
 batch_size = FLAGS.batch_size
-
 DATA_DIR = "/opt/dkube/input/"
-MODEL_DIR = "/opt/dkube/output/"
+
+if os.getenv('DKUBE_JOB_CLASS',None) == 'notebook':
+    MODEL_DIR = "model"
+    if not os.path.exists('model'):
+        os.makedirs('model')
+else:
+    MODEL_DIR = "/opt/dkube/output/"
+
 EXTRACT_PATH = "/tmp/data/"
 ZIP_FILE = DATA_DIR + "data.zip"
 img_shape = (298,298)
