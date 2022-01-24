@@ -24,7 +24,7 @@
 1. Provide name: **steel-test**
 2. Versioning: DVS, Source: None
 
-### 6. Add dataset repo
+### 6. Add model repo
 1. Provide name: **steel-model**
 2. Versioning: DVS, Source: None
 
