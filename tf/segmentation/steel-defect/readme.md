@@ -29,15 +29,15 @@
 2. Versioning: DVS, Source: None
 
 ## Create and launch Jupyterlab with project steel
-1. Go to workspace/steel
+1. Go to **workspace/steel/tf/segmentation/steel-defect/**
 2. Run pipeline.ipynb to create the pipeline run.
 3. The pipeline run will create a test inference at the end.
 
 ## Test Inference
-1. open {setup-IP/URL}:32222/inference
+1. open `https://{setup-IP/URL}:32222/inference`
 2. Give Serving URL, and auth token from developer settings.
 3. Choose model steel
-4. Download and upload sample image https://github.com/oneconvergence/dkube-examples-internal/blob/master/tf/segmentation/test_sample.jpeg 
+4. Download and upload sample image https://github.com/oneconvergence/dkube-examples-internal/blob/master/tf/segmentation/steel-defect//test_sample.jpeg 
 5. Click Submit
 6. Expected Output
 ![](steel_output.png?raw=true)
