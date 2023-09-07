@@ -28,7 +28,7 @@ Following examples are provided,
 
   Supports samples for GPU based training, distributed training, hyperparameter tuning & pipeline.
 
-- Object detection sample on cocoo pets dataset.
+- Object detection sample on cocoo pets dataset
 
   [https://github.com/oneconvergence/dkube-examples/blob/1.2/tensorflow/object-detection/pets/README.md](https://github.com/oneconvergence/dkube-examples/blob/1.2/tensorflow/object-detection/pets/README.md)
 
